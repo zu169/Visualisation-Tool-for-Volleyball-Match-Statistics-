@@ -13,7 +13,7 @@ Data Upload & Editing: Easy data import from Excel and direct data entry with va
 
 Match statistic presentation is an important factor in the progression for volleyball athletes at the University of Aberystwyth. Currently, the presentation of these statistics is inefficient and lacks clarity in the identification of strengths and weaknesses for the individual. The clear visualisation of these statistics would likely encourage specified skill development and allow for comparative improvement between past and present performances. An intuitive presentation of the data which potentially includes motivational benefits dependent on the individual. With objective outlines allowing athletes to have targets to build towards.  
 
-#Features:
+# Features:
 
 **Database Design** 
 Structured relational database to manage player information, match records, statistics and user credentials. 
@@ -54,7 +54,7 @@ Navigation menus (Dashboard) for seamless access to different modules (Match His
 
  
 
-#Project Goals: 
+# Project Goals: 
 
 -  To streamline data management processes for Aberystwyth Volleyball Club. 
 
@@ -62,7 +62,7 @@ Navigation menus (Dashboard) for seamless access to different modules (Match His
 
 -  To create a scalable and adaptable platform that can grow with the organization's needs. 
 
-#Target Users: 
+# Target Users: 
 
 -  Players seeking to track personal performance metrics 
 
