@@ -1,0 +1,257 @@
+CREATE TABLE Org_User (​
+
+    Org_ID INT PRIMARY KEY,​
+
+    Username VARCHAR(255) UNIQUE NOT NULL,​
+
+    Password VARCHAR(255) NOT NULL​
+
+);​
+
+​
+
+CREATE TABLE Team (​
+
+    Team_ID INT PRIMARY KEY,​
+
+    Org_ID INT,​
+
+    Division VARCHAR(100),​
+
+    FOREIGN KEY (Org_ID) REFERENCES Org_User(Org_ID)​
+
+);​
+
+​
+
+CREATE TABLE Position (​
+
+    Position_ID INT PRIMARY KEY,​
+
+    Position_Name VARCHAR(100) NOT NULL​
+
+);​
+
+​
+
+CREATE TABLE Player (​
+
+    Player_ID INT PRIMARY KEY,​
+
+    Position_ID INT,​
+
+    Jump_Height DECIMAL(5,2),​
+
+    Serve_Speed DECIMAL(5,2),​
+
+    Hitting_Speed DECIMAL(5,2),​
+
+    FOREIGN KEY (Position_ID) REFERENCES Position(Position_ID)​
+
+);​
+
+​
+
+CREATE TABLE User (​
+
+    User_ID INT PRIMARY KEY,​
+
+    Player_ID INT UNIQUE,​
+
+    Username VARCHAR(255) UNIQUE NOT NULL,​
+
+    Password VARCHAR(255) NOT NULL,​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID)​
+
+);​
+
+​
+
+CREATE TABLE Entity (​
+
+    Team_ID INT,​
+
+    Player_ID INT,​
+
+    FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID),​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID)​
+
+);​
+
+​
+
+CREATE TABLE Match (​
+
+    Match_ID INT PRIMARY KEY,​
+
+    Team_ID INT,​
+
+    Team2_ID INT,​
+
+    Date DATE,​
+
+    Match_Type VARCHAR(100),​
+
+    FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID),​
+
+    FOREIGN KEY (Team2_ID) REFERENCES Team(Team_ID)​
+
+);​
+
+​
+
+CREATE TABLE Set (​
+
+    Set_ID INT PRIMARY KEY,​
+
+    Match_ID INT,​
+
+    Score VARCHAR(50),​
+
+    Youtube_Link VARCHAR(255),​
+
+    FOREIGN KEY (Match_ID) REFERENCES Match(Match_ID)​
+
+);​
+
+​
+
+CREATE TABLE Point (​
+
+    Set_ID INT,​
+
+    Point_ID INT,​
+
+    Team_ID INT,​
+
+    PRIMARY KEY (Set_ID, Point_ID, Team_ID),​
+
+    FOREIGN KEY (Set_ID) REFERENCES Set(Set_ID),​
+
+    FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID)​
+
+);​
+
+​
+
+CREATE TABLE Player_List (​
+
+    Set_ID INT,​
+
+    Team_ID INT,​
+
+    Player_ID INT,​
+
+    Position_ID INT,​
+
+    Shirt_Number INT,​
+
+    FOREIGN KEY (Set_ID) REFERENCES Set(Set_ID),​
+
+    FOREIGN KEY (Team_ID) REFERENCES Team(Team_ID),​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID),​
+
+    FOREIGN KEY (Position_ID) REFERENCES Position(Position_ID)​
+
+);​
+
+​
+
+CREATE TABLE Serve (​
+
+    Point_ID INT,​
+
+    Player_ID INT,​
+
+    Type ENUM('Underhand', 'Overhand', 'Float', 'Jump'),​
+
+    Success ENUM('Normal', 'Ace', 'Error'),​
+
+    FOREIGN KEY (Point_ID) REFERENCES Point(Point_ID),​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID)​
+
+);​
+
+​
+
+CREATE TABLE Attack (​
+
+    Attack_ID INT PRIMARY KEY,​
+
+    Point_ID INT,​
+
+    Player_ID INT,​
+
+    Type ENUM('Hit', 'Tip'),​
+
+    Success ENUM('Normal', 'Kill', 'Error', 'Blocked'),​
+
+    FOREIGN KEY (Point_ID) REFERENCES Point(Point_ID),​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID)​
+
+);​
+
+​
+
+CREATE TABLE Receive (​
+
+    Receive_ID INT PRIMARY KEY,​
+
+    Point_ID INT,​
+
+    Player_ID INT,​
+
+    Type ENUM('Normal', 'Serve', 'Dig', 'Error'),​
+
+    Success ENUM('0', '1', '2', '3', '4'),​
+
+    FOREIGN KEY (Point_ID) REFERENCES Point(Point_ID),​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID)​
+
+);​
+
+​
+
+CREATE TABLE Set_Action (​
+
+    Set_ID INT,​
+
+    Point_ID INT,​
+
+    Player_ID INT,​
+
+    Type ENUM('Assist', 'Error', 'Negative'),​
+
+    PRIMARY KEY (Set_ID, Point_ID, Player_ID),​
+
+    FOREIGN KEY (Point_ID) REFERENCES Point(Point_ID),​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID)​
+
+);​
+
+​
+
+CREATE TABLE Block (​
+
+    Block_ID INT PRIMARY KEY,​
+
+    Point_ID INT,​
+
+    Player_ID INT,​
+
+    Type ENUM('Kill', 'Touch', 'Error'),​
+
+    FOREIGN KEY (Point_ID) REFERENCES Point(Point_ID),​
+
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID)​
+
+);​
+
+​
