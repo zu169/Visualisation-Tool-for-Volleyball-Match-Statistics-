@@ -1,3 +1,6 @@
+Link to ER Diagram
+https://lucid.app/lucidchart/82a0508e-f8b9-40c1-ad20-8d5b141cf369/edit?viewport_loc=-486%2C-514%2C3902%2C1894%2C0_0&invitationId=inv_fd51df02-06ef-4bec-a3c0-96042d93b75e
+
 CREATE TABLE Org_User (​
 
     Org_ID INT PRIMARY KEY,​
