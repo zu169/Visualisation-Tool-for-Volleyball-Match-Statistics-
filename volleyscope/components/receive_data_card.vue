@@ -24,7 +24,9 @@ const success = ref(receive_success[0])
         />  
         Receive Type
         <USelect v-model="receive" :options="receive_types" />
-        Receive Success
+        <UTooltip text="0: Overpass, 1-4 Options available on Attack">
+            <p>Receive Success</p>
+        </UTooltip>
         <USelect v-model="success" :options="receive_success" />
     </UCard>
 </template>

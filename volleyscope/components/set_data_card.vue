@@ -1,9 +1,11 @@
 <script setup lang="ts">
 const set_types = ['Assist', 'Error', 'Negative']
+const set_rating = [0,1,2] 
 const people = ['Alan Atkins', 'Amin Khoshikabari', 'Iker Irigoyen', 'Tom Cook', 'Tanya Fox', 'Hellen Schmidt', 'Caroline Schultz', 'Mason Heaney', 'Claudie Smitham', 'Emil Schaefer']
 
 const selected = ref(people[0])
 const set = ref(set_types[0])
+const score = ref(set_rating[0])
 </script>
 
 <template>
@@ -22,5 +24,9 @@ const set = ref(set_types[0])
         />  
         Set Type
         <USelect v-model="set" :options="set_types" />
+        <UTooltip text="0: Failed Set, 1: Hitable, 2: Hit from Line">
+            <p>Set Rating</p>
+        </UTooltip>
+        <USelect v-model="score" :options="set_rating" />
     </UCard>
 </template>
