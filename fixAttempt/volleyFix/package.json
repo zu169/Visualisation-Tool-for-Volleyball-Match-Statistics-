@@ -10,13 +10,14 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/test-utils": "3.17.0",
     "@nuxt/ui": "^3.0.0",
     "nuxt": "^3.16.1",
-    "vue": "latest",
-    "vue-router": "latest"
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.31",
+    "@iconify-json/ph": "^1.2.2",
     "@types/bun": "latest"
   },
   "peerDependencies": {
