@@ -20,13 +20,13 @@ const score = ref(set_rating[0])
             class="w-full lg:w-48"
             v-model = "selected"
             placeholder="Select a person"
-            :options="people"
+            :items="people"
         />  
         Set Type
-        <USelect v-model="set" :options="set_types" />
+        <USelect v-model="set" :items="set_types" />
         <UTooltip text="0: Failed Set, 1: Hitable, 2: Hit from Line">
             <p>Set Rating</p>
         </UTooltip>
-        <USelect v-model="score" :options="set_rating" />
+        <USelect v-model="score" :items="set_rating" />
     </UCard>
 </template>

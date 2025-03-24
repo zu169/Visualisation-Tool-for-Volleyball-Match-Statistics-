@@ -20,13 +20,13 @@ const success = ref(receive_success[0])
             class="w-full lg:w-48"
             v-model = "selected"
             placeholder="Select a person"
-            :options="people"
+            :items="people"
         />  
         Receive Type
-        <USelect v-model="receive" :options="receive_types" />
+        <USelect v-model="receive" :items="receive_types" />
         <UTooltip text="0: Overpass, 1-4 Options available on Attack">
             <p>Receive Success</p>
         </UTooltip>
-        <USelect v-model="success" :options="receive_success" />
+        <USelect v-model="success" :items="receive_success" />
     </UCard>
 </template>

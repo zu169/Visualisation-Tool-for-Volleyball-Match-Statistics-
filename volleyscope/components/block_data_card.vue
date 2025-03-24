@@ -18,9 +18,9 @@ const block = ref(block_types[0])
             class="w-full lg:w-48"
             v-model = "selected"
             placeholder="Select a person"
-            :options="people"
+            :items="people"
         />  
         Block Type
-        <USelect v-model="block" :options="block_types" />
+        <USelect v-model="block" :items="block_types" />
     </UCard>
 </template>

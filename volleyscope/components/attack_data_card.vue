@@ -20,11 +20,11 @@ const success = ref(attack_success[0])
             class="w-full lg:w-48"
             v-model = "selected"
             placeholder="Select a person"
-            :options="people"
+            :items="people"
         />  
         Attack Type
-        <USelect v-model="attack" :options="attack_types" />
+        <USelect v-model="attack" :items="attack_types" />
         Attack Success
-        <USelect v-model="success" :options="attack_success" />
+        <USelect v-model="success" :items="attack_success" />
     </UCard>
 </template>

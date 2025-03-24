@@ -20,11 +20,11 @@ const success = ref(serve_success[0])
             class="w-full lg:w-48"
             v-model = "selected"
             placeholder="Select a person"
-            :options="people"
+            :items="people"
         />  
         Serve Type
-        <USelect v-model="serve" :options="serve_types" />
+        <USelect v-model="serve" :items="serve_types" />
         Serve Success
-        <USelect v-model="success" :options="serve_success" />
+        <USelect v-model="success" :items="serve_success" />
     </UCard>
 </template>

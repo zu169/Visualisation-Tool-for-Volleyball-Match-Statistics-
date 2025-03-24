@@ -1,6 +1,6 @@
 <template>
     <section>
-        <div class="flex items-center justify-center min-h-screen">
+        <div class="flex items-center justify-center ">
         <div class="text-center">
             <h1 class="text-4xl font-bold mb-4">
                 Welcome to VolleyScope
@@ -11,7 +11,7 @@
         </div>
         </div>
     </section>
-    <section>
+    <section class="grid grid-cols-2 gap-4">
         <UCard variant="soft">
             <template #header>
                 <Placeholder class="h-8"/>
