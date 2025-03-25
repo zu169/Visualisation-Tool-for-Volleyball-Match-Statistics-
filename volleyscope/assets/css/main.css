@@ -1,2 +1,25 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+section {
+  padding: 50px;
+}
+
+h1 {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: larger;
+  font-weight: bold;
+}
+
+p {
+  font-size: large;
+}
