@@ -1,8 +1,8 @@
 <template>
     <div>Data Input</div>
-    <ServeDataCard/>
-    <ReceiveDataCard/>
-    <SetDataCard/>
-    <AttackDataCard/>
-    <BlockDataCard/>
+    <MatchServeDataCard/>
+    <MatchReceiveDataCard/>
+    <MatchSetDataCard/>
+    <MatchAttackDataCard/>
+    <MatchBlockDataCard/>
 </template>

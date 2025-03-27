@@ -53,10 +53,10 @@
         </div> 
     </section>
     <section>
-        <CardsUsageInstructions/>
+        <UsageInstructions/>
     </section>
     <section>
-        <CardsRegisterInterest />
+        <RegisterInterest />
     </section>
     </UContainer>
   </template>
