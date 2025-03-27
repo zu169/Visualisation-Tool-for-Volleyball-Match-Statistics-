@@ -175,9 +175,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
     <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x">
         <template #body>
-            <NuxtLink :to="{ name: 'player'}">
-                <PlayerIndividualView/>
-            </NuxtLink>
+            <PlayerIndividualView/>
         </template>
     </UModal>
 </template>

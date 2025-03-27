@@ -69,7 +69,7 @@
           label : 'Add Player',
           description : 'Register another player to the organisation',
           icon : 'icon-park-outline:data-user',
-          to: '/playerData'
+          to: '/playerInput'
         }
       ]
     },

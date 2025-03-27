@@ -24,6 +24,10 @@
             shirtNum: number
         }
 
+
+    const props = defineProps<{ data : Player}>()
+    console.log(props.data)
+
     const data = ref<Player[]>([
         {
             name: 'Alan Atkins',
@@ -39,9 +43,11 @@
             <UBreadcrumb :items="history"></UBreadcrumb>
         </div>
         <div>
-        <h2>{{ data[0].name }}</h2>
+        <h1>{{ data[0].name }}</h1>
         <h3>Position: {{ data[0].position }}</h3>
         <h3>Shirt Number: {{ data[0].shirtNum }}</h3>
         </div>
+        <!-- Table with player stats -->
+        <!-- List of matches they have played in -->
     </UContainer>
 </template>
