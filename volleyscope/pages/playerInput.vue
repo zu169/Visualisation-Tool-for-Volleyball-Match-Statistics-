@@ -1,5 +1,23 @@
 <script setup lang="ts">
     import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
+    import type { BreadcrumbItem } from '@nuxt/ui';
+
+    const history = ref<BreadcrumbItem[]>([
+        {
+            label:'Home',
+            icon: 'i-lucide-house',
+            to: '/'
+        },
+        {
+            label: 'Player List',
+            icon: 'solar:user-broken',
+            to: '/playerData'
+        },
+        {
+            label: 'Add Player',
+            to: '/playerInput'
+        }
+    ])
 
     const positions = ['Setter', 'Outside Hitter', 'Middle', 'Libero', 'Opposite Hitter']
     const teams = ['Mens 1', 'Womens 1', 'Mens BDVA']
@@ -15,6 +33,7 @@
 </script>
 <template>
     <UContainer>
+        <UBreadcrumb :items="history" class="p-2 pb-5 flex justify-center"></UBreadcrumb>
         <div class="justify-center">
             <UCard>
                 <template #header>
@@ -50,14 +69,17 @@
                 <UFormField label="Vertical Jump" size="xl" class="p-2">
                     <UInputNumber placeholder="Enter jump in inches..." :format-options="{style: 'unit', unit: 'inch'}" orientation="vertical" class="w-full" />
                 </UFormField>
-                <UFormField label="" hint="" size="xl" class="p-2">
-                    <UInput placeholder="" class="w-full" />
+                <UFormField label="Serve Speed" size="xl" class="p-2">
+                    <UInputNumber placeholder="Enter speed in km/h" :format-options="{style: 'unit', unit: 'kilometer-per-hour'}" orientation="vertical" class="w-full" />
                 </UFormField>
-                <UFormField label="" hint="" size="xl" class="p-2">
-                    <UInput placeholder="" class="w-full" />
+                <UFormField label="Spike Speed" size="xl" class="p-2">
+                    <UInputNumber placeholder="Enter speed in km/h" :format-options="{style: 'unit', unit: 'kilometer-per-hour'}" orientation="vertical"  class="w-full" />
                 </UFormField>
-                <UFormField label="" hint="" size="xl" class="p-2">
-                    <UInput placeholder="" class="w-full" />
+                <UFormField label="Height" size="xl" class="p-2">
+                    <UInputNumber placeholder="Enter height in cm" :format-options="{style: 'unit', unit: 'centimeter'}" orientation="vertical" class="w-full" />
+                </UFormField>
+                <UFormField label="Weight" size="xl" class="p-2">
+                    <UInputNumber placeholder="Enter weight in kg" :format-options="{style: 'unit', unit: 'kilogram'}" orientation="vertical" class="w-full" />
                 </UFormField>
                 <UFormField label="Birthday" hint="Enter the Player's to display their age (Optional)" size="xl" class="p-2">
                     <UPopover class="p-2">
@@ -69,6 +91,12 @@
                         </template>
                     </UPopover>
                 </UFormField>
+                <USeparator class="pt-5 pb-5"/>
+                <div class="flex justify-center p-2">
+                    <UButton type="submit" class="p-2 flex justify-center w-md text-xl" size="xl">
+                        Submit
+                    </UButton>
+                </div>
             </UCard>
         </div>
     </UContainer>

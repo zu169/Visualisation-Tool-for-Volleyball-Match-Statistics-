@@ -4,70 +4,74 @@ import { upperFirst } from 'scule'
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Column } from '@tanstack/vue-table'
 import type { Row } from '@tanstack/vue-table'
+import { id } from '@nuxt/ui/runtime/locale/index.js';
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 
     const isModalOpen = ref(false)
-    const selectedPlayer = ref<Player | null>(null);
+    const selectedMatch = ref<Match | null>(null);
     const toast = useToast()
 
-    type Player = {
-        name: string
-        position: string
-        shirtNum: number
+    type Match = {
+        match_id: number
+        date: Date
+        opponent: string
+        result: string
+        mvp: string
     }
 
-    const data = ref<Player[]>([
+    const data = ref<Match[]>([
         {
-            name: 'Alan Atkins',
-            position: 'Outside Hitter',
-            shirtNum: 8
+            match_id: 1,
+            date: new Date(2023, 10, 3),
+            opponent: "Cardiff Met",
+            result: "1-3",
+            mvp: "Alan Atkins",
         },
         {
-            name: 'Szandra Kovacs',
-            position: 'Outside Hitter',
-            shirtNum: 11
+            match_id: 2,
+            date: new Date(2023, 11, 5),
+            opponent: "Bristol",
+            result: "3-0",
+            mvp: "Alan Atkins",
         },
         {
-            name: 'Amin Khoshikibari',
-            position: 'Setter',
-            shirtNum: 16
+            match_id: 3,
+            date: new Date(2023, 11, 17),
+            opponent: "Bath",
+            result: "5-2",
+            mvp: "Alan Atkins",
         },
         {
-            name: 'Georgia Pachygiannaki',
-            position: 'Libero',
-            shirtNum: 16
-        },
-        {
-            name: 'Joseph Lovell',
-            position: 'Libero',
-            shirtNum: 11
-        },
-        {
-            name: 'Nicholas Ciobanu',
-            position: 'Opposite Hitter',
-            shirtNum: 7
-        },
-        {
-            name: 'Zu Ziolek',
-            position: 'Libero',
-            shirtNum: 3
+            match_id: 4,
+            date: new Date(2023, 12, 3),
+            opponent: "Bangor",
+            result: "5-2",
+            mvp: "Alan Atkins",
         }
     ])
 
-    const columns : TableColumn<Player>[] = [
+    const columns : TableColumn<Match>[] = [
         {
-            accessorKey: 'name',
-            header: ({ column }) => getHeader(column, 'Name'),
+            accessorKey: 'match_id',
+            header: ({ column }) => getHeader(column, 'ID'),
         },
         {
-            accessorKey: 'position',
-            header: ({ column }) => getHeader(column, 'Postion'),
+            accessorKey: 'date',
+            header: ({ column }) => getHeader(column, 'Date'),
         },
         {
-            accessorKey: 'shirtNum',
-            header: ({ column }) => getHeader(column, 'Shirt Number'),
+            accessorKey: 'opponent',
+            header: ({ column }) => getHeader(column, 'Opponent'),
+        },
+        {
+            accessorKey: 'result',
+            header: ({ column }) => getHeader(column, 'Result'),
+        },
+        {
+            accessorKey: 'mvp',
+            header: ({ column }) => getHeader(column, 'MVP'),
         },
         {
             id: 'actions',
@@ -98,21 +102,21 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
         }
     ]
 
-    function getRowItems(row: Row<Player>) {
+    function getRowItems(row: Row<Match>) {
   return [
     {
       type: 'label',
       label: 'Actions'
     },
     {
-      label: 'View Player',
+      label: 'View Match',
       icon: 'i-lucide-eye',
       onSelect() {
         console.log(row.original)
       }
     },
     {
-      label: 'Edit Player ',
+      label: 'Edit Match',
       icon: 'bitcoin-icons:edit-filled',
 
       onSelect() {
@@ -123,7 +127,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
       type: 'separator'
     },
     {
-      label: 'Delete Player',
+      label: 'Delete Match',
       icon: 'i-lucide-trash-2',
 
     //   Display a modal to confirm deletion
@@ -131,7 +135,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
         console.log(row.original)
 
         toast.add({
-          title: 'Player ' + row.original.name + ' has been deleted!',
+          title: 'Match ' + row.original.match_id + ' has been deleted!',
           color: 'error',
           icon: 'i-lucide-trash-2'
         })
@@ -140,13 +144,13 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
   ]
 }
 
-    function onSelect(row: TableRow<Player>, e?:Event){
+    function onSelect(row: TableRow<Match>, e?:Event){
         console.log(e)
-        selectedPlayer.value = row.original;
+        selectedMatch.value = row.original;
         isModalOpen.value = true;
     }
 
-    function getHeader(column: Column<Player>, label: string){
+    function getHeader(column: Column<Match>, label: string){
         const isSorted = column.getIsSorted()
 
         return h(
@@ -201,6 +205,13 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
         )
     }
 
+    const sorting = ref([
+        {
+            id: 'match_id',
+            desc: true
+        }
+    ])
+
     const table = useTemplateRef('table')
 
     const columnVisibility = ref({
@@ -241,12 +252,12 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
         />
       </UDropdownMenu>
     </div>
-    <UTable ref="table" v-model:global-filter="globalFilter" v-model:column-visibility="columnVisibility" sticky :data="data" :columns="columns" class="flex-1" @select="onSelect"/>
+    <UTable ref="table" v-model:global-filter="globalFilter" v-model:sorting="sorting" v-model:column-visibility="columnVisibility" sticky :data="data" :columns="columns" class="flex-1" @select="onSelect"/>
     </div>
 
-    <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x">
+    <UModal title="Match Information" v-model:open="isModalOpen" close-icon="i-lucide-x">
         <template #body>
-            <PlayerIndividualView/>
+            <MatchIndividualView/>
         </template>
     </UModal>
 </template>
