@@ -24,6 +24,8 @@
 
 <template>
     <UContainer>
+        <h2 class="p-2">Match History</h2>
+        <USeparator/>
         <UTabs color="neutral" variant="link" :items="teams"class="w-full">
             <template #all="{ item }">
                 <MatchHistoryTable/>

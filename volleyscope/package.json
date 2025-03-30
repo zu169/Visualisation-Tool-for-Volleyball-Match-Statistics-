@@ -19,6 +19,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.15",
     "@types/bun": "latest",
+    "@types/youtube": "^0.1.0",
     "postcss": "^8.5.3"
   },
   "peerDependencies": {

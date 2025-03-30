@@ -1,5 +1,6 @@
 <template>
     <UContainer>
-        Leaderboard Page
+        <h2 class="p-2">Leaderboards</h2>
+        <USeparator/>
     </UContainer>
 </template>

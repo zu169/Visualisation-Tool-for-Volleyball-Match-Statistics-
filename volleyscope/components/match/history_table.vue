@@ -240,8 +240,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
               onSelect(e?: Event) {
                 e?.preventDefault()
               }
-            }))
-        "
+            }))"
         :content="{ align: 'end' }"
       >
         <UButton
