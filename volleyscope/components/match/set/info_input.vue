@@ -17,7 +17,7 @@ import Youtube_input from './youtube_input.vue';
             <Youtube_input/>
 
             <template #footer>
-                <UButton type="submit" class="p-2 flex justify-center">Save Progress</UButton>
+                <UButton type="submit" class="p-2">Save Progress</UButton>
             </template>
         </UCard>
         </div>

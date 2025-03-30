@@ -244,7 +244,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     <UTable ref="table" v-model:global-filter="globalFilter" v-model:column-visibility="columnVisibility" sticky :data="data" :columns="columns" class="flex-1" @select="onSelect"/>
     </div>
 
-    <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x">
+    <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x" size="xl">
         <template #body>
             <PlayerIndividualView/>
         </template>

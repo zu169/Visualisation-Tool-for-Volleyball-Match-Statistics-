@@ -93,7 +93,7 @@
                 </UFormField>
                 <USeparator class="pt-5 pb-5"/>
                 <div class="flex justify-center p-2">
-                    <UButton type="submit" class="p-2 flex justify-center w-md text-xl" size="xl">
+                    <UButton type="submit" class="p-2 flex justify-center w-sm" size="xl">
                         Submit
                     </UButton>
                 </div>

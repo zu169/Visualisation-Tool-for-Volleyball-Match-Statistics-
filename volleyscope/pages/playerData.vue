@@ -23,6 +23,11 @@
 </script>
 <template>
     <UContainer>
+        <div class="flex justify-between items-center">
+            <h2 class="p-2">Player Information</h2>
+            <UButton type="submit" class="h-10" to="/playerInput">Add New Player</UButton>
+        </div>
+        <USeparator />
         <UTabs color="neutral" variant="link" :items="teams"class="w-full">
             <template #all="{ item }">
                 <PlayerDisplayTable/>
