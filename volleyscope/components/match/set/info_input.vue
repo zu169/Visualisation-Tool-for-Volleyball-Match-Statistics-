@@ -12,6 +12,7 @@ import Youtube_input from './youtube_input.vue';
             <UCard>
             <template #header>
                 <!-- Player Input -->
+                 <p>Select Player's and their positions for the set</p>
             </template>
 
             <Youtube_input/>

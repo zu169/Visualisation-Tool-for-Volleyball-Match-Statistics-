@@ -93,7 +93,8 @@
                 </UFormField>
                 <USeparator class="pt-5 pb-5"/>
                 <div class="flex justify-center p-2">
-                    <UButton type="submit" class="p-2 flex justify-center w-sm" size="xl">
+                    <!-- Add Toast to confirm new player has been added -->
+                    <UButton type="submit" class="p-2 flex justify-center w-sm" to="/playerData" size="xl">
                         Submit
                     </UButton>
                 </div>
