@@ -246,7 +246,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
     <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x" size="xl">
         <template #body>
-            <PlayerIndividualView/>
+            <PlayerIndividualView :player="selectedPlayer"/>
         </template>
     </UModal>
 </template>

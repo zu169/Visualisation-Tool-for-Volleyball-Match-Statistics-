@@ -9,8 +9,20 @@ const awayTeam = ref("Cardiff Met");
 const homePoints = ref()
 const awayPoints = ref()
 
+enum Point {
+  Home = 'home',
+  Away = 'away',
+  Unknown = 'unknown'
+}
+
+const selectedPoints = ref<Point[]>([]);
 const homeButtonsVisible = ref<boolean[]>([]);
 const awayButtonsVisible = ref<boolean[]>([]);
+
+/**
+ * [HOME, AWAY, NULL, HOME, NULL]
+ * 
+ */
 
 const updateHomeButtons = (count: number) => {
   homeButtonsVisible.value = Array(count).fill(true);
@@ -44,7 +56,7 @@ const addPoint = (team: 'home' | 'away', index: number) => {
     // Ensure total visible count stays correct
     if (team === 'home') {
         const count = awayButtonsVisible.value.filter(Boolean).length;
-        if (count < awayPoints.value) awayButtonsVisible.value.push(true);
+        if (count <= awayPoints.value) awayButtonsVisible.value.push(true);
         if (count > awayPoints.value) awayButtonsVisible.value.pop();
     } else {
         const count = homeButtonsVisible.value.filter(Boolean).length;

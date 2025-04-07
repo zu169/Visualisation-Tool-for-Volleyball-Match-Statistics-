@@ -8,7 +8,7 @@ const timestamps = {
     created_at: timestamp(),
     deleted_at: timestamp(),
 }
-export const typeEnum = pgEnum('type',['BUCS', 'BDVA', 'Tournament', 'Other']);
+export const typeEnum = pgEnum('match_type',['BUCS', 'BDVA', 'Tournament', 'Other']);
 
 export const matches = pgTable('match', {
 	matchId: integer('match_id').primaryKey().generatedAlwaysAsIdentity(),

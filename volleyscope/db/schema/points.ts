@@ -19,7 +19,7 @@ export const serves = pgTable('serve', {
 });
 
 export const attacks = pgTable('attack', {
-	attackId: integer('attack_id').primaryKey().generatedAlwaysAsIdentity(),
+	attackId: integer('attack_id').generatedAlwaysAsIdentity(),
 	pointId: integer('point_id').references(() => points.pointId),
 	playerId: integer('player_id').references(() => players.playerId),
 	type: attackTypeEnum().default('Hit'),
@@ -29,7 +29,7 @@ export const attacks = pgTable('attack', {
 ]);
 
 export const receives = pgTable('receive', {
-	receiveId: integer('receive_id').primaryKey().generatedAlwaysAsIdentity(),
+	receiveId: integer('receive_id').generatedAlwaysAsIdentity(),
 	pointId: integer('point_id').references(() => points.pointId),
 	playerId: integer('player_id').references(() => players.playerId),
 	type: receiveTypeEnum().default('Normal'),
@@ -38,8 +38,8 @@ export const receives = pgTable('receive', {
     primaryKey({ columns: [table.receiveId, table.pointId]})
 ]);
 
-export const sets = pgTable('set', {
-	setId: integer('sets_id').primaryKey().generatedAlwaysAsIdentity(),
+export const set_actions = pgTable('set_action', {
+	setId: integer('set_id').generatedAlwaysAsIdentity(),
 	pointId: integer('point_id').references(() => points.pointId),
 	playerId: integer('player_id').references(() => players.playerId),
 	type: setTypeEnum().default('Assist'),
@@ -48,7 +48,7 @@ export const sets = pgTable('set', {
 ]);
 
 export const blocks = pgTable('block', {
-	blockId: integer('block_id').primaryKey().generatedAlwaysAsIdentity(),
+	blockId: integer('block_id').generatedAlwaysAsIdentity(),
 	pointId: integer('point_id').references(() => points.pointId),
 	playerId: integer('player_id').references(() => players.playerId),
 	type: blockTypeEnum().default('Touch'),

@@ -57,8 +57,5 @@ import Serve_data_card from './serve_data_card.vue';
             </div>
         </template>
 
-        <template #footer>
-            <UButton>Submit Data</UButton>
-        </template>
     </UCard>
 </template>
