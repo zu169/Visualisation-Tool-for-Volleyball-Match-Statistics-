@@ -2,7 +2,7 @@ import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
 import { players } from './players' 
 
 export const potentialUsers = pgTable("potentials", {
-  pId: integer('p_id').primaryKey().generatedAlwaysAsIdentity(),
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }),
   email: varchar({ length: 255 }).notNull().unique(),
 });

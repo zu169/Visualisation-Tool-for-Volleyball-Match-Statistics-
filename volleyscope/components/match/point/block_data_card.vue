@@ -7,20 +7,22 @@ const block = ref(block_types[0])
 </script>
 
 <template>
-    <UCard>
+    <UCard class="w-md">
         <template #header>
             Block
         </template>
-        Player Name 
-        <USelectMenu
-            searchable
-            searchable-placeholder="Search a person..."
-            class="w-full lg:w-48"
-            v-model = "selected"
-            placeholder="Select a person"
-            :items="people"
-        />  
-        Block Type
-        <USelect v-model="block" :items="block_types" />
+        <div class="flex flex-col space-y-1">
+            <label class="font-bold">Player Name</label>
+            <USelectMenu
+                searchable
+                searchable-placeholder="Search a person..."
+                class="w-full lg:w-48"
+                v-model = "selected"
+                placeholder="Select a person"
+                :items="people"
+            />  
+            <label class="font-bold">Block Type</label>
+            <USelect v-model="block" :items="block_types" />
+        </div>
     </UCard>
 </template>

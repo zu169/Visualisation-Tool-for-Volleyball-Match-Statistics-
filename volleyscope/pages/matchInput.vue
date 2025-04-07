@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { MatchInfoInput } from '#components';
+import { MatchInfoInput } from '#components';
 import type { TabsItem } from '@nuxt/ui'
 
     const sets = ref<TabsItem[]>([
@@ -35,13 +35,13 @@ import type { TabsItem } from '@nuxt/ui'
                     <MatchSetInfoInput/>
                 </template>
                 <template #two="{ item }">
-                    <p>This is the {{ item.label }}</p>
+                    <p>This is the {{ item }}</p>
                 </template>
                 <template #three="{ item }">
-                    <p>This is the {{ item.label }}</p>
+                    <p>This is the {{ item }}</p>
                 </template>
                 <template #set="{ item }">
-                    <p>This is the {{ item.label }}</p>
+                    <p>This is the {{ item }}</p>
                 </template>
             </UTabs>
         </UCard>

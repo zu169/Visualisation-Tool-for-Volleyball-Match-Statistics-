@@ -9,7 +9,7 @@ import Youtube_input from './youtube_input.vue';
             <MatchSetTimeline/>
         </div>
         <div class="flex-1">
-            <UCard>
+            <UCard class="h-full">
             <template #header>
                 <!-- Player Input -->
                  <p>Select Player's and their positions for the set</p>
@@ -17,7 +17,7 @@ import Youtube_input from './youtube_input.vue';
 
             <Youtube_input/>
 
-            <template #footer>
+            <template #footer >
                 <UButton type="submit" class="p-2">Save Progress</UButton>
             </template>
         </UCard>

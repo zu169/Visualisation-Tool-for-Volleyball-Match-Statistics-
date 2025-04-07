@@ -9,22 +9,24 @@ const success = ref(serve_success[0])
 </script>
 
 <template>
-    <UCard>
+    <UCard class="w-md">
         <template #header>
             Serve
         </template>
-        Player Name 
-        <USelectMenu
-            searchable
-            searchable-placeholder="Search a person..."
-            class="w-full lg:w-48"
-            v-model = "selected"
-            placeholder="Select a person"
-            :items="people"
-        />  
-        Serve Type
-        <USelect v-model="serve" :items="serve_types" />
-        Serve Success
-        <USelect v-model="success" :items="serve_success" />
+        <div class="flex flex-col space-y-1">
+            <label class="font-bold">Player Name</label>
+            <USelectMenu
+                searchable
+                searchable-placeholder="Search a person..."
+                class="w-full lg:w-48"
+                v-model = "selected"
+                placeholder="Select a person"
+                :items="people"
+            />  
+            <label class="font-bold">Serve Type</label>
+            <USelect v-model="serve" :items="serve_types" />
+            <label class="font-bold">Serve Success</label>
+            <USelect v-model="success" :items="serve_success" />
+            </div>
     </UCard>
 </template>

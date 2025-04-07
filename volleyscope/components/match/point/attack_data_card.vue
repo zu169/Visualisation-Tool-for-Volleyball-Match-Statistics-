@@ -9,22 +9,24 @@ const success = ref(attack_success[0])
 </script>
 
 <template>
-    <UCard>
+    <UCard class="">
         <template #header>
             Attack
         </template>
-        Player Name 
-        <USelectMenu
-            searchable
-            searchable-placeholder="Search a person..."
-            class="w-full lg:w-48"
-            v-model = "selected"
-            placeholder="Select a person"
-            :items="people"
-        />  
-        Attack Type
-        <USelect v-model="attack" :items="attack_types" />
-        Attack Success
-        <USelect v-model="success" :items="attack_success" />
+        <div class="flex flex-col space-y-1">
+            <label class="font-bold">Player Name</label>
+            <USelectMenu
+                searchable
+                searchable-placeholder="Search a person..."
+                class="w-full lg:w-48"
+                v-model = "selected"
+                placeholder="Select a person"
+                :items="people"
+            />  
+            <label class="font-bold">Attack Type</label>
+            <USelect v-model="attack" :items="attack_types" />
+            <label class="font-bold">Attack Success</label>
+            <USelect v-model="success" :items="attack_success" />
+        </div>
     </UCard>
 </template>

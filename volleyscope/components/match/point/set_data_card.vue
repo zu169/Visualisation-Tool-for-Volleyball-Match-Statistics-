@@ -9,24 +9,28 @@ const score = ref(set_rating[0])
 </script>
 
 <template>
-    <UCard>
+    <UCard class="w-md">
         <template #header>
             Set
         </template>
-        Player Name 
-        <USelectMenu
-            searchable
-            searchable-placeholder="Search a person..."
-            class="w-full lg:w-48"
-            v-model = "selected"
-            placeholder="Select a person"
-            :items="people"
-        />  
-        Set Type
-        <USelect v-model="set" :items="set_types" />
-        <UTooltip text="0: Failed Set, 1: Hitable, 2: Hit from Line">
-            <p>Set Rating</p>
-        </UTooltip>
-        <USelect v-model="score" :items="set_rating" />
+        <div class="flex flex-col space-y-1">
+            <label class="font-bold">Player Name</label>
+            <USelectMenu
+                searchable
+                searchable-placeholder="Search a person..."
+                class="w-full lg:w-48"
+                v-model="selected"
+                placeholder="Select a person"
+                :items="people"
+            />  
+
+            <label class="font-bold">Set Type</label>
+            <USelect v-model="set" :items="set_types" class="w-full" />
+
+            <UTooltip text="0: Failed Set, 1: Hitable, 2: Hit from Line">
+                <label class="font-bold">Set Rating</label>
+            </UTooltip>
+            <USelect v-model="score" :items="set_rating" class="w-full" />
+        </div>
     </UCard>
 </template>

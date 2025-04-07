@@ -9,24 +9,26 @@ const success = ref(receive_success[0])
 </script>
 
 <template>
-    <UCard>
+    <UCard class="w-md">
         <template #header>
             Receive
         </template>
-        Player Name 
-        <USelectMenu
-            searchable
-            searchable-placeholder="Search a person..."
-            class="w-full lg:w-48"
-            v-model = "selected"
-            placeholder="Select a person"
-            :items="people"
-        />  
-        Receive Type
-        <USelect v-model="receive" :items="receive_types" />
-        <UTooltip text="0: Overpass, 1-4 Options available on Attack">
-            <p>Receive Success</p>
-        </UTooltip>
-        <USelect v-model="success" :items="receive_success" />
+        <div class="flex flex-col space-y-1">
+            <label class="font-bold">Player Name</label>
+            <USelectMenu
+                searchable
+                searchable-placeholder="Search a person..."
+                class="w-full lg:w-48"
+                v-model = "selected"
+                placeholder="Select a person"
+                :items="people"
+            />  
+            <label class="font-bold">Receive Type</label>
+            <USelect v-model="receive" :items="receive_types" />
+            <UTooltip text="0: Overpass, 1-4 Options available on Attack">
+                <label class="font-bold">Receive Success</label>
+            </UTooltip>
+            <USelect v-model="success" :items="receive_success" />
+        </div>
     </UCard>
 </template>

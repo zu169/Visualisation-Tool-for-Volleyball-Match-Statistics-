@@ -33,13 +33,13 @@
                 <PlayerDisplayTable/>
             </template>
             <template #mens="{ item }">
-                <p>This is the {{ item.label }}</p>
+                <p>This is the {{ item }}</p>
             </template>
             <template #womens="{ item }">
-                <p>This is the {{ item.label }}</p>
+                <p>This is the {{ item }}</p>
             </template>
             <template #newteam="{ item }">
-                <p>This is the {{ item.label }}</p>
+                <p>This is the {{ item }}</p>
             </template>
         </UTabs>
     </UContainer>
