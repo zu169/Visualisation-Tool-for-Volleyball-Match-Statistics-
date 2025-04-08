@@ -4,13 +4,17 @@ import { upperFirst } from 'scule'
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Column } from '@tanstack/vue-table'
 import type { Row } from '@tanstack/vue-table'
+import SinglePlayerView from '~/pages/singlePlayerView.vue';
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 
-    const isModalOpen = ref(false)
+    const playerView = ref(false)
+    const editModal = ref(false)
+    const deleteModal = ref(false)
     const selectedPlayer = ref<Player | null>(null);
     const toast = useToast()
+    var name = ""
 
     type Player = {
         name: string
@@ -108,6 +112,8 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
       label: 'View Player',
       icon: 'i-lucide-eye',
       onSelect() {
+        selectedPlayer.value = row.original
+        playerView.value = true
         console.log(row.original)
       }
     },
@@ -117,6 +123,9 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
       onSelect() {
         console.log(row.original)
+        name = row.original.name
+        editModal.value = true
+
       }
     },
     {
@@ -129,21 +138,38 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     //   Display a modal to confirm deletion
       onSelect() {
         console.log(row.original)
-
-        toast.add({
-          title: 'Player ' + row.original.name + ' has been deleted!',
-          color: 'error',
-          icon: 'i-lucide-trash-2'
-        })
+        name = row.original.name
+        deleteModal.value = true;
       }
     }
   ]
 }
 
+    function editSuccess(){
+      toast.add({
+          title: 'Player ' + name + ' has been edited!',
+          color: 'success',
+          icon: 'bitcoin-icons:edit-filled'
+        })
+
+      editModal.value = false;
+    }
+
+    function deleteSuccess() {
+      toast.add({
+          title: 'Player ' + name + ' has been deleted!',
+          color: 'error',
+          icon: 'i-lucide-trash-2'
+        })
+      
+      deleteModal.value = false;
+    }
+
     function onSelect(row: TableRow<Player>, e?:Event){
         console.log(e)
         selectedPlayer.value = row.original;
-        isModalOpen.value = true;
+        playerView.value = true
+        // go to single player view page
     }
 
     function getHeader(column: Column<Player>, label: string){
@@ -244,9 +270,43 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     <UTable ref="table" v-model:global-filter="globalFilter" v-model:column-visibility="columnVisibility" sticky :data="data" :columns="columns" class="flex-1" @select="onSelect"/>
     </div>
 
-    <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x" size="xl">
+    <UModal v-model:open="editModal" :dismissible="false" :close="false" >
+        <template #header>
+          <h3>Are you sure you want to save these changes?</h3>
+        </template>
+
+        <template #body>
+          <p class="font-bold">Any changes saved can't be reverted!</p>
+        </template>
+      
+        <template #footer>
+          <UButton label="No, Cancel" color="success" variant="soft" @click="editModal = false" />
+          <UButton label="Yes I'm sure, Continue" color="error" variant="outline" @click="editSuccess()"/>
+        </template>
+    </UModal>
+
+    <UModal v-model:open="deleteModal" :dismissible="false" :close="false" >
+        <template #header>
+          <h3>Are you sure you want to delete this Player?</h3>
+        </template>
+      
+        <template #body>
+          <p>This action cannot be reversed and may affect the integrity of previously recorded matches!</p>
+          <p class="font-bold">You can remove them from the team instead.</p>
+        </template>
+
+        <template #footer>
+          <UButton label="No" color="success" variant="soft" @click="deleteModal = false" />
+          <UButton label="Yes, I'm sure!" color="error" variant="outline" @click="deleteSuccess()"/>
+        </template>
+    </UModal>
+
+    <template v-if="playerView === true">
+      <SinglePlayerView :player="selectedPlayer" />
+    </template>
+    <!-- <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x" size="xl">
         <template #body>
             <PlayerIndividualView :player="selectedPlayer"/>
         </template>
-    </UModal>
+    </UModal> -->
 </template>

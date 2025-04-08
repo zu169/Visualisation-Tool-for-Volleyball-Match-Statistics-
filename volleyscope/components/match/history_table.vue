@@ -4,12 +4,12 @@ import { upperFirst } from 'scule'
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Column } from '@tanstack/vue-table'
 import type { Row } from '@tanstack/vue-table'
-import { id } from '@nuxt/ui/runtime/locale/index.js';
+import { useRouter } from 'vue-router';
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 
-    const isModalOpen = ref(false)
+    const router = useRouter();
     const selectedMatch = ref<Match | null>(null);
     const toast = useToast()
 
@@ -147,7 +147,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     function onSelect(row: TableRow<Match>, e?:Event){
         console.log(e)
         selectedMatch.value = row.original;
-        isModalOpen.value = true;
+        router.push({ name: '/pages/singleMatchView.vue', params: { id: selectedMatch.value.match_id}})
     }
 
     function getHeader(column: Column<Match>, label: string){
@@ -254,9 +254,9 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     <UTable ref="table" v-model:global-filter="globalFilter" v-model:sorting="sorting" v-model:column-visibility="columnVisibility" sticky :data="data" :columns="columns" class="flex-1" @select="onSelect"/>
     </div>
 
-    <UModal title="Match Information" v-model:open="isModalOpen" close-icon="i-lucide-x">
+    <!-- <UModal title="Match Information" v-model:open="isModalOpen" close-icon="i-lucide-x" fullscreen>
         <template #body>
-            <MatchIndividualView/>
+            <SingleMatchView :match_id = "selectedMatch?.match_id"/>
         </template>
-    </UModal>
+    </UModal> -->
 </template>
