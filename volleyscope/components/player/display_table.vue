@@ -4,19 +4,17 @@ import { upperFirst } from 'scule'
 import type { TableColumn, TableRow } from '@nuxt/ui';
 import type { Column } from '@tanstack/vue-table'
 import type { Row } from '@tanstack/vue-table'
-import SinglePlayerView from '~/pages/singlePlayerView.vue';
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+const router = useRouter();
 
-    const playerView = ref(false)
-    const editModal = ref(false)
     const deleteModal = ref(false)
-    const selectedPlayer = ref<Player | null>(null);
     const toast = useToast()
     var name = ""
 
     type Player = {
+        id: number
         name: string
         position: string
         shirtNum: number
@@ -24,36 +22,43 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
     const data = ref<Player[]>([
         {
+            id: 0,
             name: 'Alan Atkins',
             position: 'Outside Hitter',
             shirtNum: 8
         },
         {
+            id: 1,
             name: 'Szandra Kovacs',
             position: 'Outside Hitter',
             shirtNum: 11
         },
         {
+            id: 2,
             name: 'Amin Khoshikibari',
             position: 'Setter',
             shirtNum: 16
         },
         {
+            id: 3,
             name: 'Georgia Pachygiannaki',
             position: 'Libero',
             shirtNum: 16
         },
         {
+            id: 4,
             name: 'Joseph Lovell',
             position: 'Libero',
             shirtNum: 11
         },
         {
+            id: 5,
             name: 'Nicholas Ciobanu',
             position: 'Opposite Hitter',
             shirtNum: 7
         },
         {
+            id: 6,
             name: 'Zu Ziolek',
             position: 'Libero',
             shirtNum: 3
@@ -112,9 +117,8 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
       label: 'View Player',
       icon: 'i-lucide-eye',
       onSelect() {
-        selectedPlayer.value = row.original
-        playerView.value = true
         console.log(row.original)
+        router.push({ name: 'singlePlayerView', query: { player: row.original.id}})
       }
     },
     {
@@ -123,8 +127,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
       onSelect() {
         console.log(row.original)
-        name = row.original.name
-        editModal.value = true
+        router.push({ name: 'playerInput', query: { player: row.original.id}})
 
       }
     },
@@ -145,16 +148,6 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
   ]
 }
 
-    function editSuccess(){
-      toast.add({
-          title: 'Player ' + name + ' has been edited!',
-          color: 'success',
-          icon: 'bitcoin-icons:edit-filled'
-        })
-
-      editModal.value = false;
-    }
-
     function deleteSuccess() {
       toast.add({
           title: 'Player ' + name + ' has been deleted!',
@@ -167,9 +160,9 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
     function onSelect(row: TableRow<Player>, e?:Event){
         console.log(e)
-        selectedPlayer.value = row.original;
-        playerView.value = true
         // go to single player view page
+        router.push({ name: 'singlePlayerView', query: { player: row.original.id}})
+        
     }
 
     function getHeader(column: Column<Player>, label: string){
@@ -270,22 +263,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     <UTable ref="table" v-model:global-filter="globalFilter" v-model:column-visibility="columnVisibility" sticky :data="data" :columns="columns" class="flex-1" @select="onSelect"/>
     </div>
 
-    <UModal v-model:open="editModal" :dismissible="false" :close="false" >
-        <template #header>
-          <h3>Are you sure you want to save these changes?</h3>
-        </template>
-
-        <template #body>
-          <p class="font-bold">Any changes saved can't be reverted!</p>
-        </template>
-      
-        <template #footer>
-          <UButton label="No, Cancel" color="success" variant="soft" @click="editModal = false" />
-          <UButton label="Yes I'm sure, Continue" color="error" variant="outline" @click="editSuccess()"/>
-        </template>
-    </UModal>
-
-    <UModal v-model:open="deleteModal" :dismissible="false" :close="false" >
+    <UModal v-model:open="deleteModal" :dismissible="false" :close="false" :ui="{ footer: 'justify-end' }">
         <template #header>
           <h3>Are you sure you want to delete this Player?</h3>
         </template>
@@ -301,12 +279,4 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
         </template>
     </UModal>
 
-    <template v-if="playerView === true">
-      <SinglePlayerView :player="selectedPlayer" />
-    </template>
-    <!-- <UModal title="Player Information" v-model:open="isModalOpen" close-icon="i-lucide-x" size="xl">
-        <template #body>
-            <PlayerIndividualView :player="selectedPlayer"/>
-        </template>
-    </UModal> -->
 </template>

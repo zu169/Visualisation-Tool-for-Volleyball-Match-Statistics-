@@ -5,22 +5,23 @@ import type { TabsItem } from '@nuxt/ui'
     const sets = ref<TabsItem[]>([
         {
             label: 'Set 1',
-            slot: 'one' as const
+            id: 1,
         },
         {
             label: 'Set 2',
-            slot: 'two' as const
+            id: 2,
         },
         {
             label: 'Set 3',
-            slot: 'three' as const
-        },
-        {
-            label: 'Add Set',
-            disabled: true,
-            slot: 'set' as const
+            id: 3,
         }
     ])
+
+    const addSet = () => {
+        sets.value.push({
+            label: 'Set ' + (sets.value.length + 1),
+            id: sets.value.length + 1,
+    })}
 </script>
 
 <template>
@@ -31,19 +32,11 @@ import type { TabsItem } from '@nuxt/ui'
                 <MatchInfoInput/>
             </template>
             <UTabs color="neutral" variant="link" :items="sets"class="w-full">
-                <template #one="{ item }">
-                    <MatchSetInfoInput/>
-                </template>
-                <template #two="{ item }">
-                    <p>This is the {{ item }}</p>
-                </template>
-                <template #three="{ item }">
-                    <p>This is the {{ item }}</p>
-                </template>
-                <template #set="{ item }">
-                    <p>This is the {{ item }}</p>
+                <template #content="{ item }">
+                    <MatchSetInfoInput :setId = "item.id"/>
                 </template>
             </UTabs>
+            <UButton @click="addSet()">Add Set</UButton>
         </UCard>
     </UContainer>
     <div>Data Input</div>

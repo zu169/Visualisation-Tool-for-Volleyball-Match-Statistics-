@@ -1,18 +1,17 @@
 <script setup lang="ts">
     import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
-import { setup } from '@nuxt/test-utils';
     import type { BreadcrumbItem } from '@nuxt/ui';
 
-    const props = defineProps<{
-        isEditMode : boolean
-    }>()
+    const router = useRouter();
+    const { query } = useRoute();
+    const playerId = computed(() => query.player?.toString());
 
     // Data for Player Info Input
     const name = ref('')
     const position = ref('')
     const shirtNum = ref()
     const teams = ref()
-    const year_joined = ref()
+    const year_joined = ref(new CalendarDate(2024, 10, 3))
     const jump_height = ref()
     const spike_speed = ref()
     const serve_speed= ref()
@@ -45,14 +44,27 @@ import { setup } from '@nuxt/test-utils';
         dateStyle: 'medium'
     })
 
-    const modelValue = shallowRef(new CalendarDate(2024, 10, 3))
-    const birthdayValue = shallowRef(new CalendarDate(2007, 10, 3))
 
     const toast = useToast()
+    const editModal = ref(false)
 
     function successNotif() {
-        toast.add({
-          title: 'Player ' + name + ' has been added!',
+        if (playerId){
+            editModal.value = true;
+        } else {
+            router.push({ name: 'playerData'})
+            toast.add({
+            title: 'Player ' + name.value + ' has been added!',
+            color: 'success',
+            icon: 'bitcoin-icons:edit-filled'
+            })
+        }
+    }
+
+    function editSuccess(){
+    router.push({ name: 'playerData'})
+      toast.add({
+          title: 'Player ' + name.value + ' has been edited!',
           color: 'success',
           icon: 'bitcoin-icons:edit-filled'
         })
@@ -84,7 +96,7 @@ import { setup } from '@nuxt/test-utils';
                 <UFormField label="Club Member Since" required size="xl" class="p-2">
                     <UPopover class="p-2">
                         <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-                            {{  modelValue ? df.format(modelValue.toDate(getLocalTimeZone())) : 'Select a date' }}
+                            {{  year_joined ? df.format(year_joined.toDate(getLocalTimeZone())) : 'Select a date' }}
                         </UButton>
                         <template #content>
                             <UCalendar v-model="year_joined" class="p-2"/>
@@ -111,21 +123,35 @@ import { setup } from '@nuxt/test-utils';
                 <UFormField label="Birthday" hint="Enter the Player's to display their age (Optional)" size="xl" class="p-2">
                     <UPopover class="p-2">
                         <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-                            {{  birthdayValue ? df.format(birthdayValue.toDate(getLocalTimeZone())) : 'Select a date' }}
+                            {{  birthday ? df.format(birthday.toDate(getLocalTimeZone())) : 'Select a date' }}
                         </UButton>
                         <template #content>
-                            <UCalendar v-model="birthday" class="p-2"/>
+                            <UCalendar v-model="birthday" :default-value="new CalendarDate(2007, 11, 8)" class="p-2"/>
                         </template>
                     </UPopover>
                 </UFormField>
                 <USeparator class="pt-5 pb-5"/>
                 <div class="flex justify-center p-2">
                     <!-- Add Toast to confirm new player has been added -->
-                    <UButton type="submit" class="p-2 flex justify-center w-sm" to="/playerData" size="xl" @click="successNotif">
+                    <UButton type="submit" class="p-2 flex justify-center w-sm" size="xl" @click="successNotif">
                         Submit
                     </UButton>
                 </div>
             </UCard>
         </div>
+        <UModal v-model:open="editModal" :dismissible="false" :close="false" :ui="{ footer: 'justify-end' }">
+            <template #header>
+            <h3>Are you sure you want to save these changes?</h3>
+            </template>
+
+            <template #body>
+            <p class="font-bold">Any changes saved can't be reverted!</p>
+            </template>
+        
+            <template #footer>
+                <UButton label="Yes I'm sure, Continue" color="success" variant="outline" @click="editSuccess()"/>
+                <UButton label="No, Cancel" color="error" variant="soft" @click="editModal = false" />
+            </template>
+        </UModal>
     </UContainer>
 </template>

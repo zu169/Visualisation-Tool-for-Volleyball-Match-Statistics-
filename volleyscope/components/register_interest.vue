@@ -1,9 +1,10 @@
 <template>
     <div>
         <h1 class="text-center pb-4">Coming Soon</h1>
-        <p class="text-center">Sign Up to get notified when you can begin your journey to improving your Volleyball Team with VolleyScope!</p>
+        <p class="text-center pb-2">Sign Up to get notified when you can begin your journey to improving your Volleyball Team with VolleyScope!</p>
     </div>
-    <div class="p-2">
+    <div class="flex flex-col items-center">
+        <div class="p-2 w-[60%]">
         <UFormField label="Organisation" hint="Optional" size="xl" class="p-2">
             <UInput placeholder="Enter the Organisation Name" class="w-full"></UInput>
         </UFormField>
@@ -16,5 +17,6 @@
                 Submit
             </UButton>
         </div>
+    </div>
     </div>
 </template>

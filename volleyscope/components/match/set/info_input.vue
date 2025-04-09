@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Youtube_input from './youtube_input.vue';
 
+const {setId} = defineProps<{setId : number}>()
+console.log(setId)
 </script>
 
 <template>
