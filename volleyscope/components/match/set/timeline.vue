@@ -113,12 +113,12 @@ const addPoint = (team: 'home' | 'away', index: number) => {
             </template>
         </div>
     </div>  
-    <UModal title="Add Point Actions" description="Enter all of the actions your team did during that point." v-model:open="isModalOpen" size="xl">
+    <UModal title="Add Point Actions" description="Enter all of the actions your team did during that point." v-model:open="isModalOpen" :close="false" :ui = {} size="xl">
         <template #body>
             <MatchPointInfoInput/>
         </template>
 
-        <template #footer class="items-end">
+        <template #footer>
             <UButton label="Cancel" color="neutral" variant="outline" @click="isModalOpen = false" />
             <UButton label="Submit" color="neutral" />
         </template>
