@@ -1,10 +1,10 @@
 <script lang="ts">
-    const route = useRoute();
-    const matchId = route.params.id;
+    const { query } = useRoute();
+    const matchId = computed(() => parseInt(query.matchId?.toString() ?? "0"));
 </script>
 
 <template>
     <UContainer>
-        {{ matchId }}
+        <h2>{{ matchId }}</h2>
     </UContainer>
 </template>
