@@ -1,28 +1,33 @@
 <script setup lang="ts">
     import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 
+const {matchId} = defineProps<{matchId : number}>()
+console.log(matchId)
+
     const df = new DateFormatter('en-UK', {
     dateStyle: 'short'
     })
 
-    const modelValue = shallowRef(new CalendarDate(2025, 4, 16))
+    const gameDate = ref()
+    // add game data to database
+
 </script>
 
 <template>
     <UCard>
         <template #header>
             <div class="flex justify-between p-2">
-                <MatchTeamSelection/>
+                <MatchTeamSelection :matchId = "matchId"/>
                 <UPopover :content="{align: 'center', side: 'bottom', sideOffset: 8}">
                     <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-                    {{ modelValue ? df.format(modelValue.toDate(getLocalTimeZone())) : 'Select a date' }}
+                    {{ gameDate ? df.format(gameDate.toDate(getLocalTimeZone())) : 'Select a date' }}
                     </UButton>
 
                     <template #content>
-                    <UCalendar v-model="modelValue" class="p-2" />
+                    <UCalendar v-model="gameDate" :default-value="new CalendarDate(2025, 4, 16)" class="p-2" />
                     </template>
                 </UPopover>
-                <MatchTypeSelection/>
+                <MatchTypeSelection :matchId = "matchId"/>
             </div>
         </template>
 
