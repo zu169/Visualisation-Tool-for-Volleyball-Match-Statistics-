@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { BreadcrumbItem } from '@nuxt/ui';
+    import type { BreadcrumbItem } from '@nuxt/ui';    
 
     // Variables which store the Player Information
     const name = "Something Something"
@@ -84,9 +84,25 @@
     }
     ])
 
+    const router = useRouter()
     const { query } = useRoute();
     const playerId = computed(() => parseInt(query.player?.toString() ?? "0"));
     const playerData = computed(() => data.value.find(player => player.id == playerId.value));
+    const toast = useToast()
+    const deleteModal = ref(false)
+
+    function deletePlayer() {
+        deleteModal.value = true
+    }
+
+    function deleteSuccess(){
+        router.push({ name: 'playerData'})
+        toast.add({
+          title: 'Player ' + playerData?.value?.name + ' has been deleted!',
+          color: 'error',
+          icon: 'i-lucide-trash-2'
+        })
+    }
 
 
 </script>
@@ -98,9 +114,11 @@
         </div>
         <div class="flex justify-between items-center">
             <h2 class="p-2">Player Information</h2>
-            <UButton type="submit" class="h-10" :to="{ path: '/playerInput', query: { player: playerId } }">Edit Player</UButton>
+            <div>
+                <UButton type="submit" class="h-10 m-2" color="success" variant="soft" :to="{ path: '/playerInput', query: { player: playerId } }">Edit Player</UButton>
+                <UButton type="submit" class="h-10 m-2" color="error" variant="soft" @click="deletePlayer()">Delete Player</UButton>
+            </div>
         </div>
-        <USeparator />
         <UCard>
             <template #header>
                 <div class="flex justify-evenly">
@@ -129,5 +147,20 @@
         </div>
         <!-- Table with player stats -->
         <!-- List of matches they have played in -->
+        <UModal v-model:open="deleteModal" :dismissible="false" :close="false" :ui="{ footer: 'justify-end' }">
+            <template #header>
+            <h3>Are you sure you want to delete this Player?</h3>
+            </template>
+        
+            <template #body>
+            <p>This action cannot be reversed and may affect the integrity of previously recorded matches!</p>
+            <p class="font-bold">You can remove them from the team instead.</p>
+            </template>
+
+            <template #footer>
+            <UButton label="No" color="success" variant="soft" @click="deleteModal = false" />
+            <UButton label="Yes, I'm sure!" color="error" variant="outline" @click="deleteSuccess()"/>
+            </template>
+        </UModal>
     </UContainer>
 </template>
