@@ -24,7 +24,10 @@
 
 <template>
     <UContainer>
-        <h2 class="p-2">Match History</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="p-2">Match History</h2>
+            <UButton type="submit" class="h-10" to="/matchInput">Add New Match</UButton>
+        </div>
         <USeparator/>
         <UTabs color="neutral" variant="link" :items="teams"class="w-full">
             <template #all="{ item }">
