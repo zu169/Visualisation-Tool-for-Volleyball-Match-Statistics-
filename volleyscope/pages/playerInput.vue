@@ -5,7 +5,8 @@
     const router = useRouter();
     const { query } = useRoute();
     const playerId = computed(() => query.player?.toString());
-
+    //if playerId null then create new player table and id
+    
     // Data for Player Info Input
     const name = ref('')
     const position = ref('')
@@ -46,10 +47,11 @@
 
 
     const toast = useToast()
+    const editView = ref(false)
     const editModal = ref(false)
 
     function successNotif() {
-        if (playerId){
+        if (playerId != null){
             editModal.value = true;
         } else {
             router.push({ name: 'playerData'})
