@@ -8,7 +8,7 @@ console.log(setId)
 <template>
     <div class="flex gap-4">
         <div class="flex-1">
-            <MatchSetTimeline/>
+            <MatchSetTimeline :setId = "setId"/>
         </div>
         <div class="flex-1">
             <UCard class="h-full">
@@ -17,11 +17,7 @@ console.log(setId)
                  <p>Select Player's and their positions for the set</p>
             </template>
 
-            <Youtube_input/>
-
-            <template #footer >
-                <UButton type="submit" class="p-2">Save Progress</UButton>
-            </template>
+            <Youtube_input :setId = "setId"/>
         </UCard>
         </div>
     </div>
