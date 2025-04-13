@@ -13,6 +13,9 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     const selectedMatch = ref<Match | null>(null);
     const toast = useToast()
 
+    const deleteModal = ref(false)
+    var id = 0;
+
     type Match = {
         match_id: number
         date: Date
@@ -113,6 +116,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
       icon: 'i-lucide-eye',
       onSelect() {
         console.log(row.original)
+        router.push({ name: 'singleMatchView', query: { match: row.original.match_id}})
       }
     },
     {
@@ -121,6 +125,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 
       onSelect() {
         console.log(row.original)
+        router.push({ name: 'matchInput', query: { match: row.original.match_id}})
       }
     },
     {
@@ -133,21 +138,26 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     //   Display a modal to confirm deletion
       onSelect() {
         console.log(row.original)
-
-        toast.add({
-          title: 'Match ' + row.original.match_id + ' has been deleted!',
-          color: 'error',
-          icon: 'i-lucide-trash-2'
-        })
+        deleteModal.value = true
+        id = row.original.match_id
       }
     }
   ]
 }
 
+    function deleteSuccess() {
+      deleteModal.value = false
+      toast.add({
+          title: 'Match ' + id + ' has been deleted!',
+          color: 'error',
+          icon: 'i-lucide-trash-2'
+        })
+    }
+
     function onSelect(row: TableRow<Match>, e?:Event){
         console.log(e)
         selectedMatch.value = row.original;
-        router.push({ name: '/pages/singleMatchView.vue', params: { id: selectedMatch.value.match_id}})
+        router.push({ name: 'singleMatchView', query: { match: row.original.match_id}})
     }
 
     function getHeader(column: Column<Match>, label: string){
@@ -254,9 +264,18 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
     <UTable ref="table" v-model:global-filter="globalFilter" v-model:sorting="sorting" v-model:column-visibility="columnVisibility" sticky :data="data" :columns="columns" class="flex-1" @select="onSelect"/>
     </div>
 
-    <!-- <UModal title="Match Information" v-model:open="isModalOpen" close-icon="i-lucide-x" fullscreen>
-        <template #body>
-            <SingleMatchView :match_id = "selectedMatch?.match_id"/>
+    <UModal v-model:open="deleteModal" :dismissible="false" :close="false" :ui="{ footer: 'justify-end' }">
+        <template #header>
+          <h3>Are you sure you want to delete this Match?</h3>
         </template>
-    </UModal> -->
+      
+        <template #body>
+          <p>This action cannot be reversed and will affect existing leaderboard data!</p>
+        </template>
+
+        <template #footer>
+          <UButton label="No" color="success" variant="soft" @click="deleteModal = false" />
+          <UButton label="Yes, I'm sure!" color="error" variant="outline" @click="deleteSuccess()"/>
+        </template>
+    </UModal>
 </template>
