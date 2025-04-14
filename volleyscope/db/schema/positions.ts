@@ -1,7 +1,5 @@
-import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
+import { pgEnum } from "drizzle-orm/pg-core";
 
-export const positions = pgTable('position', {
-	positionId: integer('position_id').primaryKey().generatedAlwaysAsIdentity(),
-	positionName: varchar('position_name', { length: 100 }).notNull(),
-});
+export const positionsEnum = pgEnum('positions',['Setter', 'Outside Hitter', 'Middle Blocker', 'Opposite Hitter', 'Libero', 'Defensive Specialist', 'Service Specialist', 'Bench']);
+
 

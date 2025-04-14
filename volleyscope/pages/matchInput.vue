@@ -88,7 +88,7 @@ import type { TabsItem } from '@nuxt/ui'
     function openMatchView() {
         unableToSave.value = false
         //check if the required data has been added
-        const required = ref(true)
+        const required = ref(false)
         // make sure all the data has been saved
         const saved = ref(true)
 

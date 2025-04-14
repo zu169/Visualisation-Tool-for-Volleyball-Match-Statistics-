@@ -1,11 +1,8 @@
 <script setup lang="ts">
 
-const {matchId} = defineProps<{matchId : number}>()
-
-//maybe make this an enum??
 const type = ['BUCS', 'BDVA', 'Tournament', 'Other']
 
-const selectedType = ref()
+const selectedType = defineModel<string>()
 // add selected type to match database
 
 </script>
@@ -16,7 +13,7 @@ const selectedType = ref()
             <USelectMenu
                 searchable
                 searchable-placeholder="Search a Game Type..."
-                v-model:model-value="selectedType"
+                v-model="selectedType"
                 class="w-full lg:w-48"
                 placeholder="Select a type..."
                 :items="type"

@@ -8,6 +8,7 @@ console.log(matchId)
     dateStyle: 'short'
     })
 
+    const gameType = ref()
     const gameDate = ref()
     // add game data to database
 
@@ -27,8 +28,9 @@ console.log(matchId)
                     <UCalendar v-model="gameDate" :default-value="new CalendarDate(2025, 4, 16)" class="p-2" />
                     </template>
                 </UPopover>
-                <MatchTypeSelection :matchId = "matchId"/>
+                <MatchTypeSelection v-model="gameType"/>
             </div>
+            <p>{{ gameType }}</p>
         </template>
 
         

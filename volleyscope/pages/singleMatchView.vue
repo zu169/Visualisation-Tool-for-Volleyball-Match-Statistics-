@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
     import type { TabsItem, BreadcrumbItem } from '@nuxt/ui';    
-import { set } from '@nuxt/ui/runtime/utils/index.js';
 
     const history = ref<BreadcrumbItem[]>([
             {
@@ -20,7 +19,7 @@ import { set } from '@nuxt/ui/runtime/utils/index.js';
             }
         ]);
 
-    const setScores = [[25,21], [20,25], [25,19]];
+    const setScores = [[25,21], [20,25], [25,19]]
 
     const generateScore = () => {
         //Keep Track of each teams won sets
@@ -103,7 +102,7 @@ import { set } from '@nuxt/ui/runtime/utils/index.js';
             </div>
         </div>
         <div class="flex items-end">
-            <UDropdownMenu
+            <!-- <UDropdownMenu
                 :items="sections.filter((sections.values)).map((sections.values) => ({
                     label : sections.values.name,
                     type: 'checkbox' as const,
@@ -120,7 +119,7 @@ import { set } from '@nuxt/ui/runtime/utils/index.js';
                 variant="outline"
                 trailing-icon="i-lucide-chevron-down"
                 />
-            </UDropdownMenu>
+            </UDropdownMenu> -->
         </div>
         <UCard>
             <template #header>

@@ -1,13 +1,31 @@
 <script setup lang="ts">
     import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
     import type { BreadcrumbItem } from '@nuxt/ui';
+    import * as v from 'valibot'
+    import type { FormSubmitEvent } from '@nuxt/ui'
 
+    const schema = v.object({
+        
+    })
     const router = useRouter();
     const { query } = useRoute();
     const playerId = computed(() => query.player?.toString());
     //if playerId null then create new player table and id
     
     // Data for Player Info Input
+    const state = reactive({
+        playerName: '',
+        position: '',
+        shirtNumber: '',
+        teams: '',
+        year_joined: '',
+        jumpHeight: '',
+        spike_speed: '',
+        serve_speed: '',
+        height: '',
+        weight: '',
+        birthday: ''
+    })
     const name = ref('')
     const position = ref('')
     const shirtNum = ref()
@@ -83,8 +101,8 @@
                 
                 <h3 class="p-2">Required Information</h3>
                 <USeparator/>
-                <UFormField label="Player Name" required size="xl" class="p-2">
-                    <UInput v-model:model-value="name" placeholder="Enter Name..." class="w-full" />
+                <UFormField label="Player Name" required size="xl" class="p-2" name="name">
+                    <UInput v-model="state.name" placeholder="Enter Name..." class="w-full" />
                 </UFormField>
                 <UFormField label="Main Position" required hint="Enter the Player's main position." size="xl" class="p-2">
                     <USelect v-model:model-value="position" placeholder="Select a position..." :items="positions" class="w-full"/>
