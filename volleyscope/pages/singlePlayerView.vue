@@ -28,7 +28,7 @@
         },
         {
             label: 'Player View',
-            to: '/individualPlayerView'
+            to: '/singlePlayerView'
         }
     ])
 
@@ -91,10 +91,6 @@
     const toast = useToast()
     const deleteModal = ref(false)
 
-    function deletePlayer() {
-        deleteModal.value = true
-    }
-
     function deleteSuccess(){
         router.push({ name: 'playerData'})
         toast.add({
@@ -116,7 +112,7 @@
             <h2 class="p-2">Player Information</h2>
             <div>
                 <UButton type="submit" class="h-10 m-2" color="success" variant="soft" :to="{ path: '/playerInput', query: { player: playerId } }">Edit Player</UButton>
-                <UButton type="submit" class="h-10 m-2" color="error" variant="soft" @click="deletePlayer()">Delete Player</UButton>
+                <UButton type="submit" class="h-10 m-2" color="error" variant="soft" @click="deleteModal = true">Delete Player</UButton>
             </div>
         </div>
         <UCard>
