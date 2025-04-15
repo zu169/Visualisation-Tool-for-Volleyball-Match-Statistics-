@@ -1,5 +1,3 @@
 <template>
-    <UContainer>
-        Data Analysis
-    </UContainer>
+  <UContainer> Data Analysis </UContainer>
 </template>

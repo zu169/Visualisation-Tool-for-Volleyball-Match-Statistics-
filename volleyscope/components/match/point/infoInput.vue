@@ -1,61 +1,58 @@
-<script lang="ts">
-import { MatchPointServeDataCard } from '#components';
-import Serve_data_card from './serve_data_card.vue';
+<script setup lang="ts">
+const addedActions = ref<string[]>([]);
+const serveAdded = ref(false);
 
+// function updateActions() {}
+// watch(addedActions, (val) => {});
 
-    const addedActions = ref<string[]>([]);
-    const serveAdded = ref(false);
+function addServe() {
+  if (!serveAdded.value && !addedActions.value.includes("Serve")) {
+    serveAdded.value = true;
+    addedActions.value.push("Serve");
+  }
+}
 
-    const addServe = () => {
-        if (!serveAdded.value && !addedActions.value.includes('Serve')) {
-            serveAdded.value = true;
-            addedActions.value.push('Serve');
-        }
-    };
+function addAttack() {
+  addedActions.value.push("Attack");
+}
 
-    const addAttack = () => {
-      addedActions.value.push('Attack');
-    };
+function addReceive() {
+  addedActions.value.push("Receive");
+}
 
-    const addReceive = () => {
-      addedActions.value.push('Receive');
-    };
+function addSet() {
+  addedActions.value.push("Set");
+}
 
-    const addSet = () => {
-      addedActions.value.push('Set');
-    };
-
-    const addBlock = () => {
-      addedActions.value.push('Block');
-    };
-
+function addBlock() {
+  addedActions.value.push("Block");
+}
 </script>
 
 <template>
-    <UCard>
-        <template #header>
-            <div class="flex justify-evenly">
-                <UButton @click="addServe()">Serve</UButton>
-                <UButton @click="addAttack()">Attack</UButton>
-                <UButton @click="addReceive()">Receive</UButton>
-                <UButton @click="addSet()">Set</UButton>
-                <UButton @click="addBlock()">Block</UButton>
-            </div>
-        </template>
+  <UCard>
+    <template #header>
+      <div class="flex justify-evenly">
+        <UButton @click="addServe()">Serve</UButton>
+        <UButton @click="addAttack()">Attack</UButton>
+        <UButton @click="addReceive()">Receive</UButton>
+        <UButton @click="addSet()">Set</UButton>
+        <UButton @click="addBlock()">Block</UButton>
+      </div>
+    </template>
 
-        <MatchPointAttackDataCard/>
-        <template #body>
-            <div v-for="(action, index) in addedActions" :key="index">
-                <div v-if="action === 'Serve'">
-                    <MatchPointServeDataCard/>
-                </div>
-                <MatchPointServeDataCard v-if="action === 'Serve'" />
-                <MatchPointAttackDataCard v-if="action === 'Attack'" />
-                <MatchPointReceiveDataCard v-if="action === 'Receive'" />
-                <MatchPointSetDataCard v-if="action === 'Set'" />
-                <LazyMatchPointBlockDataCard v-if="action === 'Block'" />
-            </div>
-        </template>
-
-    </UCard>
+    <!-- <MatchPointAttackDataCard /> -->
+    <template #body>
+      <div v-for="(action, index) in addedActions" :key="index">
+        <div v-if="action === 'Serve'">
+          <MatchPointServeDataCard />
+        </div>
+        <MatchPointServeDataCard v-show="action === 'Serve'" />
+        <MatchPointAttackDataCard v-show="action === 'Attack'" />
+        <MatchPointReceiveDataCard v-if="action === 'Receive'" />
+        <MatchPointSetDataCard v-if="action === 'Set'" />
+        <MatchPointBlockDataCard v-if="action === 'Block'" />
+      </div>
+    </template>
+  </UCard>
 </template>

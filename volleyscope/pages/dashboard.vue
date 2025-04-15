@@ -1,5 +1,3 @@
 <template>
-    <UContainer>
-        Dashboard Page
-    </UContainer>
+  <UContainer> Dashboard Page </UContainer>
 </template>

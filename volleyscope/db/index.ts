@@ -1,5 +1,5 @@
-import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/node-postgres";
 // import { potentialUsers } from './schema/users';
 // import { positions } from './schema/positions';
 
@@ -14,7 +14,7 @@ export const db = drizzle(process.env.DATABASE_URL!);
 //         await db.insert(potentialUsers).values(potentials);
 //         console.log('Successfully Registered Interest!')
 //     }
-    
+
 //     await db.insert(positions).values([{positionName: 'Setter'}, {positionName: 'Outside Hitter'}, {positionName: 'Middle Blocker'}, {positionName: 'Opposite Hitter'}, {positionName: 'Libero'}, {positionName: 'Defensive Specialist'}, {positionName: 'Service Specialist'}])
 // }
 

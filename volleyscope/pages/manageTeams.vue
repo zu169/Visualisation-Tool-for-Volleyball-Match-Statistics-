@@ -1,15 +1,13 @@
 <template>
-    <UContainer>
-        <!-- View all Teams -->
+  <UContainer>
+    <!-- View all Teams -->
 
-        <!-- Add New Team -->
-        <UModal>
-            
-        </UModal>
-        <!-- Edit existing Team -->
+    <!-- Add New Team -->
 
-        <!-- Add Opponent Teams -->
+    <!-- Edit existing Team -->
 
-        <!-- View Opponent Teams -->
-    </UContainer>
+    <!-- Add Opponent Teams -->
+
+    <!-- View Opponent Teams -->
+  </UContainer>
 </template>

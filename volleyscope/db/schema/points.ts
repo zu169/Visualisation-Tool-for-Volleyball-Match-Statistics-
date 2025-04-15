@@ -55,4 +55,3 @@
 // }, (table) => [
 //     primaryKey({ columns: [table.blockId, table.pointId]})
 // ]);
-
