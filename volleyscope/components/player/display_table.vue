@@ -13,60 +13,78 @@ const toast = useToast();
 let name = "";
 
 type Player = {
-  id: number;
-  name: string;
+  playerId: number;
+  playerName: string;
   position: string;
-  shirtNum: number;
+  shirtNumber: number;
+  birthday: Date;
+  playerHeight: number;
+  playerWeight: number;
+  jumpHeight: number;
+  serveSpeed: number;
+  hittingSpeed: number;
 };
 
-const data = ref<Player[]>([
-  {
-    id: 0,
-    name: "Alan Atkins",
-    position: "Outside Hitter",
-    shirtNum: 8,
+const { data } = await useFetch<Player[]>("/api/getAllPlayers", {
+  key: "table",
+  transform: (data) => {
+    return (
+      data?.map((player) => ({
+        ...player,
+      })) || []
+    );
   },
-  {
-    id: 1,
-    name: "Szandra Kovacs",
-    position: "Outside Hitter",
-    shirtNum: 11,
-  },
-  {
-    id: 2,
-    name: "Amin Khoshikibari",
-    position: "Setter",
-    shirtNum: 16,
-  },
-  {
-    id: 3,
-    name: "Georgia Pachygiannaki",
-    position: "Libero",
-    shirtNum: 16,
-  },
-  {
-    id: 4,
-    name: "Joseph Lovell",
-    position: "Libero",
-    shirtNum: 11,
-  },
-  {
-    id: 5,
-    name: "Nicholas Ciobanu",
-    position: "Opposite Hitter",
-    shirtNum: 7,
-  },
-  {
-    id: 6,
-    name: "Zu Ziolek",
-    position: "Libero",
-    shirtNum: 3,
-  },
-]);
+  lazy: true,
+});
+
+// const data = ref<Player[]>([
+//   {
+//     id: 0,
+//     name: "Alan Atkins",
+//     position: "Outside Hitter",
+//     shirtNum: 8,
+//   },
+//   {
+//     id: 1,
+//     name: "Szandra Kovacs",
+//     position: "Outside Hitter",
+//     shirtNum: 11,
+//   },
+//   {
+//     id: 2,
+//     name: "Amin Khoshikibari",
+//     position: "Setter",
+//     shirtNum: 16,
+//   },
+//   {
+//     id: 3,
+//     name: "Georgia Pachygiannaki",
+//     position: "Libero",
+//     shirtNum: 16,
+//   },
+//   {
+//     id: 4,
+//     name: "Joseph Lovell",
+//     position: "Libero",
+//     shirtNum: 11,
+//   },
+//   {
+//     id: 5,
+//     name: "Nicholas Ciobanu",
+//     position: "Opposite Hitter",
+//     shirtNum: 7,
+//   },
+//   {
+//     id: 6,
+//     name: "Zu Ziolek",
+//     position: "Libero",
+//     shirtNum: 3,
+//   },
+// ]);
 
 const columns: TableColumn<Player>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "playerName",
     header: ({ column }) => getHeader(column, "Name"),
   },
   {
@@ -74,7 +92,7 @@ const columns: TableColumn<Player>[] = [
     header: ({ column }) => getHeader(column, "Postion"),
   },
   {
-    accessorKey: "shirtNum",
+    accessorKey: "shirtNumber",
     header: ({ column }) => getHeader(column, "Shirt Number"),
   },
   {
@@ -119,7 +137,7 @@ function getRowItems(row: Row<Player>) {
         console.log(row.original);
         router.push({
           name: "singlePlayerView",
-          query: { player: row.original.id },
+          query: { player: row.original.playerId },
         });
       },
     },
@@ -131,7 +149,7 @@ function getRowItems(row: Row<Player>) {
         console.log(row.original);
         router.push({
           name: "playerInput",
-          query: { player: row.original.id },
+          query: { player: row.original.playerId },
         });
       },
     },
@@ -145,7 +163,7 @@ function getRowItems(row: Row<Player>) {
       //   Display a modal to confirm deletion
       onSelect() {
         console.log(row.original);
-        name = row.original.name;
+        name = row.original.playerName;
         deleteModal.value = true;
       },
     },

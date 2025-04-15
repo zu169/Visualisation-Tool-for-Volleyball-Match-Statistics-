@@ -4,40 +4,64 @@ import {
   DateFormatter,
   getLocalTimeZone,
 } from "@internationalized/date";
-import type { BreadcrumbItem } from "@nuxt/ui";
+import type { BreadcrumbItem, FormSubmitEvent } from "@nuxt/ui";
 import * as v from "valibot";
 
-const schema = v.object({});
 const router = useRouter();
 const { query } = useRoute();
 const playerId = computed(() => query.player?.toString());
-//if playerId null then create new player table and id
 
+//if playerId null then create new player table and id
+const editView = ref(false);
+if (playerId.value) {
+  editView.value = true;
+}
+
+// async function setupEdit(event: FormDataEventInit){
+
+// };
+
+const positions = [
+  "Setter",
+  "Outside Hitter",
+  "Middle Blocker",
+  "Opposite Hitter",
+  "Libero",
+  "Defensive Specialist",
+  "Service Specialist",
+  "Bench",
+];
+const schema = v.object({
+  playerName: v.pipe(
+    v.string(),
+    v.maxLength(100, "Cannot be more than 100 characters")
+  ),
+  position: v.pipe(v.string()),
+  shirtNumber: v.pipe(v.number("Must be a number")),
+  // birthday: v.pipe(v.date()),
+  playerHeight: v.pipe(v.number()),
+  playerWeight: v.pipe(v.number()),
+  jumpHeight: v.pipe(v.number()),
+  serveSpeed: v.pipe(v.number()),
+  hittingSpeed: v.pipe(v.number()),
+});
+
+type Schema = v.InferOutput<typeof schema>;
+// Add when team tables are made
+// teams: "",
+// year_joined: "",
 // Data for Player Info Input
 const state = reactive({
-  playerName: "",
-  position: "",
-  shirtNumber: "",
-  teams: "",
-  year_joined: "",
-  jumpHeight: "",
-  spike_speed: "",
-  serve_speed: "",
-  height: "",
-  weight: "",
-  birthday: "",
+  playerName: undefined,
+  position: undefined,
+  shirtNumber: undefined,
+  // birthday: new CalendarDate(2025, 10, 15),
+  playerHeight: undefined,
+  playerWeight: undefined,
+  jumpHeight: undefined,
+  serveSpeed: undefined,
+  hittingSpeed: undefined,
 });
-const name = ref("");
-const position = ref("");
-const shirtNum = ref();
-const teams = ref();
-const year_joined = ref(new CalendarDate(2024, 10, 3));
-const jump_height = ref();
-const spike_speed = ref();
-const serve_speed = ref();
-const height = ref();
-const weight = ref();
-const birthday = ref();
 
 const history = ref<BreadcrumbItem[]>([
   {
@@ -56,40 +80,49 @@ const history = ref<BreadcrumbItem[]>([
   },
 ]);
 
-const positions = [
-  "Setter",
-  "Outside Hitter",
-  "Middle",
-  "Libero",
-  "Opposite Hitter",
-];
-const possible_teams = ["Mens 1", "Womens 1", "Mens BDVA"];
+// const possible_teams = ["Mens 1", "Womens 1", "Mens BDVA"];
 
-const df = new DateFormatter("en-UK", {
-  dateStyle: "medium",
-});
+// const df = new DateFormatter("en-UK", {
+//   dateStyle: "medium",
+// });
 
 const toast = useToast();
-const editView = ref(false);
 const editModal = ref(false);
 
-function successNotif() {
-  if (playerId != null) {
-    editModal.value = true;
-  } else {
-    router.push({ name: "playerData" });
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  const response = await $fetch("/api/playerInput", {
+    method: "POST",
+    body: state,
+  });
+
+  if (!response || response.message === "error") {
     toast.add({
-      title: "Player " + name.value + " has been added!",
-      color: "success",
-      icon: "bitcoin-icons:edit-filled",
+      title: "Error",
+      description: "There was an error submitting the form",
+      color: "error",
     });
+    return;
+  } else if (response.message === "missing") {
+    toast.add({
+      title: "Error",
+      description: "Required values are missing!",
+      color: "error",
+    });
+    return;
   }
+  router.push({ name: "playerData" });
+  toast.add({
+    title: "Player " + state.playerName + " has been added!",
+    color: "success",
+    icon: "bitcoin-icons:edit-filled",
+  });
+  console.log(event.data);
 }
 
 function editSuccess() {
   router.push({ name: "playerData" });
   toast.add({
-    title: "Player " + name.value + " has been edited!",
+    title: "Player " + state.playerName + " has been edited!",
     color: "success",
     icon: "bitcoin-icons:edit-filled",
   });
@@ -97,163 +130,175 @@ function editSuccess() {
 </script>
 <template>
   <UContainer>
-    <UBreadcrumb
-      :items="history"
-      class="p-2 pb-5 flex justify-center"
-    ></UBreadcrumb>
-    <div class="justify-center">
-      <UCard>
+    <UBreadcrumb :items="history" class="p-2 pb-5 flex justify-center" />
+    <div class="flex justify-center">
+      <UCard class="w-[80%]">
         <template #header>
           <h2>Add New Player</h2>
         </template>
 
         <h3 class="p-2">Required Information</h3>
         <USeparator />
-        <UFormField
-          label="Player Name"
-          required
-          size="xl"
-          class="p-2"
-          name="name"
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="space-y-4"
+          @submit="onSubmit"
         >
-          <UInput
-            v-model="state.name"
-            placeholder="Enter Name..."
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField
-          label="Main Position"
-          required
-          hint="Enter the Player's main position."
-          size="xl"
-          class="p-2"
-        >
-          <USelect
-            v-model:model-value="position"
-            placeholder="Select a position..."
-            :items="positions"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="Shirt Number" size="xl" class="p-2">
-          <UInput
-            v-model:model-value="shirtNum"
-            placeholder="Enter Shirt Number..."
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField
-          label="Teams"
-          required
-          hint="Which team do they play for?"
-          size="xl"
-          class="p-2"
-        >
-          <USelect
-            v-model:model-value="teams"
-            multiple
-            placeholder="Select a team..."
-            :items="possible_teams"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="Club Member Since" required size="xl" class="p-2">
-          <UPopover class="p-2">
-            <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-              {{
-                year_joined
-                  ? df.format(year_joined.toDate(getLocalTimeZone()))
-                  : "Select a date"
-              }}
-            </UButton>
-            <template #content>
-              <UCalendar v-model="year_joined" class="p-2" />
-            </template>
-          </UPopover>
-        </UFormField>
-        <h3 class="p-2 pt-5">Additional Information</h3>
-        <USeparator />
-        <UFormField label="Vertical Jump" size="xl" class="p-2">
-          <UInputNumber
-            v-model:model-value="jump_height"
-            placeholder="Enter jump in inches..."
-            :format-options="{ style: 'unit', unit: 'inch' }"
-            orientation="vertical"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="Serve Speed" size="xl" class="p-2">
-          <UInputNumber
-            v-model:model-value="serve_speed"
-            placeholder="Enter speed in km/h"
-            :format-options="{ style: 'unit', unit: 'kilometer-per-hour' }"
-            orientation="vertical"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="Spike Speed" size="xl" class="p-2">
-          <UInputNumber
-            v-model:model-value="spike_speed"
-            placeholder="Enter speed in km/h"
-            :format-options="{ style: 'unit', unit: 'kilometer-per-hour' }"
-            orientation="vertical"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="Height" size="xl" class="p-2">
-          <UInputNumber
-            v-model:model-value="height"
-            placeholder="Enter height in cm"
-            :format-options="{ style: 'unit', unit: 'centimeter' }"
-            orientation="vertical"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField label="Weight" size="xl" class="p-2">
-          <UInputNumber
-            v-model:model-value="weight"
-            placeholder="Enter weight in kg"
-            :format-options="{ style: 'unit', unit: 'kilogram' }"
-            orientation="vertical"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField
-          label="Birthday"
-          hint="Enter the Player's to display their age (Optional)"
-          size="xl"
-          class="p-2"
-        >
-          <UPopover class="p-2">
-            <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-              {{
-                birthday
-                  ? df.format(birthday.toDate(getLocalTimeZone()))
-                  : "Select a date"
-              }}
-            </UButton>
-            <template #content>
-              <UCalendar
-                v-model="birthday"
-                :default-value="new CalendarDate(2007, 11, 8)"
-                class="p-2"
-              />
-            </template>
-          </UPopover>
-        </UFormField>
-        <USeparator class="pt-5 pb-5" />
-        <div class="flex justify-center p-2">
-          <!-- Add Toast to confirm new player has been added -->
-          <UButton
-            type="submit"
-            class="p-2 flex justify-center w-sm"
+          <UFormField
+            label="Player Name"
+            required
             size="xl"
-            @click="successNotif"
+            class="p-2"
+            name="name"
           >
-            Submit
-          </UButton>
-        </div>
+            <UInput
+              v-model="state.playerName"
+              placeholder="Enter Name..."
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField
+            label="Main Position"
+            required
+            hint="Enter the Player's main position."
+            size="xl"
+            class="p-2"
+          >
+            <USelect
+              v-model="state.position"
+              placeholder="Select a position..."
+              :items="positions"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField label="Shirt Number" size="xl" class="p-2">
+            <UInput
+              v-model="state.shirtNumber"
+              placeholder="Enter Shirt Number..."
+              class="w-full"
+            />
+          </UFormField>
+          <!-- <UFormField
+            label="Teams"
+            required
+            hint="Which team do they play for?"
+            size="xl"
+            class="p-2"
+          >
+            <USelect
+              v-model="state.teams"
+              multiple
+              placeholder="Select a team..."
+              :items="possible_teams"
+              class="w-full"
+            />
+          </UFormField> -->
+          <!-- <UFormField label="Club Member Since" required size="xl" class="p-2">
+            <UPopover class="p-2">
+              <UButton
+                color="neutral"
+                variant="subtle"
+                icon="i-lucide-calendar"
+              >
+                {{
+                  year_joined
+                    ? df.format(year_joined.toDate(getLocalTimeZone()))
+                    : "Select a date"
+                }}
+              </UButton>
+              <template #content>
+                <UCalendar v-model="year_joined" class="p-2" />
+              </template>
+            </UPopover>
+          </UFormField> -->
+          <h3 class="p-2 pt-5">Additional Information</h3>
+          <USeparator />
+          <UFormField label="Vertical Jump" size="xl" class="p-2">
+            <UInputNumber
+              v-model="state.jumpHeight"
+              placeholder="Enter jump in inches..."
+              :format-options="{ style: 'unit', unit: 'inch' }"
+              orientation="vertical"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField label="Serve Speed" size="xl" class="p-2">
+            <UInputNumber
+              v-model="state.serveSpeed"
+              placeholder="Enter speed in km/h"
+              :format-options="{ style: 'unit', unit: 'kilometer-per-hour' }"
+              orientation="vertical"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField label="Spike Speed" size="xl" class="p-2">
+            <UInputNumber
+              v-model="state.hittingSpeed"
+              placeholder="Enter speed in km/h"
+              :format-options="{ style: 'unit', unit: 'kilometer-per-hour' }"
+              orientation="vertical"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField label="Height" size="xl" class="p-2">
+            <UInputNumber
+              v-model="state.playerHeight"
+              placeholder="Enter height in cm"
+              :format-options="{ style: 'unit', unit: 'centimeter' }"
+              orientation="vertical"
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField label="Weight" size="xl" class="p-2">
+            <UInputNumber
+              v-model="state.playerWeight"
+              placeholder="Enter weight in kg"
+              :format-options="{ style: 'unit', unit: 'kilogram' }"
+              orientation="vertical"
+              class="w-full"
+            />
+          </UFormField>
+          <!-- <UFormField
+            label="Birthday"
+            hint="Enter the Player's to display their age (Optional)"
+            size="xl"
+            class="p-2"
+          >
+            <UPopover class="p-2">
+              <UButton
+                color="neutral"
+                variant="subtle"
+                icon="i-lucide-calendar"
+              >
+                {{
+                  state.birthday
+                    ? df.format(state.birthday.toDate(getLocalTimeZone()))
+                    : "Select a date"
+                }}
+              </UButton>
+              <template #content>
+                <UCalendar
+                  v-model="state.birthday"
+                  :default-value="new CalendarDate(2007, 11, 8)"
+                  class="p-2"
+                />
+              </template>
+            </UPopover>
+          </UFormField> -->
+          <USeparator class="pt-5 pb-5" />
+          <div class="flex justify-center p-2">
+            <!-- Add Toast to confirm new player has been added -->
+            <UButton
+              type="submit"
+              class="p-2 flex justify-center w-sm"
+              size="xl"
+              @click="onSubmit"
+            >
+              Submit
+            </UButton>
+          </div>
+        </UForm>
       </UCard>
     </div>
     <UModal

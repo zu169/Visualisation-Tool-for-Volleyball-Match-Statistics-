@@ -33,63 +33,24 @@ const history = ref<BreadcrumbItem[]>([
 ]);
 
 type Player = {
-  id: number;
-  name: string;
+  playerId: number;
+  playerName: string;
   position: string;
-  shirtNum: number;
+  shirtNumber: number;
+  birthday: Date;
+  playerHeight: number;
+  playerWeight: number;
+  jumpHeight: number;
+  serveSpeed: number;
+  hittingSpeed: number;
 };
-
-const data = ref<Player[]>([
-  {
-    id: 0,
-    name: "Alan Atkins",
-    position: "Outside Hitter",
-    shirtNum: 8,
-  },
-  {
-    id: 1,
-    name: "Szandra Kovacs",
-    position: "Outside Hitter",
-    shirtNum: 11,
-  },
-  {
-    id: 2,
-    name: "Amin Khoshikibari",
-    position: "Setter",
-    shirtNum: 16,
-  },
-  {
-    id: 3,
-    name: "Georgia Pachygiannaki",
-    position: "Libero",
-    shirtNum: 16,
-  },
-  {
-    id: 4,
-    name: "Joseph Lovell",
-    position: "Libero",
-    shirtNum: 11,
-  },
-  {
-    id: 5,
-    name: "Nicholas Ciobanu",
-    position: "Opposite Hitter",
-    shirtNum: 7,
-  },
-  {
-    id: 6,
-    name: "Zu Ziolek",
-    position: "Libero",
-    shirtNum: 3,
-  },
-]);
 
 const router = useRouter();
 const { query } = useRoute();
-const playerId = computed(() => parseInt(query.player?.toString() ?? "0"));
-const playerData = computed(() =>
-  data.value.find((player) => player.id == playerId.value)
-);
+const playerId = computed(() => parseInt(query.player?.toString() ?? "1"));
+const { playerData : Player } = await useFetch<Player>("/api/getSinglePlayer");
+console.log(playerData);
+
 const toast = useToast();
 const deleteModal = ref(false);
 
@@ -132,15 +93,15 @@ function deleteSuccess() {
     <UCard>
       <template #header>
         <div class="flex justify-evenly">
-          <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" >
+          <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" />
           <div>
-            <h2>{{ playerData?.name }} - {{ playerId }}</h2>
+            <h2>{{ playerData?.playerName }} - {{ playerData?.playerId }}</h2>
             <h3 v-if="age != null">Age: {{ age }}</h3>
             <h3>Position: {{ playerData?.position }}</h3>
             <h3>Teams: {{ teams }}</h3>
             <h3>Year Joined: {{ year_joined }}</h3>
             <h3 v-if="shirtNum != null">
-              Shirt Number: {{ data[0].shirtNum }}
+              Shirt Number: {{ playerData?.shirtNumber }}
             </h3>
             <h3 v-if="positions != null">Other Postions: {{ positions }}</h3>
           </div>
