@@ -31,7 +31,7 @@ const teams = ref<TabsItem[]>([
     </div>
     <USeparator />
     <UTabs color="neutral" variant="link" :items="teams" class="w-full">
-      <template #all="{ item }">
+      <template #all>
         <PlayerDisplayTable />
       </template>
       <template #mens="{ item }">
