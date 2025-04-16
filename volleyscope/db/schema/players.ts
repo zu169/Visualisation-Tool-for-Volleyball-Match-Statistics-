@@ -9,12 +9,11 @@ import {
 // import { orgUsers } from './users';
 import { positionsEnum } from "./positions";
 
-// export const teams = pgTable('team', {
-// 	teamId: integer().primaryKey(),
-//     teamName: varchar('team_name', { length: 100 }),
-// 	orgId: integer('org_id').references(() => orgUsers.orgId),
-// 	division: varchar('division', { length: 100 }),
-// });
+export const teams = pgTable("team", {
+  teamId: integer().primaryKey(),
+  teamName: varchar("team_name", { length: 100 }),
+  division: varchar("division", { length: 100 }),
+});
 
 // export const teamPlayers = pgTable('teamPlayer', {
 //     teamId: integer('team_id').references(() => teams.teamId),
@@ -24,11 +23,11 @@ import { positionsEnum } from "./positions";
 //     primaryKey({ columns: [table.teamId, table.playerId]})
 // ])
 
-// export const opponents = pgTable('team', {
-// 	teamId: integer().primaryKey(),
-//     teamName: varchar('team_name', { length: 100 }),
-// 	division: varchar('division', { length: 100 }),
-// });
+export const opponents = pgTable("opponent", {
+  teamId: integer().primaryKey(),
+  teamName: varchar("team_name", { length: 100 }),
+  division: varchar("division", { length: 100 }),
+});
 
 export const players = pgTable("player", {
   playerId: integer("player_id").primaryKey().generatedAlwaysAsIdentity(),

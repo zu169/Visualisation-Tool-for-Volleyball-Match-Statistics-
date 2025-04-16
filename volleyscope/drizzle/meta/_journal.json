@@ -15,6 +15,20 @@
       "when": 1744633288277,
       "tag": "0001_sturdy_cyclops",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1744817578845,
+      "tag": "0002_next_slayback",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1744817613686,
+      "tag": "0003_complete_maddog",
+      "breakpoints": true
     }
   ]
 }

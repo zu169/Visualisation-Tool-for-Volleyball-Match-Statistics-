@@ -37,7 +37,7 @@ const playerId = computed(() => parseInt(query.player?.toString() ?? "1"));
 const id = playerId.value;
 console.log("player id " + id);
 const { data: playerData } = useAsyncData<Player>(() =>
-  $fetch(`/api/getSinglePlayer?player=${id}`)
+  $fetch(`/api/player/getSinglePlayer?player=${id}`)
 );
 console.log(playerData);
 

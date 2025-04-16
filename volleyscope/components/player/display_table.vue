@@ -25,7 +25,7 @@ type Player = {
   hittingSpeed: number;
 };
 
-const { data } = await useFetch<Player[]>("/api/getAllPlayers", {
+const { data } = await useFetch<Player[]>("/api/player/getAllPlayers", {
   key: "table",
   transform: (data) => {
     return (

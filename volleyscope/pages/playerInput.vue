@@ -90,7 +90,7 @@ const toast = useToast();
 const editModal = ref(false);
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  const response = await $fetch("/api/playerInput", {
+  const response = await $fetch("/api/player/playerInput", {
     method: "POST",
     body: state,
   });
