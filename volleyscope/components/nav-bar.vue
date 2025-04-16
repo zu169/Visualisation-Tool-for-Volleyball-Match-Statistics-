@@ -67,11 +67,13 @@ const items = ref([
   },
   {
     label: "Account",
-    icon: "i-lucide-user",
+    icon: "icon-park-outline:data-user",
+    to: "/manageAccount",
     children: [
       {
-        label: "Log In",
-        disabled: true,
+        label: "Account",
+        icon: "icon-park-outline:data-user",
+        to: "/manageAccount",
       },
       {
         label: "Sign Up",
@@ -85,7 +87,7 @@ const items = ref([
 <template>
   <div class="flex justify-between h-24 p-2">
     <a href="/">
-      <img class="h-20" src="~assets/img/auvcLogo.png" alt="AUVC Logo" >
+      <img class="h-20" src="~assets/img/auvcLogo.png" alt="AUVC Logo" />
     </a>
     <!-- Add Search bar -->
     <UNavigationMenu
@@ -93,7 +95,7 @@ const items = ref([
       orientation="horizontal"
       arrow
       :items="items"
-      class="data-[orientation=vertical]:w-48"
+      class="w-full flex justify-end"
     />
   </div>
 </template>
