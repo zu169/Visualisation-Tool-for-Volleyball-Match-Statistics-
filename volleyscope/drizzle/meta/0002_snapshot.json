@@ -1,40 +1,9 @@
 {
-  "id": "a3aee8d7-8de2-45f9-9706-29e2f24600c0",
-  "prevId": "ddac1cb0-cac6-4e12-8c2d-6a913714e189",
+  "id": "096887b7-33a9-43c6-b5c3-61974cabbde1",
+  "prevId": "05f78f49-a296-4a38-aea2-4d2f3807efa1",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.team": {
-      "name": "team",
-      "schema": "",
-      "columns": {
-        "teamId": {
-          "name": "teamId",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "team_name": {
-          "name": "team_name",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "division": {
-          "name": "division",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.player": {
       "name": "player",
       "schema": "",
@@ -172,6 +141,26 @@
     }
   },
   "enums": {
+    "public.divisions": {
+      "name": "divisions",
+      "schema": "public",
+      "values": [
+        "Premier",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "public.leagues": {
+      "name": "leagues",
+      "schema": "public",
+      "values": [
+        "BUCS",
+        "BDVA",
+        "NVL",
+        "Regional"
+      ]
+    },
     "public.positions": {
       "name": "positions",
       "schema": "public",

@@ -1,6 +1,6 @@
 {
-  "id": "d85dc054-8a89-49ef-8811-7c571849d333",
-  "prevId": "a3aee8d7-8de2-45f9-9706-29e2f24600c0",
+  "id": "8b9409cc-a606-4fd8-b13d-4d3b126e2b8e",
+  "prevId": "096887b7-33a9-43c6-b5c3-61974cabbde1",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -8,23 +8,42 @@
       "name": "opponent",
       "schema": "",
       "columns": {
-        "teamId": {
-          "name": "teamId",
+        "team_id": {
+          "name": "team_id",
           "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "opponent_team_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
         },
         "team_name": {
           "name": "team_name",
           "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "league": {
+          "name": "league",
+          "type": "leagues",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
         },
         "division": {
           "name": "division",
-          "type": "varchar(100)",
+          "type": "divisions",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -124,23 +143,42 @@
       "name": "team",
       "schema": "",
       "columns": {
-        "teamId": {
-          "name": "teamId",
+        "team_id": {
+          "name": "team_id",
           "type": "integer",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "team_team_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
         },
         "team_name": {
           "name": "team_name",
           "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "league": {
+          "name": "league",
+          "type": "leagues",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
         },
         "division": {
           "name": "division",
-          "type": "varchar(100)",
+          "type": "divisions",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -203,6 +241,26 @@
     }
   },
   "enums": {
+    "public.divisions": {
+      "name": "divisions",
+      "schema": "public",
+      "values": [
+        "Premier",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "public.leagues": {
+      "name": "leagues",
+      "schema": "public",
+      "values": [
+        "BUCS",
+        "BDVA",
+        "NVL",
+        "Regional"
+      ]
+    },
     "public.positions": {
       "name": "positions",
       "schema": "public",

@@ -16,17 +16,8 @@ const options = ref<TabsItem[]>([
   },
 ]);
 
-const toast = useToast();
 const homeInputView = ref(false);
 const opponentInputView = ref(false);
-
-function homeInput() {
-  homeInputView.value = true;
-}
-
-function opponentInput() {
-  opponentInputView.value = true;
-}
 </script>
 
 <template>
@@ -39,37 +30,35 @@ function opponentInput() {
     <UTabs color="neutral" variant="link" :items="options" class="w-full">
       <template #home>
         <div class="flex justify-between items-center">
-          <h2 class="p-2">Home Information</h2>
-          <UButton type="submit" class="h-10" @click="homeInput"
+          <p class="p-2 font-thin">
+            You need to add all teams that your club manages to be able to add
+            players to it and select them when add match information.
+          </p>
+          <UButton type="submit" class="h-10" @click="homeInputView = true"
             >Add New Team</UButton
           >
         </div>
-        <USeparator />
-        <p class="p-2 font-thin">
-          You need to add all teams that your club manages to be able to add
-          players to it and select them when add match information.
-        </p>
+        <USeparator class="mt-0.5" />
         <TeamHomeDisplayTable />
       </template>
       <template #opponent>
         <div class="flex justify-between items-center">
-          <h2 class="p-2">Opponent Information</h2>
-          <UButton type="submit" class="h-10" @click="opponentInput"
+          <p class="p-2 font-thin">
+            You need to add all teams that your club plays against to be able to
+            select them as opponents when adding a match. (You can add these as
+            you go!)
+          </p>
+          <UButton type="submit" class="h-10" @click="opponentInputView = true"
             >Add New Team</UButton
           >
         </div>
         <USeparator />
-        <p class="p-2 font-thin">
-          You need to add all teams that your club plays against to be able to
-          select them as opponents when adding a match. (You can add these as
-          you go!)
-        </p>
         <TeamOpponentDisplayTable />
       </template>
       <template #players>
         <div class="flex justify-between items-center">
           <h2 class="p-2">Player Information</h2>
-          <UButton type="submit" class="h-10" to="/playerInput"
+          <UButton type="submit" class="h-10 m-0.5" to="/playerInput"
             >Add New Player</UButton
           >
         </div>
@@ -77,5 +66,15 @@ function opponentInput() {
         <PlayerDisplayTable />
       </template>
     </UTabs>
+    <UModal v-model:open="homeInputView">
+      <template #content>
+        <TeamHomeTeamInput v-model="homeInputView" />
+      </template>
+    </UModal>
+    <UModal v-model:open="opponentInputView">
+      <template #content>
+        <TeamOpponentTeamInput v-model="opponentInputView" />
+      </template>
+    </UModal>
   </UContainer>
 </template>

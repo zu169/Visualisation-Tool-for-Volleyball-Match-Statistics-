@@ -1,9 +1,172 @@
 {
-  "id": "e264bcd9-c7cb-489d-a018-99a9e7029a0b",
+  "id": "a2b7e392-081e-4976-b48a-17ca3cb6d2dc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.opponent": {
+      "name": "opponent",
+      "schema": "",
+      "columns": {
+        "teamId": {
+          "name": "teamId",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_name": {
+          "name": "team_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "league": {
+          "name": "league",
+          "type": "leagues",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "division": {
+          "name": "division",
+          "type": "divisions",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.player": {
+      "name": "player",
+      "schema": "",
+      "columns": {
+        "player_id": {
+          "name": "player_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "player_player_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "player_name": {
+          "name": "player_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "positions",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "shirt_number": {
+          "name": "shirt_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "birthday": {
+          "name": "birthday",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "player_height": {
+          "name": "player_height",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "player_weight": {
+          "name": "player_weight",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jump_height": {
+          "name": "jump_height",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "serve_speed": {
+          "name": "serve_speed",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hitting_speed": {
+          "name": "hitting_speed",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.team": {
+      "name": "team",
+      "schema": "",
+      "columns": {
+        "teamId": {
+          "name": "teamId",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_name": {
+          "name": "team_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "league": {
+          "name": "league",
+          "type": "leagues",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "division": {
+          "name": "division",
+          "type": "divisions",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.potentials": {
       "name": "potentials",
       "schema": "",
@@ -55,7 +218,42 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.divisions": {
+      "name": "divisions",
+      "schema": "public",
+      "values": [
+        "Premier",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "public.leagues": {
+      "name": "leagues",
+      "schema": "public",
+      "values": [
+        "BUCS",
+        "BDVA",
+        "NVL",
+        "Regional"
+      ]
+    },
+    "public.positions": {
+      "name": "positions",
+      "schema": "public",
+      "values": [
+        "Setter",
+        "Outside Hitter",
+        "Middle Blocker",
+        "Opposite Hitter",
+        "Libero",
+        "Defensive Specialist",
+        "Service Specialist",
+        "Bench"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

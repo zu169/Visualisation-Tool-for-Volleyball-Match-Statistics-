@@ -10,3 +10,12 @@ export const positionsEnum = pgEnum("positions", [
   "Service Specialist",
   "Bench",
 ]);
+
+export const leaguesEnum = pgEnum("leagues", [
+  "BUCS",
+  "BDVA",
+  "NVL",
+  "Regional",
+]);
+
+export const divisionsEnum = pgEnum("divisions", ["Premier", "1", "2", "3"]);

@@ -1,18 +1,12 @@
-import {
-  integer,
-  pgTable,
-  varchar,
-  decimal,
-  date,
-  primaryKey,
-} from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, decimal, date } from "drizzle-orm/pg-core";
 // import { orgUsers } from './users';
-import { positionsEnum } from "./positions";
+import { positionsEnum, leaguesEnum, divisionsEnum } from "./positions";
 
 export const teams = pgTable("team", {
-  teamId: integer().primaryKey(),
-  teamName: varchar("team_name", { length: 100 }),
-  division: varchar("division", { length: 100 }),
+  teamId: integer("team_id").primaryKey().generatedAlwaysAsIdentity(),
+  teamName: varchar("team_name", { length: 100 }).notNull().unique(),
+  league: leaguesEnum().notNull(),
+  division: divisionsEnum().notNull(),
 });
 
 // export const teamPlayers = pgTable('teamPlayer', {
@@ -24,9 +18,10 @@ export const teams = pgTable("team", {
 // ])
 
 export const opponents = pgTable("opponent", {
-  teamId: integer().primaryKey(),
-  teamName: varchar("team_name", { length: 100 }),
-  division: varchar("division", { length: 100 }),
+  teamId: integer("team_id").primaryKey().generatedAlwaysAsIdentity(),
+  teamName: varchar("team_name", { length: 100 }).notNull().unique(),
+  league: leaguesEnum().notNull(),
+  division: divisionsEnum().notNull(),
 });
 
 export const players = pgTable("player", {

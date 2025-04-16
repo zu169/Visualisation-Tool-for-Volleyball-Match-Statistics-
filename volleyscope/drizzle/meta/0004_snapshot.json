@@ -1,6 +1,6 @@
 {
-  "id": "05f78f49-a296-4a38-aea2-4d2f3807efa1",
-  "prevId": "a2b7e392-081e-4976-b48a-17ca3cb6d2dc",
+  "id": "01e5432e-60d0-4f61-a6b4-f7b22a30de32",
+  "prevId": "8b9409cc-a606-4fd8-b13d-4d3b126e2b8e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -49,7 +49,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "opponent_team_name_unique": {
+          "name": "opponent_team_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "team_name"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -184,7 +192,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "team_team_name_unique": {
+          "name": "team_team_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "team_name"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
