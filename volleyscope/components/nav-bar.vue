@@ -65,6 +65,9 @@ const items = ref([
       },
     ],
   },
+]);
+
+const account = ref([
   {
     label: "Account",
     icon: "icon-park-outline:data-user",
@@ -97,5 +100,14 @@ const items = ref([
       :items="items"
       class="w-full flex justify-end"
     />
+    <div class="flex justify-end">
+      <UNavigationMenu
+        highlight-color="primary"
+        orientation="horizontal"
+        content-orientation="vertical"
+        arrow
+        :items="account"
+      />
+    </div>
   </div>
 </template>
