@@ -139,7 +139,12 @@ function editSuccess() {
 
         <h3 class="p-2">Required Information</h3>
         <USeparator />
-        <UForm :schema="schema" :state="state" class="space-y-4">
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="space-y-4"
+          @submit="onSubmit"
+        >
           <UFormField
             label="Player Name"
             required
@@ -288,7 +293,7 @@ function editSuccess() {
               type="submit"
               class="p-2 flex justify-center w-sm"
               size="xl"
-              @submit="onSubmit"
+              @click="onSubmit"
             >
               Submit
             </UButton>
