@@ -89,7 +89,7 @@ const columns: TableColumn<Player>[] = [
   },
   {
     accessorKey: "position",
-    header: ({ column }) => getHeader(column, "Postion"),
+    header: ({ column }) => getHeader(column, "Position"),
   },
   {
     accessorKey: "shirtNumber",
@@ -181,9 +181,12 @@ function deleteSuccess() {
 }
 
 function onSelect(row: TableRow<Player>, e?: Event) {
-  console.log(e);
+  console.log(row.original.playerId);
   // go to single player view page
-  router.push({ name: "singlePlayerView", query: { player: row.original.id } });
+  router.push({
+    name: "singlePlayerView",
+    query: { player: row.original.playerId },
+  });
 }
 
 function getHeader(column: Column<Player>, label: string) {

@@ -1,16 +1,25 @@
 import { db } from "~/db/index";
 import { eq } from "drizzle-orm";
 import { players } from "~/db/schema/players";
+import { defineEventHandler } from "h3";
 
 export default defineEventHandler(async (event) => {
-  const id: number = getRouterParam(event, "playerId") ?? 1;
-  let data = undefined;
+  const query = getQuery(event);
+  const id = Number(query.player);
+
+  if (isNaN(id)) {
+    return { message: "Invalid Player ID" };
+  }
+
   try {
-    data = await db.select().from(players).where(eq(players.playerId, id));
+    const data = await db
+      .select()
+      .from(players)
+      .where(eq(players.playerId, id));
+
+    return data[0] ?? { message: "Player not found" }; // return single player
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching player:", error);
     return { message: "error" };
   }
-  console.log(data);
-  return data;
 });

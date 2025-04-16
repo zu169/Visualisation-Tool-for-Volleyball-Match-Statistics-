@@ -1,20 +1,6 @@
 <script setup lang="ts">
 import type { BreadcrumbItem } from "@nuxt/ui";
 
-// Variables which store the Player Information
-const name = "Something Something";
-const age = 21;
-const main_position = "Setter";
-const height = 8;
-const weight = 3;
-const jump_height = 17.5;
-const spike_speed = 54;
-const serve_speed = 70;
-const teams = ["Aber Mens", "Aber Mens Bucs"];
-const year_joined = 2022;
-const positions = ["Setter", "Outside Hitter", "Opposite"];
-const shirtNum = 3;
-
 const history = ref<BreadcrumbItem[]>([
   {
     label: "Home",
@@ -48,7 +34,11 @@ type Player = {
 const router = useRouter();
 const { query } = useRoute();
 const playerId = computed(() => parseInt(query.player?.toString() ?? "1"));
-const { playerData : Player } = await useFetch<Player>("/api/getSinglePlayer");
+const id = playerId.value;
+console.log("player id " + id);
+const { data: playerData } = useAsyncData<Player>(() =>
+  $fetch(`/api/getSinglePlayer?player=${id}`)
+);
 console.log(playerData);
 
 const toast = useToast();
@@ -57,7 +47,7 @@ const deleteModal = ref(false);
 function deleteSuccess() {
   router.push({ name: "playerData" });
   toast.add({
-    title: "Player " + playerData?.value?.name + " has been deleted!",
+    title: "Player " + playerData?.value?.playerName + " has been deleted!",
     color: "error",
     icon: "i-lucide-trash-2",
   });
@@ -96,22 +86,32 @@ function deleteSuccess() {
           <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" />
           <div>
             <h2>{{ playerData?.playerName }} - {{ playerData?.playerId }}</h2>
-            <h3 v-if="age != null">Age: {{ age }}</h3>
+            <!-- <h3 v-if="age != null">Age: {{ age }}</h3> -->
             <h3>Position: {{ playerData?.position }}</h3>
-            <h3>Teams: {{ teams }}</h3>
-            <h3>Year Joined: {{ year_joined }}</h3>
-            <h3 v-if="shirtNum != null">
+            <!-- <h3>Teams: {{ teams }}</h3> -->
+            <!-- <h3>Year Joined: {{ year_joined }}</h3> -->
+            <h3 v-if="playerData?.shirtNumber != null">
               Shirt Number: {{ playerData?.shirtNumber }}
             </h3>
-            <h3 v-if="positions != null">Other Postions: {{ positions }}</h3>
+            <!-- <h3 v-if="playerData?.position != null">Other Postions: {{ positions }}</h3> -->
           </div>
         </div>
         <div>
-          <h3 v-if="height != null">Height: {{ height }}</h3>
-          <h3 v-if="weight != null">Weight: {{ weight }}</h3>
-          <h3 v-if="jump_height != null">Jump Height: {{ jump_height }}</h3>
-          <h3 v-if="spike_speed != null">Spike Speed: {{ spike_speed }}</h3>
-          <h3 v-if="serve_speed != null">Serve Speed: {{ serve_speed }}</h3>
+          <h3 v-if="playerData?.playerHeight != null">
+            Height: {{ playerData.playerHeight }}
+          </h3>
+          <h3 v-if="playerData?.playerWeight != null">
+            Weight: {{ playerData.playerWeight }}
+          </h3>
+          <h3 v-if="playerData?.jumpHeight != null">
+            Jump Height: {{ playerData.jumpHeight }}
+          </h3>
+          <h3 v-if="playerData?.hittingSpeed != null">
+            Spike Speed: {{ playerData.hittingSpeed }}
+          </h3>
+          <h3 v-if="playerData?.serveSpeed != null">
+            Serve Speed: {{ playerData.serveSpeed }}
+          </h3>
         </div>
       </template>
     </UCard>
