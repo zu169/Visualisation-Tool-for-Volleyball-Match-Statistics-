@@ -180,7 +180,7 @@ function deleteSuccess() {
   deleteModal.value = false;
 }
 
-function onSelect(row: TableRow<Player>, e?: Event) {
+function onSelect(row: TableRow<Player>) {
   console.log(row.original.playerId);
   // go to single player view page
   router.push({
@@ -293,7 +293,7 @@ const globalFilter = ref("");
       v-model:global-filter="globalFilter"
       v-model:column-visibility="columnVisibility"
       sticky
-      :data="data"
+      :data="data ?? []"
       :columns="columns"
       class="flex-1"
       @select="onSelect"

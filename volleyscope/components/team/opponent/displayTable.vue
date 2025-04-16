@@ -232,7 +232,7 @@ function getHeader(column: Column<Team>, label: string) {
       v-model:global-filter="globalFilter"
       v-model:column-visibility="columnVisibility"
       sticky
-      :data="data"
+      :data="data ?? []"
       :columns="columns"
       class="flex-1"
     />
