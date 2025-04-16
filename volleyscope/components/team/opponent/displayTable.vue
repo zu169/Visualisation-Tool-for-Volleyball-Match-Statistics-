@@ -7,6 +7,7 @@ import type { Row, Column } from "@tanstack/vue-table";
 const UButton = resolveComponent("UButton");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
 
+const opponentViewModal = ref(false);
 const deleteModal = ref(false);
 let id = 0;
 let name = "";
@@ -93,7 +94,9 @@ function getRowItems(row: Row<Team>) {
 
       onSelect() {
         console.log(row.original);
-        // Use Modal to edit
+        id = row.original.teamId;
+        name = row.original.teamName;
+        opponentViewModal.value = true;
       },
     },
     {
@@ -229,11 +232,17 @@ function getHeader(column: Column<Team>, label: string) {
       v-model:global-filter="globalFilter"
       v-model:column-visibility="columnVisibility"
       sticky
-      :data?="data"
+      :data="data"
       :columns="columns"
       class="flex-1"
     />
   </div>
+
+  <UModal v-model:open="opponentViewModal">
+    <template #content>
+      <TeamOpponentTeamInput v-model="opponentViewModal" :team-id="id" />
+    </template>
+  </UModal>
 
   <UModal
     v-model:open="deleteModal"

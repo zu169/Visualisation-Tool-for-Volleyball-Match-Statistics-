@@ -2,7 +2,42 @@
 import type { FormSubmitEvent } from "@nuxt/ui";
 import * as v from "valibot";
 
-const opponentInputView = defineModel<boolean>();
+type Team = {
+  teamId: number;
+  teamName: string;
+  league: string;
+  division: string;
+};
+
+const state = reactive<{
+  teamName: string | undefined;
+  league: string | undefined;
+  division: string | undefined;
+}>({
+  teamName: undefined,
+  league: undefined,
+  division: undefined,
+});
+
+const opponentViewModal = defineModel<boolean>();
+const { teamId } = defineProps<{ teamId?: number }>();
+console.log(teamId);
+const editView = ref(false);
+
+if (teamId) {
+  editView.value = true;
+  const { data: teamData } = useAsyncData<Team>(() =>
+    $fetch(`/api/team/getOpponent?team=${teamId}`)
+  );
+
+  watchEffect(() => {
+    if (editView.value && teamData.value) {
+      state.teamName = teamData.value.teamName;
+      state.league = teamData.value.league;
+      state.division = teamData.value.division;
+    }
+  });
+}
 
 const leagues = ["BUCS", "BDVA", "NVL", "Regional"];
 const divisions = ["Premier", "1", "2", "3"];
@@ -18,15 +53,40 @@ const schema = v.object({
 
 type Schema = v.InferOutput<typeof schema>;
 
-const state = reactive({
-  teamName: undefined,
-  league: undefined,
-  division: undefined,
-});
-
 const toast = useToast();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  if (editView.value === true) {
+    const response = await $fetch(`/api/team/updateOpponent?team=${teamId}`, {
+      method: "PUT",
+      body: state,
+    });
+
+    if (!response || response.message === "error") {
+      toast.add({
+        title: "Error",
+        description: "There was an error submitting the form",
+        color: "error",
+      });
+      return;
+    } else if (response.message === "missing") {
+      toast.add({
+        title: "Error",
+        description: "Required values are missing!",
+        color: "error",
+      });
+      return;
+    }
+    opponentViewModal.value = false;
+    toast.add({
+      title: "Team " + state.teamName + " has been editted!",
+      color: "success",
+      icon: "bitcoin-icons:edit-filled",
+    });
+    console.log(event.data);
+    return;
+  }
+
   const response = await $fetch("/api/team/opponentInput", {
     method: "POST",
     body: state,
@@ -47,7 +107,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     });
     return;
   }
-  opponentInputView.value = false;
+  opponentViewModal.value = false;
   toast.add({
     title: "Team " + state.teamName + " has been added!",
     color: "success",
@@ -66,7 +126,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     <h3 class="p-2">Required Information</h3>
     <USeparator />
-    <UForm :schema="schema" :state="state" class="space-y-4">
+    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
       <UFormField label="Team Name" required class="p-2">
         <UInput
           v-model="state.teamName"
@@ -104,12 +164,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         />
       </UFormField>
       <div class="flex justify-center p-2">
-        <UButton
-          type="submit"
-          class="p-2 flex justify-center w-sm"
-          size="xl"
-          @submit="onSubmit"
-        >
+        <UButton type="submit" class="p-2 flex justify-center w-sm" size="xl">
           Submit
         </UButton>
       </div>

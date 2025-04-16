@@ -2,7 +2,42 @@
 import type { FormSubmitEvent } from "@nuxt/ui";
 import * as v from "valibot";
 
-const homeInputView = defineModel<boolean>();
+type Team = {
+  teamId: number;
+  teamName: string;
+  league: string;
+  division: string;
+};
+
+const state = reactive<{
+  teamName: string | undefined;
+  league: string | undefined;
+  division: string | undefined;
+}>({
+  teamName: undefined,
+  league: undefined,
+  division: undefined,
+});
+
+const teamViewModal = defineModel<boolean>();
+const { teamId } = defineProps<{ teamId?: number }>();
+console.log(teamId);
+const editView = ref(false);
+
+if (teamId) {
+  editView.value = true;
+  const { data: teamData } = useAsyncData<Team>(() =>
+    $fetch(`/api/team/getTeam?team=${teamId}`)
+  );
+
+  watchEffect(() => {
+    if (editView.value && teamData.value) {
+      state.teamName = teamData.value.teamName;
+      state.league = teamData.value.league;
+      state.division = teamData.value.division;
+    }
+  });
+}
 
 const leagues = ["BUCS", "BDVA", "NVL", "Regional"];
 const divisions = ["Premier", "1", "2", "3"];
@@ -18,15 +53,40 @@ const schema = v.object({
 
 type Schema = v.InferOutput<typeof schema>;
 
-const state = reactive({
-  teamName: undefined,
-  league: undefined,
-  division: undefined,
-});
-
-const toast = useToast();   
+const toast = useToast();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  if (editView.value === true) {
+    const response = await $fetch(`/api/team/updateTeam?team=${teamId}`, {
+      method: "PUT",
+      body: state,
+    });
+
+    if (!response || response.message === "error") {
+      toast.add({
+        title: "Error",
+        description: "There was an error submitting the form",
+        color: "error",
+      });
+      return;
+    } else if (response.message === "missing") {
+      toast.add({
+        title: "Error",
+        description: "Required values are missing!",
+        color: "error",
+      });
+      return;
+    }
+    teamViewModal.value = false;
+    toast.add({
+      title: "Team " + state.teamName + " has been editted!",
+      color: "success",
+      icon: "bitcoin-icons:edit-filled",
+    });
+    console.log(event.data);
+    return;
+  }
+
   const response = await $fetch("/api/team/homeInput", {
     method: "POST",
     body: state,
@@ -47,7 +107,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     });
     return;
   }
-  homeInputView.value = false;
+  teamViewModal.value = false;
   toast.add({
     title: "Team " + state.teamName + " has been added!",
     color: "success",
@@ -105,12 +165,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       </UFormField>
       <div class="flex justify-center p-2">
         <!-- Add Toast to confirm new player has been added -->
-        <UButton
-          type="submit"
-          class="p-2 flex justify-center w-sm"
-          size="xl"
-          @click="onSubmit"
-        >
+        <UButton type="submit" class="p-2 flex justify-center w-sm" size="xl">
           Submit
         </UButton>
       </div>

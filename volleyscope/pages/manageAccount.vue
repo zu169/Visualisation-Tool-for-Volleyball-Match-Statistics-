@@ -16,7 +16,7 @@ const options = ref<TabsItem[]>([
   },
 ]);
 
-const homeInputView = ref(false);
+const teamViewModal = ref(false);
 const opponentInputView = ref(false);
 </script>
 
@@ -34,7 +34,7 @@ const opponentInputView = ref(false);
             You need to add all teams that your club manages to be able to add
             players to it and select them when add match information.
           </p>
-          <UButton type="submit" class="h-10" @click="homeInputView = true"
+          <UButton type="submit" class="h-10" @click="teamViewModal = true"
             >Add New Team</UButton
           >
         </div>
@@ -66,9 +66,9 @@ const opponentInputView = ref(false);
         <PlayerDisplayTable />
       </template>
     </UTabs>
-    <UModal v-model:open="homeInputView">
+    <UModal v-model:open="teamViewModal">
       <template #content>
-        <TeamHomeTeamInput v-model="homeInputView" />
+        <TeamHomeTeamInput v-model="teamViewModal" />
       </template>
     </UModal>
     <UModal v-model:open="opponentInputView">
