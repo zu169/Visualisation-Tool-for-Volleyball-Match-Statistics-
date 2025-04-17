@@ -1,5 +1,11 @@
-import { integer, pgTable, varchar, decimal, date } from "drizzle-orm/pg-core";
-// import { orgUsers } from './users';
+import {
+  integer,
+  pgTable,
+  varchar,
+  decimal,
+  date,
+  primaryKey,
+} from "drizzle-orm/pg-core";
 import { positionsEnum, leaguesEnum, divisionsEnum } from "./positions";
 
 export const teams = pgTable("team", {
@@ -9,13 +15,15 @@ export const teams = pgTable("team", {
   division: divisionsEnum().notNull(),
 });
 
-// export const teamPlayers = pgTable('teamPlayer', {
-//     teamId: integer('team_id').references(() => teams.teamId),
-//     playerId: integer('player_id').references(() => players.playerId),
-//     joinedDate: date('joined_date').notNull()
-// }, (table) => [
-//     primaryKey({ columns: [table.teamId, table.playerId]})
-// ])
+export const teamPlayers = pgTable(
+  "teamPlayer",
+  {
+    teamId: integer("team_id").references(() => teams.teamId),
+    playerId: integer("player_id").references(() => players.playerId),
+    yearJoined: varchar("year_joined", { length: 4 }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.teamId, table.playerId] })]
+);
 
 export const opponents = pgTable("opponent", {
   teamId: integer("team_id").primaryKey().generatedAlwaysAsIdentity(),

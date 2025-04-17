@@ -36,6 +36,13 @@
       "when": 1744824612922,
       "tag": "0004_sparkling_shape",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1744849430050,
+      "tag": "0005_real_stingray",
+      "breakpoints": true
     }
   ]
 }

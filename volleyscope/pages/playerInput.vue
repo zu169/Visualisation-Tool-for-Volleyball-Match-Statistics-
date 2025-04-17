@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import {
-  CalendarDate,
-  DateFormatter,
-  getLocalTimeZone,
-} from "@internationalized/date";
 import type { BreadcrumbItem, FormSubmitEvent } from "@nuxt/ui";
 import * as v from "valibot";
 
@@ -20,6 +15,24 @@ if (playerId.value) {
 // async function setupEdit(event: FormDataEventInit){
 
 // };
+
+type Team = {
+  teamId: number;
+  teamName: string;
+};
+
+const teamNames = ref<string[]>([]);
+const { data: teamData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllTeamNames")
+);
+
+watchEffect(() => {
+  if (teamData.value) {
+    teamNames.value = teamData.value.map((team) => team.teamName);
+  }
+});
+
+const years = ["2020", "2021", "2022", "2023", "2024", "2025"];
 
 const positions = [
   "Setter",
@@ -38,6 +51,8 @@ const schema = v.object({
   ),
   position: v.pipe(v.string()),
   shirtNumber: v.pipe(v.number("Must be a number")),
+  teams: v.array(v.number()),
+  yearJoined: v.pipe(v.string()),
   // birthday: v.pipe(v.date()),
   playerHeight: v.pipe(v.number()),
   playerWeight: v.pipe(v.number()),
@@ -51,11 +66,25 @@ type Schema = v.InferOutput<typeof schema>;
 // teams: "",
 // year_joined: "",
 // Data for Player Info Input
-const state = reactive({
+const state = reactive<{
+  playerName: string | undefined;
+  position: string | undefined;
+  shirtNumber: number | undefined;
+  teamNames: string[] | undefined;
+  teams: number[] | undefined; // 👈 define teams as an array of numbers (team IDs)
+  yearJoined: string | undefined;
+  playerHeight: number | undefined;
+  playerWeight: number | undefined;
+  jumpHeight: number | undefined;
+  serveSpeed: number | undefined;
+  hittingSpeed: number | undefined;
+}>({
   playerName: undefined,
   position: undefined,
   shirtNumber: undefined,
-  // birthday: new CalendarDate(2025, 10, 15),
+  teamNames: undefined,
+  teams: undefined,
+  yearJoined: undefined,
   playerHeight: undefined,
   playerWeight: undefined,
   jumpHeight: undefined,
@@ -80,8 +109,6 @@ const history = ref<BreadcrumbItem[]>([
   },
 ]);
 
-// const possible_teams = ["Mens 1", "Womens 1", "Mens BDVA"];
-
 // const df = new DateFormatter("en-UK", {
 //   dateStyle: "medium",
 // });
@@ -90,6 +117,17 @@ const toast = useToast();
 const editModal = ref(false);
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  console.log("function entered");
+
+  state.teams = (state.teamNames || [])
+    .map((teamName: string) => {
+      const foundTeam = teamData.value?.find(
+        (team) => team.teamName === teamName
+      );
+      return foundTeam?.teamId;
+    })
+    .filter((id): id is number => id !== undefined);
+
   const response = await $fetch("/api/player/playerInput", {
     method: "POST",
     body: state,
@@ -117,6 +155,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     icon: "bitcoin-icons:edit-filled",
   });
   console.log(event.data);
+  return;
 }
 
 function editSuccess() {
@@ -179,7 +218,7 @@ function editSuccess() {
               class="w-full"
             />
           </UFormField>
-          <!-- <UFormField
+          <UFormField
             label="Teams"
             required
             hint="Which team do they play for?"
@@ -187,31 +226,21 @@ function editSuccess() {
             class="p-2"
           >
             <USelect
-              v-model="state.teams"
+              v-model="state.teamNames"
               multiple
               placeholder="Select a team..."
-              :items="possible_teams"
+              :items="teamNames"
               class="w-full"
             />
-          </UFormField> -->
-          <!-- <UFormField label="Club Member Since" required size="xl" class="p-2">
-            <UPopover class="p-2">
-              <UButton
-                color="neutral"
-                variant="subtle"
-                icon="i-lucide-calendar"
-              >
-                {{
-                  year_joined
-                    ? df.format(year_joined.toDate(getLocalTimeZone()))
-                    : "Select a date"
-                }}
-              </UButton>
-              <template #content>
-                <UCalendar v-model="year_joined" class="p-2" />
-              </template>
-            </UPopover>
-          </UFormField> -->
+          </UFormField>
+          <UFormField label="Club Member Since" required size="xl" class="p-2">
+            <USelect
+              v-model="state.yearJoined"
+              placeholder="Select a Year..."
+              :items="years"
+              class="w-full"
+            />
+          </UFormField>
           <h3 class="p-2 pt-5">Additional Information</h3>
           <USeparator />
           <UFormField label="Vertical Jump" size="xl" class="p-2">
@@ -293,6 +322,7 @@ function editSuccess() {
               type="submit"
               class="p-2 flex justify-center w-sm"
               size="xl"
+              @click="onSubmit"
             >
               Submit
             </UButton>

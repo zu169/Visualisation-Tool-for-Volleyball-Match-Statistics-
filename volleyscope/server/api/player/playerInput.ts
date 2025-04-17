@@ -1,11 +1,35 @@
 import { db } from "~/db/index";
-import { players } from "~/db/schema/players";
+import { players, teamPlayers } from "~/db/schema/players";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   console.log(body);
+
   try {
-    await db.insert(players).values(body);
+    const { teams, yearJoined, ...playerData } = body;
+
+    const insertedPlayer = await db
+      .insert(players)
+      .values(playerData)
+      .returning({ playerId: players.playerId });
+
+    const newPlayerId = insertedPlayer[0]?.playerId;
+
+    if (!newPlayerId) {
+      return { message: "error", detail: "Failed to retrieve new playerId" };
+    }
+
+    if (Array.isArray(teams)) {
+      const teamPlayerRows = teams.map((teamId: number) => ({
+        teamId,
+        playerId: newPlayerId,
+        yearJoined,
+      }));
+
+      await db.insert(teamPlayers).values(teamPlayerRows);
+    }
+
+    return { message: "success" };
   } catch (error) {
     console.log(error);
     if (
@@ -16,5 +40,4 @@ export default defineEventHandler(async (event) => {
     }
     return { message: "error" };
   }
-  return { message: "success" };
 });

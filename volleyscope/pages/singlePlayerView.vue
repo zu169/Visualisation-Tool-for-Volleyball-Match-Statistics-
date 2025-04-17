@@ -83,7 +83,7 @@ function deleteSuccess() {
     <UCard>
       <template #header>
         <div class="flex justify-evenly">
-          <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" />
+          <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" >
           <div>
             <h2>{{ playerData?.playerName }} - {{ playerData?.playerId }}</h2>
             <!-- <h3 v-if="age != null">Age: {{ age }}</h3> -->
