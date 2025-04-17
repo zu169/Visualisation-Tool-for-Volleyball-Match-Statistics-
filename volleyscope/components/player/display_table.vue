@@ -10,6 +10,7 @@ const router = useRouter();
 
 const deleteModal = ref(false);
 const toast = useToast();
+let id = 0;
 let name = "";
 
 type Player = {
@@ -163,6 +164,7 @@ function getRowItems(row: Row<Player>) {
       //   Display a modal to confirm deletion
       onSelect() {
         console.log(row.original);
+        id = row.original.playerId;
         name = row.original.playerName;
         deleteModal.value = true;
       },
@@ -170,14 +172,24 @@ function getRowItems(row: Row<Player>) {
   ];
 }
 
-function deleteSuccess() {
+async function deleteSuccess() {
+  const response = await $fetch(`/api/player/deletePlayer?player=${id}`);
+
+  if (!response || response.message === "error") {
+    toast.add({
+      title: "Error",
+      description: "There was an error deleting the Player " + name,
+      color: "error",
+    });
+    return;
+  }
   toast.add({
     title: "Player " + name + " has been deleted!",
-    color: "error",
+    color: "success",
     icon: "i-lucide-trash-2",
   });
-
   deleteModal.value = false;
+  await refreshNuxtData("table");
 }
 
 function onSelect(row: TableRow<Player>) {
