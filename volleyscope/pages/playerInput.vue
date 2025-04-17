@@ -2,76 +2,51 @@
 import type { BreadcrumbItem, FormSubmitEvent } from "@nuxt/ui";
 import * as v from "valibot";
 
+// Router and route setup
 const router = useRouter();
 const { query } = useRoute();
-const playerId = computed(() => query.player?.toString());
 
-//if playerId null then create new player table and id
-const editView = ref(false);
-if (playerId.value) {
-  editView.value = true;
-}
+// Extract playerId from route query
+const playerId = computed(() => {
+  const player = query.player;
+  return typeof player === "string" ? parseInt(player, 10) : null;
+});
 
-// async function setupEdit(event: FormDataEventInit){
+// Define types
+type Player = {
+  playerId: number;
+  playerName: string;
+  position: string;
+  shirtNumber: number;
+  birthday: Date;
+  playerHeight: number;
+  playerWeight: number;
+  jumpHeight: number;
+  serveSpeed: number;
+  hittingSpeed: number;
+};
 
-// };
+type PlayerResponse = {
+  player: Player | null;
+  teamInfo: {
+    teamId: number;
+    yearJoined: string;
+  }[];
+  message?: string;
+};
 
 type Team = {
   teamId: number;
   teamName: string;
 };
 
-const teamNames = ref<string[]>([]);
-const { data: teamData } = useAsyncData<Team[]>(() =>
-  $fetch("/api/team/getAllTeamNames")
-);
-
-watchEffect(() => {
-  if (teamData.value) {
-    teamNames.value = teamData.value.map((team) => team.teamName);
-  }
-});
-
-const years = ["2020", "2021", "2022", "2023", "2024", "2025"];
-
-const positions = [
-  "Setter",
-  "Outside Hitter",
-  "Middle Blocker",
-  "Opposite Hitter",
-  "Libero",
-  "Defensive Specialist",
-  "Service Specialist",
-  "Bench",
-];
-const schema = v.object({
-  playerName: v.pipe(
-    v.string(),
-    v.maxLength(100, "Cannot be more than 100 characters")
-  ),
-  position: v.pipe(v.string()),
-  shirtNumber: v.pipe(v.number("Must be a number")),
-  teams: v.array(v.number()),
-  yearJoined: v.pipe(v.string()),
-  // birthday: v.pipe(v.date()),
-  playerHeight: v.pipe(v.number()),
-  playerWeight: v.pipe(v.number()),
-  jumpHeight: v.pipe(v.number()),
-  serveSpeed: v.pipe(v.number()),
-  hittingSpeed: v.pipe(v.number()),
-});
-
-type Schema = v.InferOutput<typeof schema>;
-// Add when team tables are made
-// teams: "",
-// year_joined: "",
-// Data for Player Info Input
+// Form state
 const state = reactive<{
   playerName: string | undefined;
   position: string | undefined;
   shirtNumber: number | undefined;
   teamNames: string[] | undefined;
-  teams: number[] | undefined; // 👈 define teams as an array of numbers (team IDs)
+  teams: number[] | undefined;
   yearJoined: string | undefined;
   playerHeight: number | undefined;
   playerWeight: number | undefined;
@@ -92,33 +67,139 @@ const state = reactive<{
   hittingSpeed: undefined,
 });
 
+// Fetch and populate team names
+const teamNames = ref<string[]>([]);
+const { data: teamData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllTeamNames")
+);
+
+watchEffect(() => {
+  if (teamData.value) {
+    teamNames.value = teamData.value.map((team) => team.teamName);
+  }
+});
+
+// If playerId exists, we're in edit mode
+const editView = ref(false);
+if (playerId.value) {
+  editView.value = true;
+
+  const { data: playerData } = await useAsyncData<PlayerResponse>(() =>
+    $fetch(`/api/player/getSinglePlayer?player=${playerId.value}`)
+  );
+
+  watchEffect(() => {
+    if (editView.value && playerData.value) {
+      const player = computed(() => playerData.value?.player ?? null);
+      const teamInfo = computed(() => playerData.value?.teamInfo ?? []);
+      const message = computed(() => playerData.value?.message ?? "");
+
+      if (player.value) {
+        // Populate state with existing player data
+        state.playerName = player.value.playerName;
+        state.position = player.value.position;
+        state.shirtNumber = player.value.shirtNumber;
+        state.playerHeight = player.value.playerHeight;
+        state.playerWeight = player.value.playerWeight;
+        state.jumpHeight = player.value.jumpHeight;
+        state.serveSpeed = player.value.serveSpeed;
+        state.hittingSpeed = player.value.hittingSpeed;
+
+        // Map team info to state
+        state.teams = teamInfo.value.map((team) => team.teamId);
+        state.yearJoined = teamInfo.value[0].yearJoined || undefined;
+        state.teamNames = (state.teams || [])
+          .map((teamId: number) => {
+            const foundTeam = teamData.value?.find(
+              (team) => team.teamId === teamId
+            );
+            return foundTeam?.teamName;
+          })
+          .filter((name): name is string => name !== undefined);
+      } else {
+        console.warn("Message:", message.value || "Player not found");
+      }
+    }
+  });
+}
+
+// Dropdown options
+const years = ["2020", "2021", "2022", "2023", "2024", "2025"];
+const positions = [
+  "Setter",
+  "Outside Hitter",
+  "Middle Blocker",
+  "Opposite Hitter",
+  "Libero",
+  "Defensive Specialist",
+  "Service Specialist",
+  "Bench",
+];
+
+// Form validation schema
+const schema = v.object({
+  playerName: v.pipe(
+    v.string(),
+    v.maxLength(100, "Cannot be more than 100 characters")
+  ),
+  position: v.pipe(v.string()),
+  shirtNumber: v.pipe(v.number("Must be a number")),
+  teams: v.array(v.number()),
+  yearJoined: v.pipe(v.string()),
+  playerHeight: v.pipe(v.number()),
+  playerWeight: v.pipe(v.number()),
+  jumpHeight: v.pipe(v.number()),
+  serveSpeed: v.pipe(v.number()),
+  hittingSpeed: v.pipe(v.number()),
+});
+
+type Schema = v.InferOutput<typeof schema>;
+
+// Breadcrumb navigation
 const history = ref<BreadcrumbItem[]>([
-  {
-    label: "Home",
-    icon: "i-lucide-house",
-    to: "/",
-  },
-  {
-    label: "Player List",
-    icon: "solar:user-broken",
-    to: "/playerData",
-  },
-  {
-    label: "Add Player",
-    to: "/playerInput",
-  },
+  { label: "Home", icon: "i-lucide-house", to: "/" },
+  { label: "Player List", icon: "solar:user-broken", to: "/playerData" },
+  { label: "Add Player", to: "/playerInput" },
 ]);
 
-// const df = new DateFormatter("en-UK", {
-//   dateStyle: "medium",
-// });
-
 const toast = useToast();
-const editModal = ref(false);
 
+// Submit new or updated player info
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  console.log("function entered");
+  if (editView.value === true) {
+    const response = await $fetch(
+      `/api/player/updatePlayer?player=${playerId.value}`,
+      {
+        method: "PUT",
+        body: state,
+      }
+    );
 
+    if (!response || response.message === "error") {
+      toast.add({
+        title: "Error",
+        description: "There was an error submitting the form",
+        color: "error",
+      });
+      return;
+    } else if (response.message === "missing") {
+      toast.add({
+        title: "Error",
+        description: "Required values are missing!",
+        color: "error",
+      });
+      return;
+    }
+    router.push({ name: "playerData" });
+    toast.add({
+      title: "Player " + state.playerName + " has been edited!",
+      color: "success",
+      icon: "bitcoin-icons:edit-filled",
+    });
+    return;
+  }
+
+  // Map team names to team IDs
   state.teams = (state.teamNames || [])
     .map((teamName: string) => {
       const foundTeam = teamData.value?.find(
@@ -133,6 +214,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     body: state,
   });
 
+  // Handle errors and success
   if (!response || response.message === "error") {
     toast.add({
       title: "Error",
@@ -148,25 +230,18 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     });
     return;
   }
+
   router.push({ name: "playerData" });
   toast.add({
     title: "Player " + state.playerName + " has been added!",
     color: "success",
     icon: "bitcoin-icons:edit-filled",
   });
-  console.log(event.data);
-  return;
-}
 
-function editSuccess() {
-  router.push({ name: "playerData" });
-  toast.add({
-    title: "Player " + state.playerName + " has been edited!",
-    color: "success",
-    icon: "bitcoin-icons:edit-filled",
-  });
+  console.log(event.data);
 }
 </script>
+
 <template>
   <UContainer>
     <UBreadcrumb :items="history" class="p-2 pb-5 flex justify-center" />
@@ -330,34 +405,5 @@ function editSuccess() {
         </UForm>
       </UCard>
     </div>
-    <UModal
-      v-model:open="editModal"
-      :dismissible="false"
-      :close="false"
-      :ui="{ footer: 'justify-end' }"
-    >
-      <template #header>
-        <h3>Are you sure you want to save these changes?</h3>
-      </template>
-
-      <template #body>
-        <p class="font-bold">Any changes saved can't be reverted!</p>
-      </template>
-
-      <template #footer>
-        <UButton
-          label="Yes I'm sure, Continue"
-          color="success"
-          variant="outline"
-          @click="editSuccess()"
-        />
-        <UButton
-          label="No, Cancel"
-          color="error"
-          variant="soft"
-          @click="editModal = false"
-        />
-      </template>
-    </UModal>
   </UContainer>
 </template>

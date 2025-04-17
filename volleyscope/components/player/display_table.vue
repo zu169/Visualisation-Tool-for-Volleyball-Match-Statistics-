@@ -137,7 +137,7 @@ function getRowItems(row: Row<Player>) {
         console.log(row.original);
         router.push({
           name: "singlePlayerView",
-          query: { player: row.original.playerId },
+          query: { player: String(row.original.playerId) },
         });
       },
     },
@@ -149,7 +149,7 @@ function getRowItems(row: Row<Player>) {
         console.log(row.original);
         router.push({
           name: "playerInput",
-          query: { player: row.original.playerId },
+          query: { player: String(row.original.playerId) },
         });
       },
     },

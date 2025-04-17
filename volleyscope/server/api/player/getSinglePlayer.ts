@@ -1,7 +1,6 @@
 import { db } from "~/db/index";
 import { eq } from "drizzle-orm";
-import { players } from "~/db/schema/players";
-import { defineEventHandler } from "h3";
+import { players, teamPlayers } from "~/db/schema/players";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -17,7 +16,23 @@ export default defineEventHandler(async (event) => {
       .from(players)
       .where(eq(players.playerId, id));
 
-    return data[0] ?? { message: "Player not found" }; // return single player
+      if (!data[0]) {
+        return { message: "Player not found" };
+      }
+    
+    const teamInfo = await db
+      .select({
+        teamId: teamPlayers.teamId,
+        yearJoined: teamPlayers.yearJoined,
+      })
+      .from(teamPlayers)
+      .where(eq(teamPlayers.playerId, id));
+
+    return {
+      player: data[0],
+      teamInfo,
+      message: "success"
+    };
   } catch (error) {
     console.error("Error fetching player:", error);
     return { message: "error" };
