@@ -1,25 +1,36 @@
 <script setup lang="ts">
 import type { TabsItem } from "@nuxt/ui";
 
+type Team = {
+  teamId: number;
+  teamName: string;
+};
+
 const teams = ref<TabsItem[]>([
   {
     label: "View All",
     slot: "all" as const,
   },
-  {
-    label: "Mens 1",
-    slot: "mens" as const,
-  },
-  {
-    label: "Womens 1",
-    slot: "womens" as const,
-  },
-  {
-    label: "Add New Team",
-    disabled: true,
-    slot: "newteam" as const,
-  },
 ]);
+
+const { data: teamData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllTeamNames")
+);
+
+watchEffect(() => {
+  if (teamData.value) {
+    teams.value = teams.value.filter(
+      (t) => !t.slot?.toString().startsWith("team-")
+    );
+
+    teamData.value.forEach((team) => {
+      teams.value.push({
+        label: team.teamName,
+        slot: `team-${team.teamId}` as const, // Unique slot name per team
+      });
+    });
+  }
+});
 </script>
 <template>
   <UContainer>
@@ -34,13 +45,7 @@ const teams = ref<TabsItem[]>([
       <template #all>
         <PlayerDisplayTable />
       </template>
-      <template #mens="{ item }">
-        <p>This is the {{ item }}</p>
-      </template>
-      <template #womens="{ item }">
-        <p>This is the {{ item }}</p>
-      </template>
-      <template #newteam="{ item }">
+      <template #content="{ item }">
         <p>This is the {{ item }}</p>
       </template>
     </UTabs>

@@ -293,7 +293,6 @@ function editSuccess() {
               type="submit"
               class="p-2 flex justify-center w-sm"
               size="xl"
-              @click="onSubmit"
             >
               Submit
             </UButton>
