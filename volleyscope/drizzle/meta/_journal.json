@@ -43,6 +43,13 @@
       "when": 1744849430050,
       "tag": "0005_real_stingray",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1744901111828,
+      "tag": "0006_round_whizzer",
+      "breakpoints": true
     }
   ]
 }

@@ -34,7 +34,7 @@ export const opponents = pgTable("opponent", {
 
 export const players = pgTable("player", {
   playerId: integer("player_id").primaryKey().generatedAlwaysAsIdentity(),
-  playerName: varchar("player_name").notNull(),
+  playerName: varchar("player_name").notNull().unique(),
   position: positionsEnum().notNull(),
   shirtNumber: integer("shirt_number"),
   birthday: date("birthday", { mode: "date" }),

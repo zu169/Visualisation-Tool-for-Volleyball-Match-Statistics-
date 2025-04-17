@@ -31,24 +31,75 @@ type Player = {
   hittingSpeed: number;
 };
 
+type PlayerResponse = {
+  player: Player | null;
+  teamInfo: {
+    teamId: number;
+    yearJoined: string;
+  }[];
+  message?: string;
+};
+
+type Team = {
+  teamId: number;
+  teamName: string;
+};
+
 const router = useRouter();
 const { query } = useRoute();
-const playerId = computed(() => parseInt(query.player?.toString() ?? "1"));
+const playerId = computed(() => {
+  const player = query.player;
+  return typeof player === "string" ? parseInt(player, 10) : null;
+});
 const id = playerId.value;
-console.log("player id " + id);
-const { data: playerData } = useAsyncData<Player>(() =>
-  $fetch(`/api/player/getSinglePlayer?player=${id}`)
+
+// Fetch and populate team names
+const teamNames = ref<string[]>([]);
+const { data: teamData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllTeamNames")
 );
-console.log(playerData);
+
+watchEffect(() => {
+  if (teamData.value) {
+    teamNames.value = teamData.value.map((team) => team.teamName);
+  }
+});
+
+console.log("player id " + id);
+const { data: playerData } = await useAsyncData<PlayerResponse>(() =>
+  $fetch(`/api/player/getSinglePlayer?player=${playerId.value}`)
+);
+
+const player = computed(() => playerData.value?.player ?? null);
+const teamInfo = computed(() => playerData.value?.teamInfo ?? []);
+
+const teams = teamInfo.value.map((team) => team.teamId);
+const yearJoined = teamInfo.value[0].yearJoined || undefined;
+const names = (teams || [])
+  .map((teamId: number) => {
+    const foundTeam = teamData.value?.find((team) => team.teamId === teamId);
+    return foundTeam?.teamName;
+  })
+  .filter((name): name is string => name !== undefined);
 
 const toast = useToast();
 const deleteModal = ref(false);
 
-function deleteSuccess() {
+async function deleteSuccess() {
+  const response = await $fetch(`/api/player/deletePlayer?player=${id}`);
+
+  if (!response || response.message === "error") {
+    toast.add({
+      title: "Error",
+      description: "There was an error deleting the Player " + name,
+      color: "error",
+    });
+    return;
+  }
   router.push({ name: "playerData" });
   toast.add({
-    title: "Player " + playerData?.value?.playerName + " has been deleted!",
-    color: "error",
+    title: "Player " + player?.value?.playerName + " has been deleted!",
+    color: "success",
     icon: "i-lucide-trash-2",
   });
 }
@@ -67,7 +118,7 @@ function deleteSuccess() {
           class="h-10 m-2"
           color="success"
           variant="soft"
-          :to="{ path: '/playerInput', query: { player: playerId } }"
+          :to="{ path: '/playerInput', query: { player: String(playerId) } }"
           >Edit Player</UButton
         >
         <UButton
@@ -85,32 +136,32 @@ function deleteSuccess() {
         <div class="flex justify-evenly">
           <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" >
           <div>
-            <h2>{{ playerData?.playerName }} - {{ playerData?.playerId }}</h2>
+            <h2>{{ player?.playerName }} - {{ player?.playerId }}</h2>
             <!-- <h3 v-if="age != null">Age: {{ age }}</h3> -->
-            <h3>Position: {{ playerData?.position }}</h3>
-            <!-- <h3>Teams: {{ teams }}</h3> -->
-            <!-- <h3>Year Joined: {{ year_joined }}</h3> -->
-            <h3 v-if="playerData?.shirtNumber != null">
-              Shirt Number: {{ playerData?.shirtNumber }}
+            <h3>Position: {{ player?.position }}</h3>
+            <h3>Teams: {{ names }}</h3>
+            <h3>Year Joined: {{ yearJoined }}</h3>
+            <h3 v-if="player?.shirtNumber != null">
+              Shirt Number: {{ player?.shirtNumber }}
             </h3>
             <!-- <h3 v-if="playerData?.position != null">Other Postions: {{ positions }}</h3> -->
           </div>
         </div>
         <div>
-          <h3 v-if="playerData?.playerHeight != null">
-            Height: {{ playerData.playerHeight }}
+          <h3 v-if="player?.playerHeight != null">
+            Height: {{ player.playerHeight }}
           </h3>
-          <h3 v-if="playerData?.playerWeight != null">
-            Weight: {{ playerData.playerWeight }}
+          <h3 v-if="player?.playerWeight != null">
+            Weight: {{ player.playerWeight }}
           </h3>
-          <h3 v-if="playerData?.jumpHeight != null">
-            Jump Height: {{ playerData.jumpHeight }}
+          <h3 v-if="player?.jumpHeight != null">
+            Jump Height: {{ player.jumpHeight }}
           </h3>
-          <h3 v-if="playerData?.hittingSpeed != null">
-            Spike Speed: {{ playerData.hittingSpeed }}
+          <h3 v-if="player?.hittingSpeed != null">
+            Spike Speed: {{ player.hittingSpeed }}
           </h3>
-          <h3 v-if="playerData?.serveSpeed != null">
-            Serve Speed: {{ playerData.serveSpeed }}
+          <h3 v-if="player?.serveSpeed != null">
+            Serve Speed: {{ player.serveSpeed }}
           </h3>
         </div>
       </template>
