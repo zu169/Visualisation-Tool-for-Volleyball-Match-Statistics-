@@ -99,24 +99,29 @@ const { data: playersData } = await useFetch<PlayerResponse[]>(
 
 const columns: TableColumn<PlayerResponse>[] = [
   {
+    id: "name",
     accessorKey: "player.playerName",
     header: ({ column }) => getHeader(column, "Name"),
   },
   {
+    id: "position",
     accessorKey: "player.position",
     header: ({ column }) => getHeader(column, "Position"),
   },
   {
+    id: "shirt Number",
     accessorKey: "player.shirtNumber",
     header: ({ column }) => getHeader(column, "Shirt Number"),
   },
   {
+    id: "teams",
     accessorKey: "teamInfo",
     header: ({ column }) => getHeader(column, "Teams"),
     cell: ({ row }) =>
       row.original.teamInfo.map((team) => team.teamName).join(", "),
   },
   {
+    id: "year Joined",
     accessorKey: "teamInfo",
     header: ({ column }) => getHeader(column, "Year Joined"),
     cell: ({ row }) => {
