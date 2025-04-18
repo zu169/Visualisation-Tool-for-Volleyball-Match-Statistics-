@@ -1,5 +1,13 @@
-// import { pgEnum, integer, pgTable, varchar, date, primaryKey } from 'drizzle-orm/pg-core';
-// import { teams, opponents, players } from './players'
+import {
+  pgEnum,
+  integer,
+  pgTable,
+  varchar,
+  date,
+  primaryKey,
+} from "drizzle-orm/pg-core";
+import { teams, opponents, players } from "./players";
+import { leaguesEnum } from "./positions";
 // import { positions } from './positions';
 // import { timestamp } from 'drizzle-orm/gel-core';
 
@@ -8,15 +16,18 @@
 //     created_at: timestamp(),
 //     deleted_at: timestamp(),
 // }
-// export const typeEnum = pgEnum('match_type',['BUCS', 'BDVA', 'Tournament', 'Other']);
 
-// export const matches = pgTable('match', {
-// 	matchId: integer('match_id').primaryKey().generatedAlwaysAsIdentity(),
-// 	teamId: integer('team_id').references(() => teams.teamId),
-// 	team2Id: integer('team2_id').references(() => opponents.teamId),
-// 	date: date('date'),
-// 	matchType: typeEnum(),
-// });
+export const matches = pgTable("match", {
+  matchId: integer("match_id").primaryKey().generatedAlwaysAsIdentity(),
+  teamId: integer("team_id")
+    .references(() => teams.teamId)
+    .notNull(),
+  opponentId: integer("opponent_id")
+    .references(() => opponents.teamId)
+    .notNull(),
+  date: date("date").notNull(),
+  matchType: leaguesEnum().notNull(),
+});
 
 // export const sets = pgTable('set', {
 // 	setId: integer('set_id').primaryKey().generatedAlwaysAsIdentity(),
