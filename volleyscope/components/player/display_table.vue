@@ -7,11 +7,12 @@ import type { Row, Column } from "@tanstack/vue-table";
 const UButton = resolveComponent("UButton");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
 const router = useRouter();
+const { teamId } = defineProps<{ teamId?: number }>();
 
 const deleteModal = ref(false);
 const toast = useToast();
-let id = 0;
-let name = "";
+let id: number | undefined;
+let name: string | undefined;
 
 type Player = {
   playerId: number;
@@ -26,17 +27,30 @@ type Player = {
   hittingSpeed: number;
 };
 
-const { data } = await useFetch<Player[]>("/api/player/getAllPlayers", {
-  key: "table",
-  transform: (data) => {
-    return (
-      data?.map((player) => ({
-        ...player,
-      })) || []
-    );
-  },
-  lazy: true,
-});
+type PlayerResponse = {
+  player: Player | null;
+  teamInfo: {
+    teamId: number;
+    yearJoined: string;
+    teamName: string;
+  }[];
+  message?: string;
+};
+
+const { data: playersData } = await useFetch<PlayerResponse[]>(
+  `/api/player/getAllPlayers?team=${teamId}`,
+  {
+    key: "table",
+    transform: (data) => {
+      return (
+        data?.map((player) => ({
+          ...player,
+        })) || []
+      );
+    },
+    lazy: true,
+  }
+);
 
 // const data = ref<Player[]>([
 //   {
@@ -83,18 +97,26 @@ const { data } = await useFetch<Player[]>("/api/player/getAllPlayers", {
 //   },
 // ]);
 
-const columns: TableColumn<Player>[] = [
+const columns: TableColumn<PlayerResponse>[] = [
   {
-    accessorKey: "playerName",
+    accessorKey: "player.playerName",
     header: ({ column }) => getHeader(column, "Name"),
   },
   {
-    accessorKey: "position",
+    accessorKey: "player.position",
     header: ({ column }) => getHeader(column, "Position"),
   },
   {
-    accessorKey: "shirtNumber",
+    accessorKey: "player.shirtNumber",
     header: ({ column }) => getHeader(column, "Shirt Number"),
+  },
+  {
+    accessorKey: "teamInfo.teamName",
+    header: ({ column }) => getHeader(column, "Teams"),
+  },
+  {
+    accessorKey: "teamInfo.yearJoined",
+    header: ({ column }) => getHeader(column, "Year Joined"),
   },
   {
     id: "actions",
@@ -125,7 +147,7 @@ const columns: TableColumn<Player>[] = [
   },
 ];
 
-function getRowItems(row: Row<Player>) {
+function getRowItems(row: Row<PlayerResponse>) {
   return [
     {
       type: "label",
@@ -138,7 +160,7 @@ function getRowItems(row: Row<Player>) {
         console.log(row.original);
         router.push({
           name: "singlePlayerView",
-          query: { player: String(row.original.playerId) },
+          query: { player: String(row.original.player?.playerId) },
         });
       },
     },
@@ -150,7 +172,7 @@ function getRowItems(row: Row<Player>) {
         console.log(row.original);
         router.push({
           name: "playerInput",
-          query: { player: String(row.original.playerId) },
+          query: { player: String(row.original.player?.playerId) },
         });
       },
     },
@@ -164,8 +186,8 @@ function getRowItems(row: Row<Player>) {
       //   Display a modal to confirm deletion
       onSelect() {
         console.log(row.original);
-        id = row.original.playerId;
-        name = row.original.playerName;
+        id = row.original.player?.playerId;
+        name = row.original.player?.playerName;
         deleteModal.value = true;
       },
     },
@@ -192,16 +214,16 @@ async function deleteSuccess() {
   await refreshNuxtData("table");
 }
 
-function onSelect(row: TableRow<Player>) {
-  console.log(row.original.playerId);
+function onSelect(row: TableRow<PlayerResponse>) {
+  console.log(row.original.player?.playerId);
   // go to single player view page
   router.push({
     name: "singlePlayerView",
-    query: { player: row.original.playerId },
+    query: { player: row.original.player?.playerId },
   });
 }
 
-function getHeader(column: Column<Player>, label: string) {
+function getHeader(column: Column<PlayerResponse>, label: string) {
   const isSorted = column.getIsSorted();
 
   return h(
@@ -305,7 +327,7 @@ const globalFilter = ref("");
       v-model:global-filter="globalFilter"
       v-model:column-visibility="columnVisibility"
       sticky
-      :data="data ?? []"
+      :data="playersData ?? []"
       :columns="columns"
       class="flex-1"
       @select="onSelect"

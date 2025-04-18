@@ -55,9 +55,7 @@ const id = playerId.value;
 
 // Fetch and populate team names
 const teamNames = ref<string[]>([]);
-const { data: teamData } = useAsyncData<Team[]>(() =>
-  $fetch("/api/team/getAllTeamNames")
-);
+const { data: teamData } = useFetch<Team[]>("/api/team/getAllTeamNames");
 
 watchEffect(() => {
   if (teamData.value) {
@@ -134,7 +132,7 @@ async function deleteSuccess() {
     <UCard>
       <template #header>
         <div class="flex justify-evenly">
-          <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" >
+          <img src="~assets/img/playerPlaceholder.jpeg" class="object-cover" />
           <div>
             <h2>{{ player?.playerName }} - {{ player?.playerId }}</h2>
             <!-- <h3 v-if="age != null">Age: {{ age }}</h3> -->
