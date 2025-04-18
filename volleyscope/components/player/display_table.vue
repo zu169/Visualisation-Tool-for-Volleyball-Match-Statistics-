@@ -30,9 +30,9 @@ type Player = {
 type PlayerResponse = {
   player: Player | null;
   teamInfo: {
-    teamId: number;
+    teamId: number[];
     yearJoined: string;
-    teamName: string;
+    teamName: string[];
   }[];
   message?: string;
 };
@@ -111,12 +111,18 @@ const columns: TableColumn<PlayerResponse>[] = [
     header: ({ column }) => getHeader(column, "Shirt Number"),
   },
   {
-    accessorKey: "teamInfo.teamName",
+    accessorKey: "teamInfo",
     header: ({ column }) => getHeader(column, "Teams"),
+    cell: ({ row }) =>
+      row.original.teamInfo.map((team) => team.teamName).join(", "),
   },
   {
-    accessorKey: "teamInfo.yearJoined",
+    accessorKey: "teamInfo",
     header: ({ column }) => getHeader(column, "Year Joined"),
+    cell: ({ row }) => {
+      const teamInfo = row.original.teamInfo;
+      return teamInfo.length > 0 ? teamInfo[0].yearJoined : "—";
+    },
   },
   {
     id: "actions",
