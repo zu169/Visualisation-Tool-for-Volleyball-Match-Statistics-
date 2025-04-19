@@ -9,72 +9,107 @@ const UButton = resolveComponent("UButton");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
 
 const router = useRouter();
+const { teamId } = defineProps<{ teamId?: number }>();
 const selectedMatch = ref<Match | null>(null);
 const toast = useToast();
 
 const deleteModal = ref(false);
-let id = 0;
+let title = "";
 
 type Match = {
-  match_id: number;
-  date: Date;
-  opponent: string;
-  result: string;
-  mvp: string;
+  matchId: number;
+  teamId: number;
+  opponentId: number;
+  date: string;
+  matchType: string;
 };
 
-const data = ref<Match[]>([
+type Team = {
+  teamId: number;
+  teamName: string;
+  league: string;
+  division: string;
+};
+
+const { data: teamData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllTeamNames")
+);
+
+const { data: opponentData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllOpponentsNames")
+);
+
+function getTeamName(id: number) {
+  const selectedTeamName = teamData.value?.find(
+    (t) => t.teamId === id
+  )?.teamName;
+  return selectedTeamName;
+}
+
+function getOpponentName(id: number) {
+  const selectedTeamName = opponentData.value?.find(
+    (t) => t.teamId === id
+  )?.teamName;
+  return selectedTeamName;
+}
+
+const sorting = ref([
   {
-    match_id: 1,
-    date: new Date(2023, 10, 3),
-    opponent: "Cardiff Met",
-    result: "1-3",
-    mvp: "Alan Atkins",
-  },
-  {
-    match_id: 2,
-    date: new Date(2023, 11, 5),
-    opponent: "Bristol",
-    result: "3-0",
-    mvp: "Alan Atkins",
-  },
-  {
-    match_id: 3,
-    date: new Date(2023, 11, 17),
-    opponent: "Bath",
-    result: "5-2",
-    mvp: "Alan Atkins",
-  },
-  {
-    match_id: 4,
-    date: new Date(2023, 12, 3),
-    opponent: "Bangor",
-    result: "5-2",
-    mvp: "Alan Atkins",
+    id: "date",
+    desc: true,
   },
 ]);
 
+const table = useTemplateRef("table");
+
+const columnVisibility = ref({
+  id: false,
+});
+
+const globalFilter = ref("");
+
+const { data } = await useFetch<Match[]>(
+  `/api/match/getAllMatches?team=${teamId}`,
+  {
+    key: "table",
+    transform: (data) => {
+      return (
+        data?.map((match) => ({
+          ...match,
+        })) || []
+      );
+    },
+  }
+);
+
 const columns: TableColumn<Match>[] = [
   {
-    accessorKey: "match_id",
-    header: ({ column }) => getHeader(column, "ID"),
-  },
-  {
+    id: "Date",
     accessorKey: "date",
     header: ({ column }) => getHeader(column, "Date"),
   },
   {
-    accessorKey: "opponent",
-    header: ({ column }) => getHeader(column, "Opponent"),
+    id: "Title",
+    accessorKey: "teamId",
+    header: ({ column }) => getHeader(column, "Team"),
+    cell: ({ row }) =>
+      getTeamName(row.original.teamId) +
+      " vs " +
+      getOpponentName(row.original.opponentId),
   },
   {
-    accessorKey: "result",
-    header: ({ column }) => getHeader(column, "Result"),
+    id: "Type",
+    accessorKey: "matchType",
+    header: ({ column }) => getHeader(column, "Type"),
   },
-  {
-    accessorKey: "mvp",
-    header: ({ column }) => getHeader(column, "MVP"),
-  },
+  // {
+  //   accessorKey: "result",
+  //   header: ({ column }) => getHeader(column, "Result"),
+  // },
+  // {
+  //   accessorKey: "mvp",
+  //   header: ({ column }) => getHeader(column, "MVP"),
+  // },
   {
     id: "actions",
     cell: ({ row }) => {
@@ -117,7 +152,7 @@ function getRowItems(row: Row<Match>) {
         console.log(row.original);
         router.push({
           name: "singleMatchView",
-          query: { match: row.original.match_id },
+          query: { match: row.original.matchId },
         });
       },
     },
@@ -129,7 +164,7 @@ function getRowItems(row: Row<Match>) {
         console.log(row.original);
         router.push({
           name: "matchInput",
-          query: { match: row.original.match_id },
+          query: { match: row.original.matchId },
         });
       },
     },
@@ -144,7 +179,10 @@ function getRowItems(row: Row<Match>) {
       onSelect() {
         console.log(row.original);
         deleteModal.value = true;
-        id = row.original.match_id;
+        title =
+          getTeamName(row.original.teamId) +
+          " vs " +
+          getOpponentName(row.original.opponentId);
       },
     },
   ];
@@ -153,7 +191,7 @@ function getRowItems(row: Row<Match>) {
 function deleteSuccess() {
   deleteModal.value = false;
   toast.add({
-    title: "Match " + id + " has been deleted!",
+    title: "Match " + title + " has been deleted!",
     color: "error",
     icon: "i-lucide-trash-2",
   });
@@ -164,7 +202,7 @@ function onSelect(row: TableRow<Match>, e?: Event) {
   selectedMatch.value = row.original;
   router.push({
     name: "singleMatchView",
-    query: { match: row.original.match_id },
+    query: { match: row.original.matchId },
   });
 }
 
@@ -224,21 +262,6 @@ function getHeader(column: Column<Match>, label: string) {
       })
   );
 }
-
-const sorting = ref([
-  {
-    id: "match_id",
-    desc: true,
-  },
-]);
-
-const table = useTemplateRef("table");
-
-const columnVisibility = ref({
-  id: false,
-});
-
-const globalFilter = ref("");
 </script>
 
 <template>
@@ -279,7 +302,7 @@ const globalFilter = ref("");
       v-model:sorting="sorting"
       v-model:column-visibility="columnVisibility"
       sticky
-      :data="data"
+      :data="data ?? []"
       :columns="columns"
       class="flex-1"
       @select="onSelect"

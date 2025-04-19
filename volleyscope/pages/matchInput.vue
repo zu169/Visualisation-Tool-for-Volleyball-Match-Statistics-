@@ -4,15 +4,14 @@ import type { TabsItem } from "@nuxt/ui";
 
 const toast = useToast();
 const router = useRouter();
-const editView = ref(false);
-
 const { query } = useRoute();
 //receive matchid variable if edit mode
-const matchId = computed(() => query.matchId);
+const matchId = computed(() => {
+  const match = query.matchId;
+  return typeof match === "string" ? parseInt(match, 10) : undefined;
+});
 
-const id = ref();
-id.value = 4;
-
+const editView = ref(false);
 const deleteModal = ref(false);
 const unableToSave = ref(false);
 const editModal = ref(false);
@@ -52,7 +51,6 @@ function deleteMatch() {
       leaveModal.value = true;
     } else {
       //display a warning modal
-      id = Number(matchId.value);
       deleteModal.value = true;
     }
   } else {
@@ -64,7 +62,7 @@ function leaveSuccess() {
   leaveModal.value = false;
   router.push({ name: "matchHistory" });
   toast.add({
-    title: "No changes to Match " + id + " have been made!",
+    title: "No changes to Match " + matchId.value + " have been made!",
     color: "success",
     icon: "bitcoin-icons:edit-filled",
   });
@@ -75,7 +73,7 @@ function deleteSuccess() {
   deleteModal.value = false;
   router.push({ name: "matchHistory" });
   toast.add({
-    title: "Match " + id + " has been deleted!",
+    title: "Match " + matchId.value + " has been deleted!",
     color: "error",
     icon: "i-lucide-trash-2",
   });
@@ -92,11 +90,9 @@ function openMatchView() {
     if (editView.value) {
       editModal.value = true;
     } else {
-      id.value = Number(matchId.value);
-
       router.push({ name: "singleMatchView", query: { match: matchId.value } });
       toast.add({
-        title: "Match " + id + " has been created!",
+        title: "Match " + matchId.value + " has been created!",
         color: "success",
         icon: "bitcoin-icons:edit-filled",
       });
@@ -109,7 +105,7 @@ function openMatchView() {
 function editSuccess() {
   router.push({ name: "singleMatchView", query: { match: matchId.value } });
   toast.add({
-    title: "Match " + id + " has been edited!",
+    title: "Match " + matchId.value + " has been edited!",
     color: "success",
     icon: "bitcoin-icons:edit-filled",
   });
@@ -131,7 +127,7 @@ function editSuccess() {
     <UCard :ui="{ footer: 'flex justify-end' }">
       <template #header>
         <h2 class="p-2">Add New Match</h2>
-        <MatchInfoInput v-model="id" />
+        <MatchInfoInput v-model="matchId" />
       </template>
       <UButton
         label="Add Set"

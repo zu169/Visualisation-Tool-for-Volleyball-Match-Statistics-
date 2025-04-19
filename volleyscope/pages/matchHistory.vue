@@ -19,14 +19,12 @@ const { data: teamData } = useAsyncData<Team[]>(() =>
 
 watchEffect(() => {
   if (teamData.value) {
-    teams.value = teams.value.filter(
-      (t) => !t.slot?.toString().startsWith("team-")
-    );
+    teams.value = teams.value.filter((t) => !t.id);
 
     teamData.value.forEach((team) => {
       teams.value.push({
         label: team.teamName,
-        slot: `team-${team.teamId}` as const, // Unique slot name per team
+        id: team.teamId,
       });
     });
   }
@@ -44,10 +42,10 @@ watchEffect(() => {
     <USeparator />
     <UTabs color="neutral" variant="link" :items="teams" class="w-full">
       <template #all>
-        <MatchHistoryTable />
+        <MatchHistoryTable :team-id="0" />
       </template>
       <template #content="{ item }">
-        <p>This is the {{ item }}</p>
+        <MatchHistoryTable :team-id="item.id" />
       </template>
     </UTabs>
   </UContainer>
