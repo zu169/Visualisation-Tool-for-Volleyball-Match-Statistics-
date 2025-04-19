@@ -8,14 +8,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { teams, opponents, players } from "./players";
 import { leaguesEnum } from "./positions";
-// import { positions } from './positions';
-// import { timestamp } from 'drizzle-orm/gel-core';
-
-// const timestamps = {
-//     updated_at: timestamp(),
-//     created_at: timestamp(),
-//     deleted_at: timestamp(),
-// }
 
 export const matches = pgTable("match", {
   matchId: integer("match_id").primaryKey().generatedAlwaysAsIdentity(),
@@ -29,12 +21,19 @@ export const matches = pgTable("match", {
   matchType: leaguesEnum().notNull(),
 });
 
-// export const sets = pgTable('set', {
-// 	setId: integer('set_id').primaryKey().generatedAlwaysAsIdentity(),
-// 	matchId: integer('match_id').references(() => matches.matchId),
-// 	score: varchar('score', { length: 50 }),
-// 	youtubeLink: varchar('youtube_link', { length: 255 }),
-// });
+export const sets = pgTable(
+  "set",
+  {
+    setId: integer("set_id").notNull(),
+    matchId: integer("match_id").references(() => matches.matchId),
+    teamScore: integer("team_score").notNull(),
+    opponentScore: integer("opponent_score").notNull(),
+    youtubeLink: varchar("youtube_link", { length: 255 }).unique(),
+  },
+  (table) => [
+    primaryKey({ name: "set_match_id", columns: [table.matchId, table.setId] }),
+  ]
+);
 
 // export const points = pgTable('point', {
 // 	pointId: integer('point_id').generatedAlwaysAsIdentity(),
