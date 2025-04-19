@@ -13,6 +13,9 @@ const matchId = computed(() => {
 const id = ref<number | undefined>(matchId.value);
 console.log(id);
 
+const isContentDisabled = computed(() => {
+  return typeof id.value !== "number" || isNaN(id.value);
+});
 const editView = ref(false);
 const deleteModal = ref(false);
 const unableToSave = ref(false);
@@ -131,19 +134,24 @@ function editSuccess() {
         <h2 class="p-2">Add New Match</h2>
         <MatchInfoInput v-model="id" />
       </template>
-      <UButton
-        label="Add Set"
-        class="flex justify-self-end"
-        variant="soft"
-        color="primary"
-        @click="addSet()"
-      />
-      <UTabs color="neutral" variant="link" :items="sets" class="w-full">
-        <template #content="{ item }">
-          <MatchSetInfoInput :set-id="item.id" />
-        </template>
-      </UTabs>
-
+      <div
+        :class="{
+          'opacity-50 pointer-events-none select-none': isContentDisabled,
+        }"
+      >
+        <UButton
+          label="Add Set"
+          class="flex justify-self-end"
+          variant="soft"
+          color="primary"
+          @click="addSet()"
+        />
+        <UTabs color="neutral" variant="link" :items="sets" class="w-full">
+          <template #content="{ item }">
+            <MatchSetInfoInput :set-id="item.id" />
+          </template>
+        </UTabs>
+      </div>
       <template #footer>
         <UButton
           class="mr-2"

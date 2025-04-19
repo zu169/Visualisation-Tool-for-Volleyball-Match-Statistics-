@@ -6,6 +6,8 @@ import {
   fromDate,
 } from "@internationalized/date";
 
+import type { DateValue } from "@internationalized/date";
+
 import { useDebounceFn } from "@vueuse/core";
 
 const toast = useToast();
@@ -26,6 +28,17 @@ const gameType = ref();
 const gameDate = ref();
 const isoGameDate = ref();
 
+// Get current date (for max validation)
+const today = new Date();
+const currentDate = new CalendarDate(
+  today.getFullYear(),
+  today.getMonth() + 1,
+  today.getDate()
+);
+
+const isDateDisabled = (date: DateValue) => {
+  return date >= currentDate;
+};
 if (matchId.value !== undefined) {
   const { data: matchData } = useAsyncData<Match>(() =>
     $fetch(`/api/match/getMatch?match=${matchId.value}`)
@@ -150,8 +163,9 @@ async function saveMatch(num: number) {
           <template #content>
             <UCalendar
               v-model="gameDate"
-              :default-value="new CalendarDate(2025, 4, 16)"
+              :default-value="currentDate"
               class="p-2"
+              :is-date-disabled="isDateDisabled"
             />
           </template>
         </UPopover>

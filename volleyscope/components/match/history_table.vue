@@ -15,6 +15,7 @@ const toast = useToast();
 
 const deleteModal = ref(false);
 let title = "";
+let id = 0;
 
 type Match = {
   matchId: number;
@@ -179,6 +180,7 @@ function getRowItems(row: Row<Match>) {
       onSelect() {
         console.log(row.original);
         deleteModal.value = true;
+        id = row.original.matchId;
         title =
           getTeamName(row.original.teamId) +
           " vs " +
@@ -188,13 +190,23 @@ function getRowItems(row: Row<Match>) {
   ];
 }
 
-function deleteSuccess() {
+async function deleteSuccess() {
+  const response = await $fetch(`/api/match/deleteMatch?match=${id}`);
+  if (!response || response.message === "error") {
+    toast.add({
+      title: "Error",
+      description: "There was an error deleting the Team",
+      color: "error",
+    });
+    return;
+  }
   deleteModal.value = false;
   toast.add({
     title: "Match " + title + " has been deleted!",
     color: "error",
     icon: "i-lucide-trash-2",
   });
+  await refreshNuxtData("table"); 
 }
 
 function onSelect(row: TableRow<Match>, e?: Event) {
