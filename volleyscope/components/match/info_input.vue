@@ -76,7 +76,6 @@ function hasChanged(): boolean {
   );
 }
 
-const saveMatchDebounced = useDebounceFn(saveMatch, 500);
 
 watchEffect(() => {
   if (!team.value || !opponent.value || !gameType.value || !gameDate.value)
@@ -87,7 +86,7 @@ watchEffect(() => {
     saveMatch(0);
     return;
   } else if (hasChanged()) {
-    saveMatchDebounced(1);
+    saveMatch(1);
   }
   return;
 });
@@ -143,6 +142,7 @@ async function saveMatch(num: number) {
       icon: "bitcoin-icons:edit-filled",
     });
   }
+  original.value = { ...data };
 }
 </script>
 

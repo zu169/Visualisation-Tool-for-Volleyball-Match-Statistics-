@@ -16,7 +16,7 @@ console.log(id);
 const isContentDisabled = computed(() => {
   return typeof id.value !== "number" || isNaN(id.value);
 });
-const editView = ref(false);
+const editView = matchId.value !== undefined ;
 const deleteModal = ref(false);
 const unableToSave = ref(false);
 const editModal = ref(false);
@@ -29,19 +29,10 @@ const sets = ref<TabsItem[]>([
     label: "Set 1",
     id: 1,
   },
-  {
-    label: "Set 2",
-    id: 2,
-  },
-  {
-    label: "Set 3",
-    id: 3,
-  },
 ]);
 
 const addSet = () => {
   //create new table for set
-
   sets.value.push({
     label: "Set " + (sets.value.length + 1),
     id: sets.value.length + 1,
@@ -52,7 +43,7 @@ function deleteMatch() {
   //check if any data has been filled in
   const dataExist = ref(true);
   if (dataExist.value === true) {
-    if (editView.value) {
+    if (editView) {
       leaveModal.value = true;
     } else {
       //display a warning modal
@@ -92,7 +83,7 @@ function openMatchView() {
   const saved = ref(true);
 
   if (required.value && saved.value === true) {
-    if (editView.value) {
+    if (editView) {
       editModal.value = true;
     } else {
       router.push({ name: "singleMatchView", query: { match: matchId.value } });
@@ -148,7 +139,7 @@ function editSuccess() {
         />
         <UTabs color="neutral" variant="link" :items="sets" class="w-full">
           <template #content="{ item }">
-            <MatchSetInfoInput :set-id="item.id" />
+            <MatchSetInfoInput :edit-view="editView" :match-id="id" :set-id="item.id" />
           </template>
         </UTabs>
       </div>

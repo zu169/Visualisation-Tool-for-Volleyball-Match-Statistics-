@@ -1,9 +1,30 @@
 <script setup lang="ts">
+import * as v from "valibot";
+import type { FormSubmitEvent } from "@nuxt/ui";
 // const isLoaded = ref(false);
 // const isPlaying = ref(false);
 // const video = ref();
-const youtubeLink = ref("");
+const youtube = defineModel<string>();
 
+const schema = v.object({
+  youtubeLink: v.string(),
+});
+
+type Schema = v.InferOutput<typeof schema>;
+
+const state = reactive({
+  youtubeLink: "",
+});
+
+watchEffect(() => {
+  if (youtube.value) {
+    state.youtubeLink = youtube.value;
+  }
+});
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  youtube.value = event.data.youtubeLink;
+}
 // async function play() {
 //   await video.value.player.playVideo();
 // }
@@ -15,12 +36,15 @@ const youtubeLink = ref("");
 
 <template>
   <div class="flex flex-col">
-    <label class="mb-1 p-2">Youtube Link</label>
-    <UInput
-      v-model="youtubeLink"
-      placeholder="Embed the recording of the set..."
-      type="text"
-    />
+    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+      <UFormField label="Youtube Link" size="lg">
+        <UInput
+          v-model="state.youtubeLink"
+          placeholder="Embed the recording of the set..."
+          class="w-full mt-1"
+        />
+      </UFormField>
+    </UForm>
   </div>
   <!-- <div v-if="youtubeLink">
     <div class="flex items-center justify-center p-5">
