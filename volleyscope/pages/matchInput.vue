@@ -5,11 +5,13 @@ import type { TabsItem } from "@nuxt/ui";
 const toast = useToast();
 const router = useRouter();
 const { query } = useRoute();
-//receive matchid variable if edit mode
 const matchId = computed(() => {
-  const match = query.matchId;
+  const match = query.match;
   return typeof match === "string" ? parseInt(match, 10) : undefined;
 });
+
+const id = ref<number | undefined>(matchId.value);
+console.log(id);
 
 const editView = ref(false);
 const deleteModal = ref(false);
@@ -127,7 +129,7 @@ function editSuccess() {
     <UCard :ui="{ footer: 'flex justify-end' }">
       <template #header>
         <h2 class="p-2">Add New Match</h2>
-        <MatchInfoInput v-model="matchId" />
+        <MatchInfoInput v-model="id" />
       </template>
       <UButton
         label="Add Set"

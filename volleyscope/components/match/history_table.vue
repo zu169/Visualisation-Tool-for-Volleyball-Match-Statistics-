@@ -55,7 +55,7 @@ function getOpponentName(id: number) {
 
 const sorting = ref([
   {
-    id: "date",
+    id: "Date",
     desc: true,
   },
 ]);

@@ -6,6 +6,8 @@ import {
   fromDate,
 } from "@internationalized/date";
 
+import { useDebounceFn } from "@vueuse/core";
+
 const toast = useToast();
 const matchId = defineModel<number>();
 console.log("Match Id: " + matchId.value);
@@ -17,6 +19,7 @@ type Match = {
   matchType: string;
 };
 
+const original = ref<Match>();
 const team = ref();
 const opponent = ref();
 const gameType = ref();
@@ -39,6 +42,8 @@ if (matchId.value !== undefined) {
         new Date(isoGameDate.value),
         getLocalTimeZone()
       );
+
+      original.value = { ...matchData.value };
     }
   });
 }
@@ -46,7 +51,19 @@ if (matchId.value !== undefined) {
 const df = new DateFormatter("en-UK", {
   dateStyle: "short",
 });
-// add game data to database
+
+function hasChanged(): boolean {
+  if (!original.value) return true;
+
+  return (
+    original.value.teamId !== team.value ||
+    original.value.opponentId !== opponent.value ||
+    original.value.matchType !== gameType.value ||
+    original.value.date !== isoGameDate.value
+  );
+}
+
+const saveMatchDebounced = useDebounceFn(saveMatch, 500);
 
 watchEffect(() => {
   if (!team.value || !opponent.value || !gameType.value || !gameDate.value)
@@ -56,8 +73,9 @@ watchEffect(() => {
     isoGameDate.value = gameDate.value.toDate(getLocalTimeZone()).toISOString();
     saveMatch(0);
     return;
+  } else if (hasChanged()) {
+    saveMatchDebounced(1);
   }
-  saveMatch(1);
   return;
 });
 
