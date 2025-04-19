@@ -1,16 +1,16 @@
 <script setup lang="ts">
-const isLoaded = ref(false);
-const isPlaying = ref(false);
-const video = ref();
+// const isLoaded = ref(false);
+// const isPlaying = ref(false);
+// const video = ref();
 const youtubeLink = ref("");
 
-async function play() {
-  await video.value.player.playVideo();
-}
+// async function play() {
+//   await video.value.player.playVideo();
+// }
 
-function stateChange(event) {
-  isPlaying.value = event.data === 1;
-}
+// function stateChange(event) {
+//   isPlaying.value = event.data === 1;
+// }
 </script>
 
 <template>
@@ -22,7 +22,7 @@ function stateChange(event) {
       type="text"
     />
   </div>
-  <div v-if="youtubeLink">
+  <!-- <div v-if="youtubeLink">
     <div class="flex items-center justify-center p-5">
       <ScriptYouTubePlayer
         ref="video"
@@ -59,5 +59,5 @@ function stateChange(event) {
         Play Video
       </UButton>
     </div>
-  </div>
+  </div> -->
 </template>
