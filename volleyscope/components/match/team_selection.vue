@@ -1,14 +1,65 @@
 <script setup lang="ts">
-const { matchId } = defineProps<{ matchId: number }>();
-console.log(matchId);
+const team = defineModel<number>("team");
+const opponent = defineModel<number>("oppo");
 
-const aberystwyth_teams = ["Aber Mens 1", "Aber Womens 1", "Aber Mens 2"];
-const other_teams = ["Cardiff Met", "Swansea 1"];
+type Team = {
+  teamId: number;
+  teamName: string;
+};
 
-const home = ref();
-const opponent = ref();
+const selectedTeamName = ref<string>();
+const selectedOpponentName = ref<string>();
 
-//Save home and opponent to database
+// Fetch teams
+const teamNames = ref<string[]>([]);
+const { data: teamData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllTeamNames")
+);
+
+watchEffect(() => {
+  if (teamData.value) {
+    teamNames.value = teamData.value.map((team) => team.teamName);
+  }
+});
+
+// Fetch opponents
+const opponentNames = ref<string[]>([]);
+const { data: opponentData } = useAsyncData<Team[]>(() =>
+  $fetch("/api/team/getAllOpponentsNames")
+);
+
+watchEffect(() => {
+  if (opponentData.value) {
+    opponentNames.value = opponentData.value.map((team) => team.teamName);
+  }
+});
+
+if (team.value !== undefined && opponent.value !== undefined) {
+  selectedTeamName.value = teamData.value?.find(
+    (t) => t.teamId === team.value
+  )?.teamName;
+  selectedOpponentName.value = opponentData.value?.find(
+    (t) => t.teamId === opponent.value
+  )?.teamName;
+}
+
+watchEffect(() => {
+  if (!teamData.value || !selectedTeamName.value) return;
+
+  team.value = teamData.value?.find(
+    (t) => t.teamName === selectedTeamName.value
+  )?.teamId;
+  console.log("Team Info: " + team.value);
+});
+
+watchEffect(() => {
+  if (!opponentData.value || !selectedOpponentName.value) return;
+
+  opponent.value = opponentData.value?.find(
+    (t) => t.teamName === selectedOpponentName.value
+  )?.teamId;
+  console.log("Opponent Info: " + opponent.value);
+});
 </script>
 
 <template>
@@ -16,24 +67,21 @@ const opponent = ref();
     <div class="flex flex-col">
       <label class="mb-1 p-2">Team Selection</label>
       <USelectMenu
-        v-model:model-value="home"
-        required
+        v-model="selectedTeamName"
+        :items="teamNames"
         searchable
-        searchable-placeholder="Search a Home Team..."
         class="w-full lg:w-48"
         placeholder="Select a team..."
-        :items="aberystwyth_teams"
       />
     </div>
     <div class="flex flex-col">
       <label class="block mb-1 p-2">Opponent Selection</label>
       <USelectMenu
-        v-model:model-value="opponent"
+        v-model="selectedOpponentName"
+        :items="opponentNames"
         searchable
-        searchable-placeholder="Search a Opponent Team..."
         class="w-full lg:w-48"
         placeholder="Select a team..."
-        :items="other_teams"
       />
     </div>
   </div>

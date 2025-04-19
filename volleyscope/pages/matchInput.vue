@@ -9,14 +9,10 @@ const editView = ref(false);
 const { query } = useRoute();
 //receive matchid variable if edit mode
 const matchId = computed(() => query.matchId);
-let id = 0;
-//if matchid doesn't exist create new
-if (!matchId.value) {
-  id = 23;
-} else {
-  editView.value = true;
-  id = Number(matchId.value);
-}
+
+const id = ref();
+id.value = 4;
+
 const deleteModal = ref(false);
 const unableToSave = ref(false);
 const editModal = ref(false);
@@ -96,7 +92,7 @@ function openMatchView() {
     if (editView.value) {
       editModal.value = true;
     } else {
-      id = Number(matchId.value);
+      id.value = Number(matchId.value);
 
       router.push({ name: "singleMatchView", query: { match: matchId.value } });
       toast.add({
@@ -135,7 +131,7 @@ function editSuccess() {
     <UCard :ui="{ footer: 'flex justify-end' }">
       <template #header>
         <h2 class="p-2">Add New Match</h2>
-        <MatchInfoInput :match-id="Number(matchId)" />
+        <MatchInfoInput v-model="id" />
       </template>
       <UButton
         label="Add Set"

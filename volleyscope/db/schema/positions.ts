@@ -16,6 +16,8 @@ export const leaguesEnum = pgEnum("leagues", [
   "BDVA",
   "NVL",
   "Regional",
+  "Tournament",
+  "Other",
 ]);
 
 export const divisionsEnum = pgEnum("divisions", ["Premier", "1", "2", "3"]);

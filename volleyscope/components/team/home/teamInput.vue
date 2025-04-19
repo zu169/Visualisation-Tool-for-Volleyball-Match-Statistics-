@@ -39,7 +39,7 @@ if (teamId) {
   });
 }
 
-const leagues = ["BUCS", "BDVA", "NVL", "Regional"];
+const leagues = ["BUCS", "BDVA", "NVL", "Regional", "Tournament", "Other"];
 const divisions = ["Premier", "1", "2", "3"];
 
 const schema = v.object({
