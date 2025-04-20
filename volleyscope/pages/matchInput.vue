@@ -36,9 +36,9 @@ const { data: setData } = useAsyncData<Set[]>(() =>
 );
 
 watchEffect(() => {
-  if (setData.value !== null) {
+  if (setData.value !== null && sets.value.length === 1) {
     if (Array.isArray(setData.value)) {
-      sets.value = [];
+      sets.value.pop();
       setData.value.forEach((set) => {
         sets.value.push({
           label: "Set " + set.setNumber,
@@ -46,6 +46,7 @@ watchEffect(() => {
         });
       });
     }
+    refreshNuxtData();
   }
 });
 

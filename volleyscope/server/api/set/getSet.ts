@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const matchId = Number(query.match);
   const setNum = Number(query.set);
 
-  if (isNaN(matchId || setNum)) {
+  if (isNaN(matchId) || isNaN(setNum)) {
     return { message: "Invalid Match ID" };
   }
 
@@ -17,9 +17,13 @@ export default defineEventHandler(async (event) => {
       .from(sets)
       .where(and(eq(sets.matchId, matchId), eq(sets.setNumber, setNum)));
 
-    return data[0] ?? { message: "Match not found" }; // return single player
+    // Add a pending field to the response
+    return data[0] ?? { message: "Set not found", pending: false }; // return single set
   } catch (error) {
     console.error("Error fetching match:", error);
-    return { message: "error" };
+    return {
+      message: "error",
+      pending: false, // Ensure pending is false even in case of an error
+    };
   }
 });

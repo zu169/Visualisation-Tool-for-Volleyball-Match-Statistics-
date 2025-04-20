@@ -45,7 +45,7 @@ onMounted(async () => {
 <template>
   <UContainer>
     <div class="flex w-full">
-      <div class="flex flex-col gap-2 w-1/2 items-end">
+      <div class="flex flex-row gap-4 w-full items-center justify-center">
         <div class="flex flex-col">
           <label class="text-lg font-semibold p-2">
             {{ team || "Loading..." }}
@@ -57,6 +57,7 @@ onMounted(async () => {
             :min="0"
           />
         </div>
+      
         <div class="flex flex-col">
           <label class="text-lg font-semibold p-2">
             {{ opponent || "Loading..." }}

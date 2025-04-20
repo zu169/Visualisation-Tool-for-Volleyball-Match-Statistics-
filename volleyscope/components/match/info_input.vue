@@ -161,7 +161,6 @@ async function saveMatch(num: number) {
           <template #content>
             <UCalendar
               v-model="gameDate"
-              :default-value="currentDate"
               class="p-2"
               :is-date-disabled="isDateDisabled"
             />

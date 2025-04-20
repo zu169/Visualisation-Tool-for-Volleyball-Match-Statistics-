@@ -15,28 +15,29 @@ const { editView, matchId, setNum } = defineProps<{
   setNum: number;
 }>();
 
+console.log(setNum);
+
 const original = ref<Set | undefined>();
 const teamScore = ref();
 const opponentScore = ref();
 const youtube = ref();
 const setExists = ref(false); // Flag to track if the set exists
 
-if (editView && setExists.value !== false) {
-  const { data: setData } = useAsyncData<Set>(() =>
+if (editView) {
+  const { data: setData, pending } = useAsyncData<Set>(() =>
     $fetch(`/api/set/getSet?match=${matchId}&set=${setNum}`)
   );
 
   watchEffect(() => {
-    console.log("setData", setData.value);
-    if (setData.value) {
-      teamScore.value = setData.value?.teamScore;
-      opponentScore.value = setData.value?.opponentScore;
-      youtube.value = setData.value?.youtubeLink;
+    if (pending.value === true) return; // Wait until the data is fully loaded
+    if (setData.value && !setExists.value) {
+      console.log("setData", setData.value);
+      teamScore.value = setData.value.teamScore;
+      opponentScore.value = setData.value.opponentScore;
+      youtube.value = setData.value.youtubeLink;
 
       original.value = { ...setData.value };
       setExists.value = true; // Mark the set as existing
-    } else {
-      setExists.value = false; // Mark the set as not existing
     }
   });
 }

@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
       .select({ setNumber: sets.setNumber })
       .from(sets)
       .where(eq(sets.matchId, id));
-    return { data: data, message: "success" };
+    return data;
   } catch (error) {
     console.log(error);
     return { message: "error" };
