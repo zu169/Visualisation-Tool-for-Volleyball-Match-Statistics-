@@ -83,7 +83,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       color: "success",
       icon: "bitcoin-icons:edit-filled",
     });
-    console.log(event.data);
+    refreshNuxtData();
     return;
   }
 
@@ -113,7 +113,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     color: "success",
     icon: "bitcoin-icons:edit-filled",
   });
-  console.log(event.data);
+  refreshNuxtData();
   return;
 }
 </script>
