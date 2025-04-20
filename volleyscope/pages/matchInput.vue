@@ -16,20 +16,38 @@ console.log(id);
 const isContentDisabled = computed(() => {
   return typeof id.value !== "number" || isNaN(id.value);
 });
-const editView = matchId.value !== undefined ;
+const editView = matchId.value !== undefined;
 const deleteModal = ref(false);
 const unableToSave = ref(false);
-const editModal = ref(false);
 const leaveModal = ref(false);
 
-//create tables for sets add matchId to it
-
+type Set = {
+  setNumber: number;
+};
 const sets = ref<TabsItem[]>([
   {
     label: "Set 1",
     id: 1,
   },
 ]);
+//load sets from database
+const { data: setData } = useAsyncData<Set[]>(() =>
+  $fetch(`/api/set/getAllSetNumbers?match=${id.value}`)
+);
+
+watchEffect(() => {
+  if (setData.value !== null) {
+    if (Array.isArray(setData.value)) {
+      sets.value = [];
+      setData.value.forEach((set) => {
+        sets.value.push({
+          label: "Set " + set.setNumber,
+          id: set.setNumber,
+        });
+      });
+    }
+  }
+});
 
 const addSet = () => {
   //create new table for set
@@ -83,29 +101,24 @@ function openMatchView() {
   const saved = ref(true);
 
   if (required.value && saved.value === true) {
-    if (editView) {
-      editModal.value = true;
-    } else {
-      router.push({ name: "singleMatchView", query: { match: matchId.value } });
-      toast.add({
-        title: "Match " + matchId.value + " has been created!",
-        color: "success",
-        icon: "bitcoin-icons:edit-filled",
-      });
-    }
-  } else {
-    unableToSave.value = true;
+    router.push({ name: "singleMatchView", query: { match: matchId.value } });
+    toast.add({
+      title: "Match " + matchId.value + " has been created!",
+      color: "success",
+      icon: "bitcoin-icons:edit-filled",
+    });
   }
+  unableToSave.value = true;
 }
 
-function editSuccess() {
-  router.push({ name: "singleMatchView", query: { match: matchId.value } });
-  toast.add({
-    title: "Match " + matchId.value + " has been edited!",
-    color: "success",
-    icon: "bitcoin-icons:edit-filled",
-  });
-}
+// function editSuccess() {
+//   router.push({ name: "singleMatchView", query: { match: matchId.value } });
+//   toast.add({
+//     title: "Match " + matchId.value + " has been edited!",
+//     color: "success",
+//     icon: "bitcoin-icons:edit-filled",
+//   });
+// }
 </script>
 
 <template>
@@ -139,7 +152,11 @@ function editSuccess() {
         />
         <UTabs color="neutral" variant="link" :items="sets" class="w-full">
           <template #content="{ item }">
-            <MatchSetInfoInput :edit-view="editView" :match-id="id" :set-id="item.id" />
+            <MatchSetInfoInput
+              :edit-view="editView"
+              :match-id="id"
+              :set-num="item.id"
+            />
           </template>
         </UTabs>
       </div>
@@ -233,7 +250,7 @@ function editSuccess() {
         />
       </template>
     </UModal>
-    <UModal
+    <!-- <UModal
       v-model:open="editModal"
       :dismissible="false"
       :close="false"
@@ -261,6 +278,6 @@ function editSuccess() {
           @click="editModal = false"
         />
       </template>
-    </UModal>
+    </UModal> -->
   </UContainer>
 </template>

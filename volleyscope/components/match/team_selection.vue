@@ -45,20 +45,22 @@ if (team.value !== undefined && opponent.value !== undefined) {
 
 watchEffect(() => {
   if (!teamData.value || !selectedTeamName.value) return;
-
-  team.value = teamData.value?.find(
-    (t) => t.teamName === selectedTeamName.value
-  )?.teamId;
-  console.log("Team Info: " + team.value);
+  if (team.value === null) {
+    team.value = teamData.value?.find(
+      (t) => t.teamName === selectedTeamName.value
+    )?.teamId;
+    console.log("Team Info: " + team.value);
+  }
 });
 
 watchEffect(() => {
   if (!opponentData.value || !selectedOpponentName.value) return;
-
-  opponent.value = opponentData.value?.find(
-    (t) => t.teamName === selectedOpponentName.value
-  )?.teamId;
-  console.log("Opponent Info: " + opponent.value);
+  if (opponent.value === null) {
+    opponent.value = opponentData.value?.find(
+      (t) => t.teamName === selectedOpponentName.value
+    )?.teamId;
+    console.log("Opponent Info: " + opponent.value);
+  }
 });
 </script>
 

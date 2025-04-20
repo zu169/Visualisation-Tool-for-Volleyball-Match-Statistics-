@@ -2,17 +2,17 @@
 const toast = useToast();
 
 type Set = {
-  setId: number;
   matchId: number;
+  setNumber: number;
   teamScore: number;
   opponentScore: number;
   youtubeLink: string;
 };
 
-const { editView, matchId, setId } = defineProps<{
+const { editView, matchId, setNum } = defineProps<{
   editView: boolean;
   matchId: number;
-  setId: number;
+  setNum: number;
 }>();
 
 const original = ref<Set | undefined>();
@@ -21,12 +21,13 @@ const opponentScore = ref();
 const youtube = ref();
 const setExists = ref(false); // Flag to track if the set exists
 
-if (editView) {
+if (editView && setExists.value !== false) {
   const { data: setData } = useAsyncData<Set>(() =>
-    $fetch(`/api/set/getSet?match=${matchId}&set=${setId}`)
+    $fetch(`/api/set/getSet?match=${matchId}&set=${setNum}`)
   );
 
   watchEffect(() => {
+    console.log("setData", setData.value);
     if (setData.value) {
       teamScore.value = setData.value?.teamScore;
       opponentScore.value = setData.value?.opponentScore;
@@ -34,6 +35,8 @@ if (editView) {
 
       original.value = { ...setData.value };
       setExists.value = true; // Mark the set as existing
+    } else {
+      setExists.value = false; // Mark the set as not existing
     }
   });
 }
@@ -51,20 +54,20 @@ function hasChanged(): boolean {
 watchEffect(() => {
   if (!teamScore.value || !opponentScore.value || !youtube.value) return;
 
-  if (!setExists.value) {
+  if (setExists.value === false) {
     // Create the set if it does not exist
     saveSet(0);
-  } else if (setExists.value && hasChanged()) {
+  } else if (setExists.value === true && hasChanged()) {
     // Edit the set if it exists and has changed
     saveSet(1);
-  } 
+  }
   return;
 });
 
 async function saveSet(num: number) {
   const data: Set = {
-    setId: setId,
     matchId: matchId,
+    setNumber: setNum,
     teamScore: teamScore.value,
     opponentScore: opponentScore.value,
     youtubeLink: youtube.value,
@@ -85,14 +88,14 @@ async function saveSet(num: number) {
       return;
     }
     toast.add({
-      title: "Set " + setId + " has been added!",
+      title: "Set " + setNum + " has been added!",
       color: "success",
       icon: "bitcoin-icons:edit-filled",
     });
     setExists.value = true; // Mark the set as existing after creation
   } else if (num === 1) {
     const response = await $fetch(
-      `/api/set/updateSet?match=${matchId}&set=${setId}`,
+      `/api/set/updateSet?match=${matchId}&set=${setNum}`,
       {
         method: "PUT",
         body: data,
@@ -107,7 +110,7 @@ async function saveSet(num: number) {
       return;
     }
     toast.add({
-      title: "Set " + setId + " has been edited!",
+      title: "Set " + setNum + " has been edited!",
       color: "success",
       icon: "bitcoin-icons:edit-filled",
     });

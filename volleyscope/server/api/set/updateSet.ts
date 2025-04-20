@@ -5,21 +5,29 @@ import { sets } from "~/db/schema/match";
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const matchId = Number(query.match);
-  const setId = Number(query.set);
+  const setNum = Number(query.set);
   const body = await readBody(event);
 
   try {
-    await db
+    // Attempt to update the record
+    const result = await db
       .update(sets)
       .set(body)
-      .where(and(eq(sets.matchId, matchId), eq(sets.setId, setId)));
+      .where(and(eq(sets.matchId, matchId), eq(sets.setNumber, setNum)));
+
+    if (result.rowCount === 0) {
+      // If no rows were updated, attempt to insert the record
+      await db.insert(sets).values(body);
+    }
+
     return {
       message: "success",
     };
   } catch (error) {
-    console.error("Update error:", error);
+    console.error("Database error:", error);
     return {
-      message: "error",
+      message: "Database operation failed",
+      error: error,
     };
   }
 });

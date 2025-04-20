@@ -8,8 +8,6 @@ import {
 
 import type { DateValue } from "@internationalized/date";
 
-import { useDebounceFn } from "@vueuse/core";
-
 const toast = useToast();
 const matchId = defineModel<number>();
 console.log("Match Id: " + matchId.value);
@@ -57,6 +55,7 @@ if (matchId.value !== undefined) {
       );
 
       original.value = { ...matchData.value };
+      refreshNuxtData();
     }
   });
 }
@@ -75,7 +74,6 @@ function hasChanged(): boolean {
     original.value.date !== isoGameDate.value
   );
 }
-
 
 watchEffect(() => {
   if (!team.value || !opponent.value || !gameType.value || !gameDate.value)

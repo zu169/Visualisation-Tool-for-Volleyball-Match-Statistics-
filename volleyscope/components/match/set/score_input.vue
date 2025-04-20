@@ -23,19 +23,19 @@ type Team = {
 
 onMounted(async () => {
   if (matchId !== undefined) {
-    const { data: matchData } = await useFetch<Match>(
+    const matchData = await $fetch<Match>(
       `/api/match/getMatch?match=${matchId}`
     );
-    if (matchData.value) {
-      const { data: teamData } = await useFetch<Team>(
-        `/api/team/getTeam?team=${matchData.value.teamId}`
+    if (matchData) {
+      const teamData = await $fetch<Team>(
+        `/api/team/getTeam?team=${matchData.teamId}`
       );
-      team.value = teamData.value?.teamName;
+      team.value = teamData.teamName;
 
-      const { data: opponentData } = await useFetch<Team>(
-        `/api/team/getOpponent?team=${matchData.value.opponentId}`
+      const opponentData = await $fetch<Team>(
+        `/api/team/getOpponent?team=${matchData.opponentId}`
       );
-      opponent.value = opponentData.value?.teamName;
+      opponent.value = opponentData.teamName;
     }
   }
   refreshNuxtData();

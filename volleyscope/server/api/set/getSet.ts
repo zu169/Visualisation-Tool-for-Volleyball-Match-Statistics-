@@ -5,9 +5,9 @@ import { sets } from "~/db/schema/match";
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const matchId = Number(query.match);
-  const setId = Number(query.set);
+  const setNum = Number(query.set);
 
-  if (isNaN(matchId || setId)) {
+  if (isNaN(matchId || setNum)) {
     return { message: "Invalid Match ID" };
   }
 
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     const data = await db
       .select()
       .from(sets)
-      .where(and(eq(sets.matchId, matchId), eq(sets.setId, setId)));
+      .where(and(eq(sets.matchId, matchId), eq(sets.setNumber, setNum)));
 
     return data[0] ?? { message: "Match not found" }; // return single player
   } catch (error) {
