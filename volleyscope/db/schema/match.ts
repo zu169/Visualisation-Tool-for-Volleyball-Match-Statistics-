@@ -24,8 +24,9 @@ export const matches = pgTable("match", {
 export const sets = pgTable(
   "set",
   {
-    setId: integer("set_id").notNull(),
+    setId: integer("set_id").notNull().generatedAlwaysAsIdentity(),
     matchId: integer("match_id").references(() => matches.matchId),
+    setNumber: integer("set_number").notNull(),
     teamScore: integer("team_score").notNull(),
     opponentScore: integer("opponent_score").notNull(),
     youtubeLink: varchar("youtube_link", { length: 255 }).unique(),

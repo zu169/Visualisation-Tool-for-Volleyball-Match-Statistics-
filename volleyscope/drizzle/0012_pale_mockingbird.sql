@@ -1,0 +1,2 @@
+ALTER TABLE "set" ALTER COLUMN "set_id" ADD GENERATED ALWAYS AS IDENTITY (sequence name "set_set_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1);--> statement-breakpoint
+ALTER TABLE "set" ADD COLUMN "set_number" integer NOT NULL;
