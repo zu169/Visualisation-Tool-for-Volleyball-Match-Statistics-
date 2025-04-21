@@ -44,20 +44,19 @@ const { data: setData } = useAsyncData<Set[]>(
   }
 );
 
-watchEffect(() => {
-  if (setData.value !== null && sets.value.length === 1) {
-    if (Array.isArray(setData.value)) {
-      sets.value.pop();
-      setData.value.forEach((set) => {
-        sets.value.push({
-          label: "Set " + set.setNumber,
-          id: set.setNumber,
-        });
-      });
+// Update sets when data loads
+watch(
+  setData,
+  (newData) => {
+    if (newData?.length && sets.value.length === 1) {
+      sets.value = newData.map((set) => ({
+        label: `Set ${set.setNumber}`,
+        id: set.setNumber,
+      }));
     }
-    refreshNuxtData();
-  }
-});
+  },
+  { immediate: true }
+);
 
 const addSet = () => {
   //create new table for set
