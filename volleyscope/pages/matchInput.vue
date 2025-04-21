@@ -4,13 +4,18 @@ import type { TabsItem } from "@nuxt/ui";
 const toast = useToast();
 const router = useRouter();
 const { query } = useRoute();
+
+type Set = {
+  setNumber: number;
+};
+
 const matchId = computed(() => {
   const match = query.match;
   return typeof match === "string" ? parseInt(match, 10) : undefined;
 });
 
 const id = ref<number | undefined>(matchId.value);
-console.log(id);
+console.log("Match Id: " + id);
 
 const isContentDisabled = computed(() => {
   return typeof id.value !== "number" || isNaN(id.value);
@@ -20,9 +25,6 @@ const deleteModal = ref(false);
 const unableToSave = ref(false);
 const leaveModal = ref(false);
 
-type Set = {
-  setNumber: number;
-};
 const sets = ref<TabsItem[]>([
   {
     label: "Set 1",
@@ -30,8 +32,16 @@ const sets = ref<TabsItem[]>([
   },
 ]);
 //load sets from database
-const { data: setData } = useAsyncData<Set[]>(() =>
-  $fetch(`/api/set/getAllSetNumbers?match=${id.value}`)
+
+const { data: setData } = useAsyncData<Set[]>(
+  "match-sets",
+  () => {
+    if (!id.value) return Promise.resolve([]);
+    return $fetch(`/api/set/getAllSetNumbers?match=${id.value}`);
+  },
+  {
+    watch: [id],
+  }
 );
 
 watchEffect(() => {

@@ -20,11 +20,11 @@ type Match = {
 };
 
 const original = ref<Match>();
-const team = ref();
-const opponent = ref();
-const gameType = ref();
-const gameDate = ref();
-const isoGameDate = ref();
+const team = ref<number>();
+const opponent = ref<number>();
+const gameType = ref<string>();
+const gameDate = ref<DateValue>();
+const isoGameDate = ref<string>();
 
 // Get current date (for max validation)
 const today = new Date();
@@ -34,46 +34,57 @@ const currentDate = new CalendarDate(
   today.getDate()
 );
 
-const isDateDisabled = (date: DateValue) => {
-  return date >= currentDate;
-};
-if (matchId.value !== undefined) {
-  const { data: matchData } = useAsyncData<Match>(() =>
-    $fetch(`/api/match/getMatch?match=${matchId.value}`)
-  );
-
-  watchEffect(() => {
-    if (matchData.value) {
-      team.value = matchData.value?.teamId;
-      opponent.value = matchData.value?.opponentId;
-      isoGameDate.value = matchData.value?.date;
-      gameType.value = matchData.value?.matchType;
-
-      gameDate.value = fromDate(
-        new Date(isoGameDate.value),
-        getLocalTimeZone()
-      );
-
-      original.value = { ...matchData.value };
-      refreshNuxtData();
-    }
-  });
-}
-
 const df = new DateFormatter("en-UK", {
   dateStyle: "short",
 });
 
-function hasChanged(): boolean {
-  if (!original.value) return true;
+const isDateDisabled = (date: DateValue) => {
+  return date >= currentDate;
+};
 
+const { data: matchData } = useAsyncData<Match>(
+  () => $fetch(`/api/match/getMatch?match=${matchId.value}`),
+  {
+    watch: [matchId],
+    immediate: false, // Only fetch when matchId is available
+  }
+);
+
+/**
+ * Initialize form when match data loads
+ */
+watch(
+  matchData,
+  (newData) => {
+    if (!newData) return;
+
+    team.value = newData.teamId;
+    opponent.value = newData.opponentId;
+    gameType.value = newData.matchType;
+    isoGameDate.value = newData.date;
+
+    // Convert ISO date to CalendarDate object
+    gameDate.value = fromDate(new Date(newData.date), getLocalTimeZone());
+
+    // Store original values for change detection
+    original.value = { ...newData };
+    console.log("Original: ", original.value);
+  },
+  { immediate: true }
+);
+/**
+ * Check if form has been modified
+ */
+const hasChanged = computed(() => {
+  console.log("Original: ", original.value);
+  if (!original.value) return true;
   return (
     original.value.teamId !== team.value ||
     original.value.opponentId !== opponent.value ||
     original.value.matchType !== gameType.value ||
     original.value.date !== isoGameDate.value
   );
-}
+});
 
 watchEffect(() => {
   if (!team.value || !opponent.value || !gameType.value || !gameDate.value)
@@ -84,7 +95,7 @@ watchEffect(() => {
     isoGameDate.value = gameDate.value.toDate(getLocalTimeZone()).toISOString();
     saveMatch(0);
     return;
-  } else if (hasChanged() &&matchId.value !== undefined) {
+  } else if (hasChanged.value === true && matchId.value !== undefined) {
     saveMatch(1);
   }
   return;
