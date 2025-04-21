@@ -78,12 +78,13 @@ function hasChanged(): boolean {
 watchEffect(() => {
   if (!team.value || !opponent.value || !gameType.value || !gameDate.value)
     return;
+
   if (matchId.value === undefined) {
-    console.log(gameType.value);
+    console.log("gametype" + gameType.value);
     isoGameDate.value = gameDate.value.toDate(getLocalTimeZone()).toISOString();
     saveMatch(0);
     return;
-  } else if (hasChanged()) {
+  } else if (hasChanged() &&matchId.value !== undefined) {
     saveMatch(1);
   }
   return;

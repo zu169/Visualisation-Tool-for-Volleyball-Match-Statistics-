@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { MatchInfoInput } from "#components";
 import type { TabsItem } from "@nuxt/ui";
 
 const toast = useToast();

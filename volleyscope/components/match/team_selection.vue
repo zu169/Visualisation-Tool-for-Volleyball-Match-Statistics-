@@ -11,56 +11,63 @@ const selectedTeamName = ref<string>();
 const selectedOpponentName = ref<string>();
 
 // Fetch teams
-const teamNames = ref<string[]>([]);
-const { data: teamData } = useAsyncData<Team[]>(() =>
+const { data: teamData } = useAsyncData<Team[]>("teamNames", () =>
   $fetch("/api/team/getAllTeamNames")
 );
 
-watchEffect(() => {
-  if (teamData.value) {
-    teamNames.value = teamData.value.map((team) => team.teamName);
-  }
-});
+const teamNames = computed(
+  () => teamData.value?.map((team) => team.teamName) || []
+);
 
 // Fetch opponents
-const opponentNames = ref<string[]>([]);
 const { data: opponentData } = useAsyncData<Team[]>(() =>
   $fetch("/api/team/getAllOpponentsNames")
 );
 
-watchEffect(() => {
-  if (opponentData.value) {
-    opponentNames.value = opponentData.value.map((team) => team.teamName);
+const opponentNames = computed(
+  () => opponentData.value?.map((team) => team.teamName) || []
+);
+
+watch(
+  [teamData, opponentData],
+  () => {
+    if (team.value !== undefined && teamData.value) {
+      selectedTeamName.value = teamData.value.find(
+        (t) => t.teamId === team.value
+      )?.teamName;
+    }
+
+    if (opponent.value !== undefined && opponentData.value) {
+      selectedOpponentName.value = opponentData.value.find(
+        (t) => t.teamId === opponent.value
+      )?.teamName;
+    }
+  },
+  { immediate: true }
+);
+
+// Update team ID when name selection changes
+watch(selectedTeamName, (newName) => {
+  if (!newName || !teamData.value) {
+    team.value = undefined;
+    return;
   }
+
+  const foundTeam = teamData.value.find((t) => t.teamName === newName);
+  team.value = foundTeam?.teamId;
+  console.log("Team Info:", team.value);
 });
 
-if (team.value !== undefined && opponent.value !== undefined) {
-  selectedTeamName.value = teamData.value?.find(
-    (t) => t.teamId === team.value
-  )?.teamName;
-  selectedOpponentName.value = opponentData.value?.find(
-    (t) => t.teamId === opponent.value
-  )?.teamName;
-}
-
-watchEffect(() => {
-  if (!teamData.value || !selectedTeamName.value) return;
-  if (team.value === null) {
-    team.value = teamData.value?.find(
-      (t) => t.teamName === selectedTeamName.value
-    )?.teamId;
-    console.log("Team Info: " + team.value);
+// Update opponent ID when name selection changes
+watch(selectedOpponentName, (newName) => {
+  if (!newName || !opponentData.value) {
+    opponent.value = undefined;
+    return;
   }
-});
 
-watchEffect(() => {
-  if (!opponentData.value || !selectedOpponentName.value) return;
-  if (opponent.value === null) {
-    opponent.value = opponentData.value?.find(
-      (t) => t.teamName === selectedOpponentName.value
-    )?.teamId;
-    console.log("Opponent Info: " + opponent.value);
-  }
+  const foundOpponent = opponentData.value.find((t) => t.teamName === newName);
+  opponent.value = foundOpponent?.teamId;
+  console.log("Opponent Info:", opponent.value);
 });
 </script>
 

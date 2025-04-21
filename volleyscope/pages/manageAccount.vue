@@ -63,7 +63,7 @@ const opponentInputView = ref(false);
           >
         </div>
         <USeparator />
-        <PlayerDisplayTable />
+        <PlayerDisplayTable :team-id="0" />
       </template>
     </UTabs>
     <UModal v-model:open="teamViewModal">
