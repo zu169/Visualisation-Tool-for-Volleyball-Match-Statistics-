@@ -134,6 +134,7 @@ async function saveSet(num: number) {
         <template #header>
           <!-- Player Input -->
           <p>Select Player's and their positions for the set</p>
+          <MatchSetPlayerTable />
         </template>
 
         <MatchSetYoutubeInput v-model="youtube" />
