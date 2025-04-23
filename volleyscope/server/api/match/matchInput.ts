@@ -3,7 +3,6 @@ import { matches } from "~/db/schema/match";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  console.log(body);
 
   try {
     const insertedMatch = await db
