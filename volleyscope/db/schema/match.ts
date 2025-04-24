@@ -1,5 +1,4 @@
 import {
-  pgEnum,
   integer,
   pgTable,
   varchar,
@@ -7,7 +6,7 @@ import {
   primaryKey,
 } from "drizzle-orm/pg-core";
 import { teams, opponents, players } from "./players";
-import { leaguesEnum } from "./positions";
+import { positionsEnum, leaguesEnum } from "./positions";
 
 export const matches = pgTable("match", {
   matchId: integer("match_id").primaryKey().generatedAlwaysAsIdentity(),
@@ -21,20 +20,14 @@ export const matches = pgTable("match", {
   matchType: leaguesEnum().notNull(),
 });
 
-export const sets = pgTable(
-  "set",
-  {
-    setId: integer("set_id").notNull().generatedAlwaysAsIdentity(),
-    matchId: integer("match_id").references(() => matches.matchId),
-    setNumber: integer("set_number").notNull(),
-    teamScore: integer("team_score").notNull(),
-    opponentScore: integer("opponent_score").notNull(),
-    youtubeLink: varchar("youtube_link", { length: 255 }).unique(),
-  },
-  (table) => [
-    primaryKey({ name: "set_match_id", columns: [table.matchId, table.setId] }),
-  ]
-);
+export const sets = pgTable("set", {
+  setId: integer("set_id").primaryKey().generatedAlwaysAsIdentity(),
+  matchId: integer("match_id").references(() => matches.matchId),
+  setNumber: integer("set_number").notNull(),
+  teamScore: integer("team_score").notNull(),
+  opponentScore: integer("opponent_score").notNull(),
+  youtubeLink: varchar("youtube_link", { length: 255 }).unique(),
+});
 
 // export const points = pgTable('point', {
 // 	pointId: integer('point_id').generatedAlwaysAsIdentity(),
@@ -44,12 +37,23 @@ export const sets = pgTable(
 //     primaryKey({ columns: [table.pointId, table.setId, table.teamId]})
 // ] );
 
-// export const playerList = pgTable('player_list', {
-// 	setId: integer('set_id').references(() => sets.setId),
-// 	teamId: integer('team_id').references(() => teams.teamId),
-// 	playerId: integer('player_id').references(() => players.playerId),
-// 	positionId: integer('position_id').references(() => positions.positionId),
-// 	shirtNumber: integer('shirt_number'),
-// }, (table) => [
-//     primaryKey({ columns: [table.setId, table.teamId]})
-// ] );
+export const playerList = pgTable("player_list", {
+  playerListId: integer("player_list_id")
+    .primaryKey()
+    .generatedAlwaysAsIdentity(),
+  setId: integer("set_id").references(() => sets.setId),
+  matchId: integer("match_id").references(() => matches.matchId),
+});
+
+export const listPlayer = pgTable(
+  "list_player",
+  {
+    playerListId: integer("player_list_id").references(
+      () => playerList.playerListId
+    ),
+    playerId: integer("player_id").references(() => players.playerId),
+    position: positionsEnum().notNull(),
+    shirtNumber: integer("shirt_number"),
+  },
+  (table) => [primaryKey({ columns: [table.playerListId, table.playerId] })]
+);
