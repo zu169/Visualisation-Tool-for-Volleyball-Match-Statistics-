@@ -41,7 +41,7 @@ export const playerList = pgTable("player_list", {
   playerListId: integer("player_list_id")
     .primaryKey()
     .generatedAlwaysAsIdentity(),
-  setId: integer("set_id").references(() => sets.setId),
+  setNum: integer("set_num").notNull(),
   matchId: integer("match_id").references(() => matches.matchId),
 });
 
