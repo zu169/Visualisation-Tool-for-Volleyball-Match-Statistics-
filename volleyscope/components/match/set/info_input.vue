@@ -133,7 +133,6 @@ async function saveSet(num: number) {
       <UCard class="h-full">
         <template #header>
           <!-- Player Input -->
-          <p>Select Player's and their positions for the set</p>
           <MatchSetPlayerTable />
         </template>
 

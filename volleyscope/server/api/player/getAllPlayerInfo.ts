@@ -1,35 +1,21 @@
 import { db } from "~/db/index";
-import { players, teamPlayers, teams } from "~/db/schema/players";
+import { players } from "~/db/schema/players";
 
-export default defineEventHandler(async (event) => {
-  type Player = {
-    playerId: number;
-    playerName: string;
-    position:
-      | "Setter"
-      | "Outside Hitter"
-      | "Middle Blocker"
-      | "Opposite Hitter"
-      | "Libero"
-      | "Defensive Specialist"
-      | "Service Specialist"
-      | "Bench";
-    shirtNumber: number | null;
-  };
-
-  const data = await readBody(event);
+export default defineEventHandler(async () => {
   try {
-    await db
+    const data = await db
       .select({
-        playerId: players.playerId,
         playerName: players.playerName,
+        playerId: players.playerId,
         position: players.position,
         shirtNumber: players.shirtNumber,
       })
       .from(players)
       .orderBy(players.playerName);
+    console.log("Player data:", data);
+    return data;
   } catch (error) {
+    console.error("Database error:", error);
     return { message: "error" };
   }
-  return data;
 });

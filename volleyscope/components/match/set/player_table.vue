@@ -38,10 +38,13 @@ const { data: players, status } = await useFetch<Player[]>(
         })) || []
       );
     },
-    lazy: true,
   }
 );
 
+function savePlayers() {
+  if (selectedPlayers.value.length < 6) return;
+  
+}
 watch(selectedPlayers, () => {
   refreshNuxtData();
 });
@@ -50,6 +53,7 @@ watch(selectedPlayers, () => {
 <template>
   <UContainer>
     <!-- Select a player to add to the list -->
+    <p class="mb-2 text-sm font-semibold">Set Lineup</p>
     <USelectMenu
       v-model="selectedPlayers"
       multiple
@@ -57,15 +61,15 @@ watch(selectedPlayers, () => {
       :loading="status === 'pending'"
       label="Select Players"
       placeholder="Select a player..."
-      :items?="players"
-      class="w-full m-2"
+      :items="players"
+      class="w-full mb-2"
       size="lg"
     />
     <!-- add the player to the list and allow user to edit information like position and shirt number -->
-    <div class="space-y-4 max-w-2xl">
+    <div class="space-y-4">
       <!-- Header Row -->
       <div
-        class="grid grid-cols-12 gap-4 font-semibold text-gray-700 border-b pb-2"
+        class="grid grid-cols-12 gap-4 font-semibold text-white text-sm border-b pb-2"
       >
         <div class="col-span-5">Player Name</div>
         <div class="col-span-3">Shirt Number</div>
@@ -105,6 +109,9 @@ watch(selectedPlayers, () => {
           />
         </div>
       </div>
+    </div>
+    <div class="flex justify-end">
+      <UButton label="Confirm Line Up" @click="savePlayers()" class="mt-2" />
     </div>
   </UContainer>
 </template>
