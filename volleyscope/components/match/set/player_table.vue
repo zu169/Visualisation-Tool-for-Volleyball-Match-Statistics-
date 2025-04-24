@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const { matchId, setNum } = defineProps<{ matchId: number; setNum: number }>();
+const listSaved = defineModel<boolean>();
+
 type Player = {
   playerId: number;
   playerName: string;
@@ -43,8 +46,8 @@ const { data: players, status } = await useFetch<Player[]>(
 
 function savePlayers() {
   if (selectedPlayers.value.length < 6) return;
-  
 }
+
 watch(selectedPlayers, () => {
   refreshNuxtData();
 });
@@ -53,7 +56,10 @@ watch(selectedPlayers, () => {
 <template>
   <UContainer>
     <!-- Select a player to add to the list -->
-    <p class="mb-2 text-sm font-semibold">Set Lineup</p>
+    <div class="flex justify-between">
+      <p class="mb-2 text-sm font-semibold">Set Lineup</p>
+      <p class="mb-2 text-xs">Minimum 6 Players</p>
+    </div>
     <USelectMenu
       v-model="selectedPlayers"
       multiple

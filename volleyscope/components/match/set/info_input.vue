@@ -15,11 +15,10 @@ const { editView, matchId, setNum } = defineProps<{
   setNum: number;
 }>();
 
-console.log(setNum);
-
 const original = ref<Set | undefined>();
 const teamScore = ref();
 const opponentScore = ref();
+const listSaved = ref(false);
 const youtube = ref();
 const setExists = ref(false); // Flag to track if the set exists
 
@@ -133,7 +132,7 @@ async function saveSet(num: number) {
       <UCard class="h-full">
         <template #header>
           <!-- Player Input -->
-          <MatchSetPlayerTable />
+          <MatchSetPlayerTable v-model="listSaved" :match-id="matchId" :set-id="setNum"/>
         </template>
 
         <MatchSetYoutubeInput v-model="youtube" />
