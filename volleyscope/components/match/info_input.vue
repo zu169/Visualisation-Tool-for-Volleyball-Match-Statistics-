@@ -39,7 +39,7 @@ const df = new DateFormatter("en-UK", {
 });
 
 const isDateDisabled = (date: DateValue) => {
-  return date >= currentDate;
+  return date > currentDate;
 };
 
 const { data: matchData } = useAsyncData<Match>(
