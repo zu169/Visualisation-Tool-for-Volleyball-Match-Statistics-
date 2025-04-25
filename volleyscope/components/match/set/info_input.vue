@@ -36,7 +36,7 @@ if (editView) {
       opponentScore.value = setData.value.opponentScore;
       playerListId.value = setData.value.playerListId;
       youtube.value = setData.value.youtubeLink;
-
+      console.log("Player List ID: " + playerListId.value);
       original.value = { ...setData.value };
       setExists.value = true; // Mark the set as existing
     }
@@ -54,7 +54,13 @@ function hasChanged(): boolean {
 }
 
 watchEffect(() => {
-  if (!teamScore.value || !opponentScore.value || !youtube.value) return;
+  if (
+    !teamScore.value ||
+    !opponentScore.value ||
+    !youtube.value ||
+    !playerListId.value
+  )
+    return;
 
   if (setExists.value === false) {
     // Create the set if it does not exist

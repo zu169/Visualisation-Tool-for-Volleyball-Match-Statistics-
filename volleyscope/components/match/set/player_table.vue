@@ -5,7 +5,6 @@ const playerListId = defineModel<number>();
 
 console.log("Match Id: " + matchId);
 console.log("Set Number: " + setNum);
-console.log("Player List ID: " + playerListId.value);
 
 type Player = {
   playerId: number;
@@ -27,26 +26,6 @@ const positions = [
 
 const selectedPlayers = ref<Player[]>([]);
 
-if (playerListId.value !== undefined) {
-  console.log("Player List ID: " + playerListId.value);
-  const { data: playerList } = await useFetch<Player[]>(
-    `/api/playerList/getPlayerList?listId=${playerListId.value}`
-  );
-  if (playerList.value !== null) {
-    selectedPlayers.value = playerList.value.map((player) => ({
-      playerId: player.playerId,
-      playerName: player.playerName,
-      position: player.position,
-      shirtNumber: player.shirtNumber,
-    }));
-  } else {
-    toast.add({
-      title: "Error",
-      description: "There was an error fetching the player list",
-      color: "error",
-    });
-  }
-}
 // Fetch all players
 const { data: players, status } = await useFetch<Player[]>(
   `/api/player/getAllPlayerInfo`,
@@ -68,6 +47,28 @@ const { data: players, status } = await useFetch<Player[]>(
     },
   }
 );
+
+if (playerListId.value !== undefined) {
+  console.log("Player List ID: " + playerListId.value);
+  const { data: playerList } = await useFetch<Player[]>(
+    `/api/playerList/getPlayerList?listId=${playerListId.value}`
+  );
+  console.log("Player List: ", playerList);
+  if (playerList.value !== null) {
+    selectedPlayers.value = playerList.value.map((player) => ({
+      label: player.playerName,
+      value: player.playerId,
+      ...player,
+    }));
+  } else if (playerList.value === 0) {
+    toast.add({
+      title: "Error",
+      description: "There was an error fetching the player list",
+      color: "error",
+    });
+  }
+  refreshNuxtData();
+}
 
 function approvePositions() {
   const positions: string[] = [];
@@ -137,17 +138,17 @@ async function savePlayers() {
   } else if (!approvePositions()) {
     return;
   }
-  if (playerListId.value !== undefined) {
+  if (playerListId.value !== undefined && selectedPlayers.value !== null) {
     console.log("Updating existing player list");
     selectedPlayers.value.forEach(async (player) => {
       const response = await $fetch(
-        `/api/playerList/updatePlayerList?listId=${playerListId.value}`,
+        `/api/playerList/updateListPlayer?listId=${playerListId.value}`,
         {
           method: "PUT",
           body: player,
         }
       );
-      if (!response || response === "error") {
+      if (!response || response.message === "error") {
         toast.add({
           title: "Error",
           description: "There was an error updating the Lineup information",
@@ -164,14 +165,12 @@ async function savePlayers() {
     return;
   }
   console.log("Creating new player list");
-  console.log(selectedPlayers.value);
   const { data: listId, message: response } = await $fetch(
     `/api/playerList/createPlayerList?match=${matchId}&set=${setNum}`,
     {
       method: "POST",
     }
   );
-  console.log("List ID: " + listId);
   selectedPlayers.value.forEach((player) => {
     $fetch(`/api/playerList/addPlayerToList?listId=${listId}`, {
       method: "POST",
@@ -187,7 +186,6 @@ async function savePlayers() {
     return;
   }
   playerListId.value = listId;
-  console.log("Player List ID: " + playerListId.value);
   toast.add({
     title: "Lineup has been added!",
     color: "success",

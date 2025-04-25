@@ -12,7 +12,6 @@ export default defineEventHandler(async () => {
       })
       .from(players)
       .orderBy(players.playerName);
-    console.log("Player data:", data);
     return data;
   } catch (error) {
     console.error("Database error:", error);
