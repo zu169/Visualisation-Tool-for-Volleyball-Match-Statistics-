@@ -6,9 +6,10 @@ export default defineEventHandler(async (event) => {
   console.log(body);
 
   try {
-    await db.insert(sets).values(body);
+    const setId = await db.insert(sets).values(body).returning(sets.setId);
 
     return {
+      data: setId,
       message: "success",
     };
   } catch (error) {

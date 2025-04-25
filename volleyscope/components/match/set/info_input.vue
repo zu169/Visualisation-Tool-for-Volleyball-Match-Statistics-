@@ -16,12 +16,13 @@ const { editView, matchId, setNum } = defineProps<{
   setNum: number;
 }>();
 
+const setId = ref<number | undefined>();
+
 const original = ref<Set | undefined>();
 const teamScore = ref();
 const opponentScore = ref();
 const playerListId = ref();
 const youtube = ref();
-const setExists = ref(false); // Flag to track if the set exists
 
 if (editView) {
   const { data: setData, pending } = useAsyncData<Set>(() =>
@@ -30,15 +31,15 @@ if (editView) {
 
   watchEffect(() => {
     if (pending.value === true) return; // Wait until the data is fully loaded
-    if (setData.value && !setExists.value) {
+    if (setData.value && setId.value === undefined) {
       console.log("setData", setData.value);
+      setId.value = setData.value.setId;
       teamScore.value = setData.value.teamScore;
       opponentScore.value = setData.value.opponentScore;
       playerListId.value = setData.value.playerListId;
       youtube.value = setData.value.youtubeLink;
       console.log("Player List ID: " + playerListId.value);
       original.value = { ...setData.value };
-      setExists.value = true; // Mark the set as existing
     }
   });
 }
@@ -62,10 +63,10 @@ watchEffect(() => {
   )
     return;
 
-  if (setExists.value === false) {
+  if (setId.value === undefined) {
     // Create the set if it does not exist
     saveSet(0);
-  } else if (setExists.value === true && hasChanged()) {
+  } else if (setId.value && hasChanged()) {
     // Edit the set if it exists and has changed
     saveSet(1);
   }
@@ -83,11 +84,13 @@ async function saveSet(num: number) {
   };
 
   if (num === 0) {
-    const response = await $fetch("/api/set/setInput", {
-      method: "POST",
-      body: data,
-    });
-
+    const { data: setId, message: response } = await $fetch(
+      "/api/set/setInput",
+      {
+        method: "POST",
+        body: data,
+      }
+    );
     if (!response || response.message === "error") {
       toast.add({
         title: "Error",
@@ -101,7 +104,7 @@ async function saveSet(num: number) {
       color: "success",
       icon: "bitcoin-icons:edit-filled",
     });
-    setExists.value = true; // Mark the set as existing after creation
+    setId.value = setId;
   } else if (num === 1) {
     const response = await $fetch(
       `/api/set/updateSet?match=${matchId}&set=${setNum}`,
@@ -135,8 +138,13 @@ async function saveSet(num: number) {
         v-model:oppo="opponentScore"
         :match-id="matchId"
       />
-      <div v-if="setExists">
-        <MatchSetTimeline :team="teamScore" :opponent="opponentScore" />
+      <div v-if="setId.value">
+        <MatchSetTimeline
+          :team="teamScore"
+          :opponent="opponentScore"
+          :list-id="playerListId"
+          :set-id="setId"
+        />
       </div>
     </div>
     <div class="flex-1">

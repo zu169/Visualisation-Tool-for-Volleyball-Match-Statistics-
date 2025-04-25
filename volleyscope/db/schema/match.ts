@@ -32,13 +32,17 @@ export const sets = pgTable("set", {
   youtubeLink: varchar("youtube_link", { length: 255 }).unique(),
 });
 
-// export const points = pgTable('point', {
-// 	pointId: integer('point_id').generatedAlwaysAsIdentity(),
-//     setId: integer('set_id').references(() => sets.setId),
-// 	teamId: integer('team_id').references(() => teams.teamId),
-// }, (table) => [
-//     primaryKey({ columns: [table.pointId, table.setId, table.teamId]})
-// ] );
+export const points = pgTable(
+  "point",
+  {
+    pointId: integer("point_id").generatedAlwaysAsIdentity(),
+    setId: integer("set_id").references(() => sets.setId),
+    playerListId: integer("player_list_id").references(
+      () => playerList.playerListId
+    ),
+  },
+  (table) => [primaryKey({ columns: [table.pointId, table.setId] })]
+);
 
 export const playerList = pgTable("player_list", {
   playerListId: integer("player_list_id")

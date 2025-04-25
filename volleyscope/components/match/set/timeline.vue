@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const pointId = ref<number>(0);
 const addPointModal = ref(false);
 const warningModal = ref(false);
 const warningSuccess = ref(false);
 
-const { team, opponent } = defineProps<{ team: number; opponent: number }>();
+const { team, opponent, listId, setId } = defineProps<{
+  team: number;
+  opponent: number;
+  listId: number;
+  setId: number;
+}>();
 
 enum Point {
   Home = "home",
@@ -31,6 +37,7 @@ const addPoint = (team: "home" | "away", index: number) => {
     } else {
       selectedPoints.value[index] = Point.Away;
     }
+    pointId.value = index;
     addPointModal.value = true;
   } else {
     // Second click: reset both buttons to visible
@@ -89,7 +96,11 @@ const addPoint = (team: "home" | "away", index: number) => {
     size="xl"
   >
     <template #body>
-      <MatchPointInfoInput />
+      <MatchPointInfoInput
+        :point-id="pointId"
+        :list-id="listId"
+        :set-id="setId"
+      />
     </template>
 
     <template #footer>

@@ -1,26 +1,26 @@
 <script setup lang="ts">
+const { listId, players } = defineProps<{
+  listId: number;
+  players: Player[];
+}>();
+
+type Player = {
+  playerId: number;
+  playerName: string;
+  position: string;
+  shirtNumber: number;
+};
+
 const set_types = ["Assist", "Error", "Negative"];
 const set_rating = [0, 1, 2];
-const people = [
-  "Alan Atkins",
-  "Amin Khoshikabari",
-  "Iker Irigoyen",
-  "Tom Cook",
-  "Tanya Fox",
-  "Hellen Schmidt",
-  "Caroline Schultz",
-  "Mason Heaney",
-  "Claudie Smitham",
-  "Emil Schaefer",
-];
 
-const selected = ref(people[0]);
+const selected = ref<Player>();
 const set = ref(set_types[0]);
 const score = ref(set_rating[0]);
 </script>
 
 <template>
-  <UCard class="w-md">
+  <UCard class="mb-2">
     <template #header> Set </template>
     <div class="flex flex-col space-y-1">
       <label class="font-bold">Player Name</label>
@@ -30,7 +30,7 @@ const score = ref(set_rating[0]);
         searchable-placeholder="Search a person..."
         class="w-full lg:w-48"
         placeholder="Select a person"
-        :items="people"
+        :items="players"
       />
 
       <label class="font-bold">Set Type</label>
