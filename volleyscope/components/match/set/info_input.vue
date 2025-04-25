@@ -135,7 +135,9 @@ async function saveSet(num: number) {
         v-model:oppo="opponentScore"
         :match-id="matchId"
       />
-      <!-- <MatchSetTimeline /> -->
+      <div v-if="setExists">
+        <MatchSetTimeline :team="teamScore" :opponent="opponentScore" />
+      </div>
     </div>
     <div class="flex-1">
       <UCard class="h-full">
