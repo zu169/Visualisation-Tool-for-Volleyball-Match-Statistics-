@@ -26,6 +26,9 @@ export const sets = pgTable("set", {
   setNumber: integer("set_number").notNull(),
   teamScore: integer("team_score").notNull(),
   opponentScore: integer("opponent_score").notNull(),
+  playerListId: integer("player_list_id").references(
+    () => playerList.playerListId
+  ),
   youtubeLink: varchar("youtube_link", { length: 255 }).unique(),
 });
 

@@ -120,6 +120,13 @@
       "when": 1745508449985,
       "tag": "0016_friendly_iron_lad",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1745511240963,
+      "tag": "0017_certain_imperial_guard",
+      "breakpoints": true
     }
   ]
 }

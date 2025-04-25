@@ -83,6 +83,14 @@ const { data } = await useFetch<Match[]>(
   }
 );
 
+watch(
+  data,
+  () => {
+    refreshNuxtData();
+  },
+  { immediate: true }
+);
+
 const columns: TableColumn<Match>[] = [
   {
     id: "Date",
@@ -206,7 +214,7 @@ async function deleteSuccess() {
     color: "error",
     icon: "i-lucide-trash-2",
   });
-  await refreshNuxtData("table"); 
+  await refreshNuxtData("table");
 }
 
 function onSelect(row: TableRow<Match>, e?: Event) {

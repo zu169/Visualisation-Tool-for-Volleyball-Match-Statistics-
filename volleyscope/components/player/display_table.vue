@@ -52,6 +52,10 @@ const { data: playersData } = await useFetch<PlayerResponse[]>(
   }
 );
 
+watch(playersData, () => {
+  refreshNuxtData();
+});
+
 // const data = ref<Player[]>([
 //   {
 //     id: 0,

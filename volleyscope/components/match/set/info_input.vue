@@ -6,6 +6,7 @@ type Set = {
   setNumber: number;
   teamScore: number;
   opponentScore: number;
+  playerListId: number;
   youtubeLink: string;
 };
 
@@ -18,7 +19,7 @@ const { editView, matchId, setNum } = defineProps<{
 const original = ref<Set | undefined>();
 const teamScore = ref();
 const opponentScore = ref();
-const listSaved = ref(false);
+const playerListId = ref();
 const youtube = ref();
 const setExists = ref(false); // Flag to track if the set exists
 
@@ -33,6 +34,7 @@ if (editView) {
       console.log("setData", setData.value);
       teamScore.value = setData.value.teamScore;
       opponentScore.value = setData.value.opponentScore;
+      playerListId.value = setData.value.playerListId;
       youtube.value = setData.value.youtubeLink;
 
       original.value = { ...setData.value };
@@ -70,6 +72,7 @@ async function saveSet(num: number) {
     setNumber: setNum,
     teamScore: teamScore.value,
     opponentScore: opponentScore.value,
+    playerListId: playerListId.value,
     youtubeLink: youtube.value,
   };
 
@@ -132,7 +135,11 @@ async function saveSet(num: number) {
       <UCard class="h-full">
         <template #header>
           <!-- Player Input -->
-          <MatchSetPlayerTable v-model="listSaved" :match-id="matchId" :set-id="setNum"/>
+          <MatchSetPlayerTable
+            v-model="playerListId"
+            :match-id="matchId"
+            :set-num="setNum"
+          />
         </template>
 
         <MatchSetYoutubeInput v-model="youtube" />

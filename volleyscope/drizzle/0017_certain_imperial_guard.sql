@@ -1,0 +1,2 @@
+ALTER TABLE "set" ADD COLUMN "player_list_id" integer;--> statement-breakpoint
+ALTER TABLE "set" ADD CONSTRAINT "set_player_list_id_player_list_player_list_id_fk" FOREIGN KEY ("player_list_id") REFERENCES "public"."player_list"("player_list_id") ON DELETE no action ON UPDATE no action;
