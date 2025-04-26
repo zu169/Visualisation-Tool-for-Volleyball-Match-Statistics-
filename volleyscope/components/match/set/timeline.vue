@@ -2,6 +2,7 @@
 import { ref } from "vue";
 
 const pointNum = ref<number>();
+const side = ref<string>();
 const addPointModal = ref(false);
 const choiceModal = ref(false);
 const warningModal = ref(false);
@@ -23,15 +24,38 @@ enum Point {
   Unknown = "unknown",
 }
 
+type Points = {
+  pointId: number;
+  setId: number;
+  pointNum: number;
+  side: string;
+  playerId: number;
+};
+
 const selectedPoints = ref<Point[]>([]);
 
-/**
- * [HOME, AWAY, NULL, HOME, NULL]
- *
- */
 watchEffect(() => {
   selectedPoints.value = Array(team + opponent).fill(Point.Unknown);
 });
+
+if (setId !== undefined) {
+  // Fetch the points for the current set
+  const { data: setPoints } = await useFetch<Points[]>(
+    `/api/point/getPoints?set=${setId}`
+  );
+  console.log("Points: ", setPoints);
+  if (setPoints.value !== null) {
+    setPoints.value.forEach((point, index) => {
+      if (point.side === "home") {
+        selectedPoints.value[index] = Point.Home;
+      } else if (point.side === "away") {
+        selectedPoints.value[index] = Point.Away;
+      } else {
+        selectedPoints.value[index] = Point.Unknown;
+      }
+    });
+  }
+}
 
 const addPoint = (team: "home" | "away", index: number) => {
   // If both are visible: first click
@@ -42,11 +66,12 @@ const addPoint = (team: "home" | "away", index: number) => {
       selectedPoints.value[index] = Point.Away;
     }
     console.log("Point Number" + index);
-    pointNum.value = index;
+    pointNum.value = index + 1;
+    side.value = team;
     addPointModal.value = true;
   } else {
     // Second click: reset both buttons to visible
-    pointNum.value = index;
+    pointNum.value = index + 1;
     choiceModal.value = true;
   }
 
@@ -54,10 +79,32 @@ const addPoint = (team: "home" | "away", index: number) => {
     if (warningSuccess.value) {
       warningModal.value = false;
       //Delete the point
-      selectedPoints.value[pointNum.value] = Point.Unknown;
+      if (deletePoint() !== false) {
+        selectedPoints.value[pointNum.value] = Point.Unknown;
+      }
       warningSuccess.value = false;
     }
   });
+
+  async function deletePoint() {
+    const response = await $fetch(
+      `/api/point/deletePoint?point=${pointNum.value}&set=${setId}`
+    );
+    if (!response || response.message === "error") {
+      toast.add({
+        title: "Error",
+        description: "There was an error deleting the Point " + pointNum.value,
+        color: "error",
+      });
+      return false;
+    }
+    toast.add({
+      title: "Point " + pointNum.value + " has been deleted!",
+      color: "success",
+      icon: "i-lucide-trash-2",
+    });
+    return true;
+  }
 
   watch(fullDeleteSuccess, () => {
     if (fullDeleteSuccess.value) {
@@ -114,6 +161,7 @@ const addPoint = (team: "home" | "away", index: number) => {
     <template #body>
       <MatchPointInfoInput
         :point-num="pointNum"
+        :side="side"
         :list-id="listId"
         :set-id="setId"
       />

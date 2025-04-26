@@ -1,8 +1,10 @@
 <script setup lang="ts">
-const { listId, players } = defineProps<{
-  listId: number;
+const { pointId, players } = defineProps<{
+  pointId: number;
   players: Player[];
 }>();
+
+console.log("Point ID: " + pointId);
 
 type Player = {
   playerId: number;
@@ -11,12 +13,52 @@ type Player = {
   shirtNumber: number;
 };
 
+const toast = useToast();
 const serve_types = ["Underhand", "Overhand", "Float", "Jump"];
 const serve_success = ["Normal", "Ace", "Error"];
 const selected = ref<Player>();
 
-const serve = ref(serve_types[0]);
-const success = ref(serve_success[0]);
+const serve = ref();
+const success = ref();
+
+watchEffect(() => {
+  if (!selected.value || !serve.value || !success.value) return;
+  console.log(
+    "Selected Player: " + selected.value?.playerName,
+    "Serve Type: " + serve?.value,
+    "Serve Success: " + success?.value
+  );
+  if (pointId) {
+    saveServe();
+  }
+});
+
+async function saveServe() {
+  const serveData = {
+    pointId: pointId,
+    playerId: selected.value.playerId,
+    type: serve.value,
+    success: success.value,
+  };
+  console.log("Serve Data", serveData);
+  const response = await $fetch("/api/point/createServe", {
+    method: "POST",
+    body: serveData,
+  });
+  if (!response || response.message === "error") {
+    toast.add({
+      title: "Error",
+      description: "There was an error creating the Serve",
+      color: "error",
+    });
+  } else {
+    toast.add({
+      title: "Serve Information has been Added!",
+      color: "success",
+      icon: "bitcoin-icons:edit-filled",
+    });
+  }
+}
 </script>
 
 <template>

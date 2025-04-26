@@ -1,21 +1,22 @@
 import { db } from "~/db/index";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { points } from "~/db/schema/match";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  const pointNum = Number(query.point);
   const setId = Number(query.set);
 
   try {
-    const point = await db
+    const setPoints = await db
       .select()
       .from(points)
-      .where(and(eq(points.setId, setId), eq(points.pointNumber, pointNum)));
+      .where(eq(points.setId, setId))
+      .orderBy(points.pointNumber);
 
-    return { data: point[0].pointId, message: "success" };
+    console.log("points", setPoints);
+    return setPoints;
   } catch (error) {
     console.log("Error" + error);
-    return { data: 0, message: "error" };
+    return { data: [] };
   }
 });

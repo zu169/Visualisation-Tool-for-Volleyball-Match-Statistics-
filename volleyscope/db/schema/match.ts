@@ -4,9 +4,12 @@ import {
   varchar,
   date,
   primaryKey,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { teams, opponents, players } from "./players";
 import { positionsEnum, leaguesEnum } from "./positions";
+
+export const sideEnum = pgEnum("sides", ["home", "away"]);
 
 export const matches = pgTable("match", {
   matchId: integer("match_id").primaryKey().generatedAlwaysAsIdentity(),
@@ -36,6 +39,7 @@ export const points = pgTable("point", {
   pointId: integer("point_id").primaryKey().generatedAlwaysAsIdentity(),
   setId: integer("set_id").references(() => sets.setId),
   pointNumber: integer("point_number").unique().notNull(),
+  side: sideEnum().notNull(),
   playerListId: integer("player_list_id").references(
     () => playerList.playerListId
   ),

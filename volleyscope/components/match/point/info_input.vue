@@ -1,13 +1,15 @@
 <script setup lang="ts">
-const { pointNum, listId, setId } = defineProps<{
+const { pointNum, side, listId, setId } = defineProps<{
   pointNum: number;
+  side: string;
   listId: number;
   setId: number;
 }>();
 
 console.log("Point Number: " + pointNum);
-console.log(listId);
-console.log(setId);
+console.log("List ID: " + listId);
+console.log("Set ID: " + setId);
+console.log("Side: " + side);
 
 const toast = useToast();
 const pointId = ref<number>();
@@ -20,28 +22,33 @@ type Player = {
 };
 
 async function checkPointExists() {
+  console.log("Checking if point exists");
   const { data: point, message: response } = await $fetch(
     `/api/point/getPoint?point=${pointNum}&set=${setId}`
   );
 
-  if (!response || response.message === "error") {
-    toast.add({
-      title: "Error",
-      description: "There was an error creating the Point",
-      color: "error",
-    });
+  if (!response || response === "error") {
     return false;
   }
   if (point.value) {
-    pointId.value = point;
+    pointId.value = point.pointId;
+    console.log("Point ID: " + pointId.value);
     return true;
   }
   return false;
 }
 
-if (checkPointExists() === false) {
+watchEffect(() => {
+  if (!pointNum || !listId || !setId || !side) return;
+  if (checkPointExists() === false) {
+    setPoint();
+  }
+});
+
+async function setPoint() {
+  console.log("Creating Point");
   const { data: point, message: response } = await $fetch(
-    `/api/point/createPoint?point=${pointNum}&list=${listId}&set=${setId}`
+    `/api/point/createPoint?point=${pointNum}&list=${listId}&set=${setId}&side=${side}`
   );
   if (!response || response === "error") {
     toast.add({
@@ -50,7 +57,8 @@ if (checkPointExists() === false) {
       color: "error",
     });
   }
-  pointId.value = point;
+  pointId.value = point.pointId;
+  console.log("Point ID: " + pointId.value);
   toast.add({
     title: "Point has been Added!",
     color: "success",
@@ -95,27 +103,27 @@ function addAction(action: string) {
     <template v-for="(action, index) in addedActions" :key="index">
       <MatchPointServeDataCard
         v-if="action === 'Serve'"
-        :list-id="listId"
+        :point-id="pointId"
         :players="players"
       />
       <MatchPointAttackDataCard
         v-else-if="action === 'Attack'"
-        :list-id="listId"
+        :point-id="pointId"
         :players="players"
       />
       <MatchPointReceiveDataCard
         v-else-if="action === 'Receive'"
-        :list-id="listId"
+        :point-id="pointId"
         :players="players"
       />
       <MatchPointSetDataCard
         v-else-if="action === 'Set'"
-        :list-id="listId"
+        :point-id="pointId"
         players="players"
       />
       <MatchPointBlockDataCard
         v-else-if="action === 'Block'"
-        :list-id="listId"
+        :point-id="pointId"
         :players="players"
       />
     </template>
