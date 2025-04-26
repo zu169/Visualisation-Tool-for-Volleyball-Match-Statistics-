@@ -37,6 +37,7 @@ export const points = pgTable(
   {
     pointId: integer("point_id").generatedAlwaysAsIdentity(),
     setId: integer("set_id").references(() => sets.setId),
+    pointNumber: integer("point_number").unique().notNull(),
     playerListId: integer("player_list_id").references(
       () => playerList.playerListId
     ),

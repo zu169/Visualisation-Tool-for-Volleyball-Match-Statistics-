@@ -16,7 +16,7 @@ const { editView, matchId, setNum } = defineProps<{
   setNum: number;
 }>();
 
-const setId = ref<number | undefined>();
+const setId = ref<number | undefined>(undefined);
 
 const original = ref<Set | undefined>();
 const teamScore = ref();
@@ -138,7 +138,7 @@ async function saveSet(num: number) {
         v-model:oppo="opponentScore"
         :match-id="matchId"
       />
-      <div v-if="setId.value">
+      <div v-if="setId !== undefined">
         <MatchSetTimeline
           :team="teamScore"
           :opponent="opponentScore"

@@ -1,0 +1,1 @@
+ALTER TABLE "point" ADD COLUMN "point_number" integer NOT NULL;

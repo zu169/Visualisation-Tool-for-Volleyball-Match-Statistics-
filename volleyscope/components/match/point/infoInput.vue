@@ -1,9 +1,16 @@
 <script setup lang="ts">
-const { pointId, listId, setId } = defineProps<{
-  pointId: number;
+const { pointNum, listId, setId } = defineProps<{
+  pointNum: number;
   listId: number;
   setId: number;
 }>();
+
+console.log("Point Number: " + pointNum);
+console.log(listId);
+console.log(setId);
+
+const toast = useToast();
+const pointId = ref<number>();
 
 type Player = {
   playerId: number;
@@ -11,6 +18,45 @@ type Player = {
   position: string;
   shirtNumber: number;
 };
+
+async function checkPointExists() {
+  const { data: point, message: response } = await $fetch(
+    `/api/point/getPoint?point=${pointNum}&set=${setId}`
+  );
+
+  if (!response || response.message === "error") {
+    toast.add({
+      title: "Error",
+      description: "There was an error creating the Point",
+      color: "error",
+    });
+    return false;
+  }
+  if (point.value) {
+    pointId.value = point;
+    return true;
+  }
+  return false;
+}
+
+if (checkPointExists() === false) {
+  const { data: point, message: response } = await $fetch(
+    `/api/point/createPoint?point=${pointNum}&list=${listId}&set=${setId}`
+  );
+  if (!response || response === "error") {
+    toast.add({
+      title: "Error",
+      description: "There was an error creating the Point",
+      color: "error",
+    });
+  }
+  pointId.value = point;
+  toast.add({
+    title: "Point has been Added!",
+    color: "success",
+    icon: "bitcoin-icons:edit-filled",
+  });
+}
 
 const { data: players } = await useFetch<Player[]>(
   `/api/playerList/getPlayerList?listId=${listId}`

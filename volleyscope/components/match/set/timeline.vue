@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-const pointId = ref<number>(0);
+const pointNum = ref<number>();
 const addPointModal = ref(false);
+const choiceModal = ref(false);
 const warningModal = ref(false);
 const warningSuccess = ref(false);
+const fullDeleteModal = ref(false);
+const fullDeleteSuccess = ref(false);
+const toast = useToast();
 
 const { team, opponent, listId, setId } = defineProps<{
   team: number;
@@ -37,19 +41,31 @@ const addPoint = (team: "home" | "away", index: number) => {
     } else {
       selectedPoints.value[index] = Point.Away;
     }
-    pointId.value = index;
+    console.log("Point Number" + index);
+    pointNum.value = index;
     addPointModal.value = true;
   } else {
     // Second click: reset both buttons to visible
-    warningModal.value = true;
+    pointNum.value = index;
+    choiceModal.value = true;
   }
 
   watch(warningSuccess, () => {
     if (warningSuccess.value) {
       warningModal.value = false;
       //Delete the point
-      selectedPoints.value[index] = Point.Unknown;
+      selectedPoints.value[pointNum.value] = Point.Unknown;
       warningSuccess.value = false;
+    }
+  });
+
+  watch(fullDeleteSuccess, () => {
+    if (fullDeleteSuccess.value) {
+      fullDeleteModal.value = false;
+      //Delete all future points
+      for (let i = pointNum.value; i < selectedPoints.value.length; i++) {
+        selectedPoints.value[i] = Point.Unknown;
+      }
     }
   });
 };
@@ -97,7 +113,7 @@ const addPoint = (team: "home" | "away", index: number) => {
   >
     <template #body>
       <MatchPointInfoInput
-        :point-id="pointId"
+        :point-num="pointNum"
         :list-id="listId"
         :set-id="setId"
       />
@@ -114,6 +130,35 @@ const addPoint = (team: "home" | "away", index: number) => {
     </template>
   </UModal>
   <UModal
+    v-model:open="choiceModal"
+    :dismissible="true"
+    :close="false"
+    :ui="{ footer: 'justify-end' }"
+  >
+    <template #header>
+      <h3>Do you want to edit or delete this Point?</h3>
+    </template>
+
+    <template #body>
+      <p>To cancel the action, click outside the modal or press the ESC key.</p>
+    </template>
+
+    <template #footer>
+      <UButton
+        label="Edit!"
+        color="success"
+        variant="soft"
+        @click="(choiceModal = false), (addPointModal = true)"
+      />
+      <UButton
+        label="Delete!"
+        color="error"
+        variant="outline"
+        @click="(choiceModal = false), (warningModal = true)"
+      />
+    </template>
+  </UModal>
+  <UModal
     v-model:open="warningModal"
     :dismissible="false"
     :close="false"
@@ -125,8 +170,8 @@ const addPoint = (team: "home" | "away", index: number) => {
 
     <template #body>
       <p>
-        This action cannot be reversed and you will lose any data you added to
-        the point!
+        This action cannot be reversed, you will lose any data you added to the
+        point and any points following that on!
       </p>
     </template>
 
@@ -141,7 +186,39 @@ const addPoint = (team: "home" | "away", index: number) => {
         label="Yes, I'm sure!"
         color="error"
         variant="outline"
-        @click="warningSuccess = true"
+        @click="(warningModal = false), (fullDeleteModal = true)"
+      />
+    </template>
+  </UModal>
+  <UModal
+    v-model:open="fullDeleteModal"
+    :dismissible="false"
+    :close="false"
+    :ui="{ footer: 'justify-end' }"
+  >
+    <template #header>
+      <h3>Would you like to delete all the following points?</h3>
+    </template>
+
+    <template #body>
+      <p>
+        This action cannot be reversed, you will lose any data you added to the
+        points following the current point!
+      </p>
+    </template>
+
+    <template #footer>
+      <UButton
+        label="No"
+        color="success"
+        variant="soft"
+        @click="(fullDeleteModal = false), (warningSuccess = true)"
+      />
+      <UButton
+        label="Yes, Delete!"
+        color="error"
+        variant="outline"
+        @click="fullDeleteSuccess = true"
       />
     </template>
   </UModal>

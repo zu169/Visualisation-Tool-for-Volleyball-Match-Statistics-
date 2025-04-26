@@ -18,7 +18,6 @@ export default defineEventHandler(async (event) => {
       .where(eq(listPlayer.playerListId, playerListId))
       .leftJoin(players, eq(listPlayer.playerId, players.playerId))
       .orderBy(listPlayer.position);
-    console.log("List of Players: " + playerList);
     return playerList;
   } catch (error) {
     console.log("Database error:", error);
