@@ -5,30 +5,24 @@ type Team = {
   teamId: number;
   teamName: string;
 };
-
-const teams = ref<TabsItem[]>([
-  {
-    label: "View All",
-    slot: "all" as const,
-  },
-]);
-
-const { data: teamData } = useAsyncData<Team[]>(() =>
+const { data: teamData } = await useAsyncData<Team[]>("teams", () =>
   $fetch("/api/team/getAllTeamNames")
 );
 
-watchEffect(() => {
-  if (teamData.value) {
-    teams.value = teams.value.filter((t) => !t.id);
+const teams = ref<TabsItem[]>([]);
 
-    teamData.value.forEach((team) => {
-      teams.value.push({
-        label: team.teamName,
-        id: team.teamId,
-      });
-    });
-  }
-});
+if (teamData.value) {
+  teams.value = [
+    {
+      label: "View All",
+      slot: "all" as const,
+    },
+    ...teamData.value.map((team) => ({
+      label: team.teamName,
+      id: team.teamId,
+    })),
+  ];
+}
 </script>
 
 <template>
@@ -42,10 +36,15 @@ watchEffect(() => {
     <USeparator />
     <UTabs color="neutral" variant="link" :items="teams" class="w-full">
       <template #all>
-        <MatchHistoryTable :team-id="0" />
+        <ClientOnly>
+          <MatchHistoryTable :team-id="0" />
+        </ClientOnly>
       </template>
+
       <template #content="{ item }">
-        <MatchHistoryTable :team-id="item.id" />
+        <ClientOnly>
+          <MatchHistoryTable :team-id="item.id" />
+        </ClientOnly>
       </template>
     </UTabs>
   </UContainer>

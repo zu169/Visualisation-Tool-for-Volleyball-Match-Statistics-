@@ -69,10 +69,10 @@ const columnVisibility = ref({
 
 const globalFilter = ref("");
 
-const { data } = await useFetch<Match[]>(
-  `/api/match/getAllMatches?team=${teamId}`,
+const { data } = await useAsyncData<Match[]>(
+  "table", // <-- the key name
+  () => $fetch(`/api/match/getAllMatches?team=${teamId}`), // <-- must be a FUNCTION
   {
-    key: "table",
     transform: (data) => {
       return (
         data?.map((match) => ({
@@ -81,14 +81,6 @@ const { data } = await useFetch<Match[]>(
       );
     },
   }
-);
-
-watch(
-  data,
-  () => {
-    refreshNuxtData();
-  },
-  { immediate: true }
 );
 
 const columns: TableColumn<Match>[] = [
@@ -203,7 +195,7 @@ async function deleteSuccess() {
   if (!response || response.message === "error") {
     toast.add({
       title: "Error",
-      description: "There was an error deleting the Team",
+      description: "There was an error deleting the Match",
       color: "error",
     });
     return;
