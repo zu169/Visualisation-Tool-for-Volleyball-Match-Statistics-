@@ -37,10 +37,10 @@ type PlayerResponse = {
   message?: string;
 };
 
-const { data: playersData } = await useFetch<PlayerResponse[]>(
-  `/api/player/getAllPlayers?team=${teamId}`,
+const { data: playersData } = await useAsyncData<PlayerResponse[]>(
+  "table",
+  () => $fetch(`/api/player/getAllPlayers?team=${teamId}`),
   {
-    key: "table",
     transform: (data) => {
       return (
         data?.map((player) => ({
@@ -48,13 +48,8 @@ const { data: playersData } = await useFetch<PlayerResponse[]>(
         })) || []
       );
     },
-    lazy: true,
   }
 );
-
-watch(playersData, () => {
-  refreshNuxtData();
-});
 
 // const data = ref<Player[]>([
 //   {
@@ -121,16 +116,30 @@ const columns: TableColumn<PlayerResponse>[] = [
     id: "teams",
     accessorKey: "teamInfo",
     header: ({ column }) => getHeader(column, "Teams"),
-    cell: ({ row }) =>
-      row.original.teamInfo.map((team) => team.teamName).join(", "),
+    cell: ({ row }) => {
+      const teamInfo = row.original.teamInfo;
+
+      // Ensure teamInfo is always an array, even if undefined
+      if (Array.isArray(teamInfo) && teamInfo.length > 0) {
+        return teamInfo.map((team) => team.teamName).join(", ");
+      }
+
+      // Fallback when teamInfo is undefined or empty
+      return "No teams";
+    },
   },
   {
     id: "year Joined",
     accessorKey: "teamInfo",
     header: ({ column }) => getHeader(column, "Year Joined"),
     cell: ({ row }) => {
-      const teamInfo = row.original.teamInfo;
-      return teamInfo.length > 0 ? teamInfo[0].yearJoined : "—";
+      const teamInfo = row.original.teamInfo || []; // Default to empty array if undefined
+
+      if (Array.isArray(teamInfo) && teamInfo.length > 0) {
+        return teamInfo[0]?.yearJoined || "—"; // Safely access yearJoined
+      }
+
+      return "—"; // Fallback when no teamInfo available
     },
   },
   {

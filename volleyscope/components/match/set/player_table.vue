@@ -27,47 +27,38 @@ const positions = [
 const selectedPlayers = ref<Player[]>([]);
 
 // Fetch all players
-const { data: players, status } = await useFetch<Player[]>(
-  `/api/player/getAllPlayerInfo`,
-  {
-    key: "players",
-    /**
-     * Transform the raw player data into a format that's easier to consume
-     * by the component. Add a `label` and `value` property to each player,
-     * and return an array of the transformed players.
-     */
-    transform: (data) => {
-      return (
-        data?.map((player) => ({
-          label: player.playerName,
-          value: player.playerId,
-          ...player,
-        })) || []
-      );
-    },
-  }
+const { data: players, status } = await useAsyncData<Player[]>(() => {
+  return $fetch(`/api/player/getAllPlayerInfo`).then((data) => {
+    return (
+      data?.map((player) => ({
+        label: player.playerName,
+        value: player.playerId,
+        ...player,
+      })) || []
+    );
+  });
+});
+
+// Fetch the player list based on playerListId
+const { data: playerList } = await useAsyncData<Player[]>(
+  () => $fetch(`/api/playerList/getPlayerList?listId=${playerListId.value}`),
+  { watch: [playerListId], immediate: true }
 );
 
-if (playerListId.value !== undefined) {
-  console.log("Player List ID: " + playerListId.value);
-  const { data: playerList } = await useFetch<Player[]>(
-    `/api/playerList/getPlayerList?listId=${playerListId.value}`
-  );
-  console.log("Player List: ", playerList);
-  if (playerList.value !== null) {
-    selectedPlayers.value = playerList.value.map((player) => ({
-      label: player.playerName,
-      value: player.playerId,
-      ...player,
-    }));
-  } else if (playerList.value === 0) {
-    toast.add({
-      title: "Error",
-      description: "There was an error fetching the player list",
-      color: "error",
-    });
-  }
-  refreshNuxtData();
+console.log("Player List: ", playerList);
+
+if (playerList.value && Array.isArray(playerList.value)) {
+  selectedPlayers.value = playerList.value.map((player) => ({
+    label: player.playerName,
+    value: player.playerId,
+    ...player,
+  }));
+} else if (playerList.value === 0) {
+  toast.add({
+    title: "Error",
+    description: "There was an error fetching the player list",
+    color: "error",
+  });
 }
 
 function approvePositions() {
@@ -192,10 +183,6 @@ async function savePlayers() {
     icon: "bitcoin-icons:edit-filled",
   });
 }
-
-// watch(selectedPlayers, () => {
-//   refreshNuxtData();
-// });
 </script>
 
 <template>
@@ -235,7 +222,7 @@ async function savePlayers() {
       >
         <!-- Player Name -->
         <div class="col-span-5">
-          {{ player.playerName || player }}
+          {{ player.playerName }}
           <!-- Handle if player is string or object -->
         </div>
 

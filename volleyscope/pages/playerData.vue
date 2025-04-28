@@ -1,36 +1,34 @@
 <script setup lang="ts">
-import { PlayerDisplayTable } from "#components";
 import type { TabsItem } from "@nuxt/ui";
+import { ClientOnly } from "#components";
 
 type Team = {
   teamId: number;
   teamName: string;
 };
 
-const teams = ref<TabsItem[]>([
-  {
-    label: "View All",
-    slot: "all" as const,
-  },
-]);
-
-const { data: teamData } = useAsyncData<Team[]>(() =>
+// Fetch teams data on page load
+const { data: teamData } = await useAsyncData<Team[]>("teams", () =>
   $fetch("/api/team/getAllTeamNames")
 );
 
-watchEffect(() => {
-  if (teamData.value) {
-    teams.value = teams.value.filter((t) => !t.id);
+const teams = ref<TabsItem[]>([]);
 
-    teamData.value.forEach((team) => {
-      teams.value.push({
-        label: team.teamName,
-        id: team.teamId,
-      });
-    });
-  }
-});
+// Populate teams dynamically after data is fetched
+if (teamData.value) {
+  teams.value = [
+    {
+      label: "View All",
+      slot: "all" as const,
+    },
+    ...teamData.value.map((team) => ({
+      label: team.teamName,
+      id: team.teamId,
+    })),
+  ];
+}
 </script>
+
 <template>
   <UContainer>
     <div class="flex justify-between items-center">
@@ -40,12 +38,20 @@ watchEffect(() => {
       >
     </div>
     <USeparator />
+
+    <!-- Tabs component for each team -->
     <UTabs color="neutral" variant="link" :items="teams" class="w-full">
       <template #all>
-        <PlayerDisplayTable :team-id="0" />
+        <!-- Use ClientOnly to avoid SSR rendering issues -->
+        <ClientOnly>
+          <PlayerDisplayTable :team-id="0" />
+        </ClientOnly>
       </template>
+
       <template #content="{ item }">
-        <PlayerDisplayTable :team-id="item.id" />
+        <ClientOnly>
+          <PlayerDisplayTable :team-id="item.id" />
+        </ClientOnly>
       </template>
     </UTabs>
   </UContainer>
