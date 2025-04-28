@@ -34,28 +34,59 @@ type Points = {
 
 const selectedPoints = ref<Point[]>([]);
 
-watchEffect(() => {
-  selectedPoints.value = Array(team + opponent).fill(Point.Unknown);
+onMounted(() => {
+  if (setId !== undefined) {
+    selectedPoints.value = Array(team + opponent).fill(Point.Unknown);
+    fetchPoints();
+  }
 });
 
-if (setId !== undefined) {
-  // Fetch the points for the current set
-  const { data: setPoints } = await useFetch<Points[]>(
-    `/api/point/getPoints?set=${setId}`
-  );
-  console.log("Points: ", setPoints);
-  if (setPoints.value !== null) {
-    setPoints.value.forEach((point, index) => {
+async function fetchPoints() {
+  const { data: pointData } = useAsyncData<Points[]>("points", () => {
+    return $fetch(`/api/point/getPoints?set=${setId}`);
+  });
+  if (pointData.value !== null) {
+    pointData.value.forEach((point) => {
       if (point.side === "home") {
-        selectedPoints.value[index] = Point.Home;
+        selectedPoints.value[point.pointNumber - 1] = Point.Home;
       } else if (point.side === "away") {
-        selectedPoints.value[index] = Point.Away;
-      } else {
-        selectedPoints.value[index] = Point.Unknown;
+        selectedPoints.value[point.pointNumber - 1] = Point.Away;
       }
     });
   }
 }
+
+watch(warningSuccess, async () => {
+  if (warningSuccess.value === true) {
+    warningModal.value = false;
+    if (await deletePoint(pointNum.value)) {
+      selectedPoints.value[pointNum.value - 1] = Point.Unknown;
+    }
+    warningSuccess.value = false;
+    toast.add({
+      title: "Point" + pointNum.value + " have been deleted!",
+      color: "success",
+      icon: "i-lucide-trash-2",
+    });
+  }
+});
+
+watch(fullDeleteSuccess, async () => {
+  if (fullDeleteSuccess.value === true) {
+    fullDeleteModal.value = false;
+    // delete all future points from this point
+    for (let i = pointNum.value - 1; i < selectedPoints.value.length; i++) {
+      deletePoint(i + 1);
+      selectedPoints.value[i] = Point.Unknown;
+    }
+    fullDeleteSuccess.value = false;
+    toast.add({
+      title: "All Points have been deleted!",
+      color: "success",
+      icon: "i-lucide-trash-2",
+    });
+  }
+});
 
 const addPoint = (team: "home" | "away", index: number) => {
   // If both are visible: first click
@@ -72,50 +103,37 @@ const addPoint = (team: "home" | "away", index: number) => {
   } else {
     // Second click: reset both buttons to visible
     pointNum.value = index + 1;
+    console.log("Point Number" + pointNum.value);
     choiceModal.value = true;
   }
+};
 
-  watch(warningSuccess, () => {
-    if (warningSuccess.value) {
-      warningModal.value = false;
-      //Delete the point
-      if (deletePoint() !== false) {
-        selectedPoints.value[pointNum.value] = Point.Unknown;
-      }
-      warningSuccess.value = false;
-    }
-  });
-
-  async function deletePoint() {
-    const response = await $fetch(
-      `/api/point/deletePoint?point=${pointNum.value}&set=${setId}`
-    );
-    if (!response || response.message === "error") {
-      toast.add({
-        title: "Error",
-        description: "There was an error deleting the Point " + pointNum.value,
-        color: "error",
-      });
-      return false;
-    }
+async function deletePoint(pointNumber: number) {
+  const response = await $fetch(
+    `/api/point/deletePoint?point=${pointNumber}&set=${setId}`
+  );
+  if (!response || response.message === "error") {
     toast.add({
-      title: "Point " + pointNum.value + " has been deleted!",
-      color: "success",
-      icon: "i-lucide-trash-2",
+      title: "Error",
+      description: "There was an error deleting the Point " + pointNum.value,
+      color: "error",
+    });
+    return false;
+  } else if (response.message === "Point not found") {
+    toast.add({
+      title: "Error",
+      description: "Point " + pointNumber.value + " does not exist!",
+      color: "error",
     });
     return true;
   }
-
-  watch(fullDeleteSuccess, () => {
-    if (fullDeleteSuccess.value) {
-      fullDeleteModal.value = false;
-      //Delete all future points
-      for (let i = pointNum.value; i < selectedPoints.value.length; i++) {
-        selectedPoints.value[i] = Point.Unknown;
-      }
-    }
+  toast.add({
+    title: "Point " + pointNumber.value + " has been deleted!",
+    color: "success",
+    icon: "i-lucide-trash-2",
   });
-};
+  return true;
+}
 </script>
 
 <template>
@@ -125,9 +143,17 @@ const addPoint = (team: "home" | "away", index: number) => {
     <div class="flex flex-col gap-2 w-1/2 items-end">
       <template v-for="(value, index) in selectedPoints" :key="'home' + index">
         <UButton
-          v-if="value === Point.Unknown || value === Point.Home"
+          v-if="value === Point.Unknown"
           class="w-10 h-10 bg-white"
           @click="addPoint('home', index)"
+          >{{ index + 1 }}</UButton
+        >
+        <UButton
+          v-else-if="value === Point.Home"
+          class="w-10 h-10"
+          color="success"
+          variant="soft"
+          @click="addPoint('unknown', index)"
           >{{ index + 1 }}</UButton
         >
         <div v-else-if="value === Point.Away" class="w-10 h-10 invisible" />
