@@ -19,8 +19,8 @@ const { editView, matchId, setNum } = defineProps<{
 const setId = ref<number | undefined>(undefined);
 
 const original = ref<Set | undefined>();
-const teamScore = ref();
-const opponentScore = ref();
+const teamScore = ref(0);
+const opponentScore = ref(0);
 const playerListId = ref();
 const youtube = ref();
 
