@@ -28,9 +28,10 @@ async function checkPointExists() {
   );
 
   if (!response || response === "error") {
+    console.log("Error fetching point");
     return false;
   }
-  if (point.value) {
+  if (point.value === 0) {
     pointId.value = point.pointId;
     console.log("Point ID: " + pointId.value);
     return true;
@@ -40,7 +41,8 @@ async function checkPointExists() {
 
 watchEffect(() => {
   if (!pointNum || !listId || !setId || !side) return;
-  if (checkPointExists() === false) {
+  if (!checkPointExists()) {
+    console.log("Point does not exist, creating new point");
     setPoint();
   }
 });
