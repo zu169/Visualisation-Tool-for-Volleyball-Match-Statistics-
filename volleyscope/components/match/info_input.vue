@@ -42,47 +42,56 @@ const isDateDisabled = (date: DateValue) => {
   return date > currentDate;
 };
 
-const { data: matchData } = useAsyncData<Match>(
-  () => $fetch(`/api/match/getMatch?match=${matchId.value}`),
-  {
-    watch: [matchId],
-    immediate: false, // Only fetch when matchId is available
-  }
+const { data: matchData, pending } = useAsyncData<Match>(
+  () => $fetch(`/api/match/getMatch?match=${matchId.value}`)
+  // {
+  //   watch: [matchId],
+  //   immediate: false, // Only fetch when matchId is available
+  // }
 );
 
 /**
  * Initialize form when match data loads
  */
-watch(
-  matchData,
-  (newData) => {
-    if (!newData) return;
-
-    team.value = newData.teamId;
-    opponent.value = newData.opponentId;
-    gameType.value = newData.matchType;
-    isoGameDate.value = newData.date;
+watchEffect(() => {
+  if (pending.value === true) return;
+  if (matchData.value && matchId.value) {
+    team.value = matchData.value.teamId;
+    opponent.value = matchData.value.opponentId;
+    gameType.value = matchData.value.matchType;
+    isoGameDate.value = matchData.value.date;
 
     // Convert ISO date to CalendarDate object
-    gameDate.value = fromDate(new Date(newData.date), getLocalTimeZone());
+    gameDate.value = fromDate(
+      new Date(matchData.value.date),
+      getLocalTimeZone()
+    );
 
-    // Store original values for change detection
-    original.value = { ...newData };
+    original.value = { ...matchData.value };
     console.log("Original: ", original.value);
-  },
-  { immediate: true }
-);
+  }
+});
+
 /**
  * Check if form has been modified
  */
 const hasChanged = computed(() => {
   console.log("Original: ", original.value);
   if (!original.value) return true;
+
+  // Normalize the date comparison
+  const normalisedGameDate = gameDate.value
+    ?.toDate(getLocalTimeZone())
+    .toISOString()
+    .split("T")[0];
+
+  console.log("og date" + original.value.date);
+  console.log("new date" + normalisedGameDate);
   return (
     original.value.teamId !== team.value ||
     original.value.opponentId !== opponent.value ||
     original.value.matchType !== gameType.value ||
-    original.value.date !== isoGameDate.value
+    original.value.date !== normalisedGameDate
   );
 });
 
@@ -90,12 +99,13 @@ watchEffect(() => {
   if (!team.value || !opponent.value || !gameType.value || !gameDate.value)
     return;
 
-  if (matchId.value === undefined) {
-    console.log("gametype" + gameType.value);
+  if (isNaN(matchId.value)) {
     isoGameDate.value = gameDate.value.toDate(getLocalTimeZone()).toISOString();
     saveMatch(0);
     return;
+    console.log(hasChanged.value);
   } else if (hasChanged.value === true && matchId.value !== undefined) {
+    isoGameDate.value = gameDate.value.toDate(getLocalTimeZone()).toISOString();
     saveMatch(1);
   }
   return;
