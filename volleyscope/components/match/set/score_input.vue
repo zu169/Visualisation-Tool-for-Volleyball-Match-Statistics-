@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, watch } from "vue";
 
 const { matchId } = defineProps<{ matchId?: number }>();
 const teamScore = defineModel<number>("team");
@@ -21,24 +21,24 @@ type Team = {
   division: string;
 };
 
-onMounted(async () => {
-  if (matchId !== undefined) {
-    const matchData = await $fetch<Match>(
-      `/api/match/getMatch?match=${matchId}`
-    );
-    if (matchData) {
-      const teamData = await $fetch<Team>(
-        `/api/team/getTeam?team=${matchData.teamId}`
-      );
-      team.value = teamData.teamName;
+// Use useAsyncData to fetch match, team, and opponent data
+const { data: matchData } = useAsyncData("matchData", () =>
+  $fetch<Match>(`/api/match/getMatch?match=${matchId}`)
+);
 
-      const opponentData = await $fetch<Team>(
-        `/api/team/getOpponent?team=${matchData.opponentId}`
-      );
-      opponent.value = opponentData.teamName;
-    }
+const { data: teamData } = useAsyncData("teamData", () =>
+  $fetch<Team>(`/api/team/getTeam?team=${matchData.value?.teamId}`)
+);
+
+const { data: opponentData } = useAsyncData("opponentData", () =>
+  $fetch<Team>(`/api/team/getOpponent?team=${matchData.value?.opponentId}`)
+);
+
+watch([teamData, opponentData], ([teamData, opponentData]) => {
+  if (teamData && opponentData) {
+    team.value = teamData.teamName;
+    opponent.value = opponentData.teamName;
   }
-  refreshNuxtData();
 });
 </script>
 
@@ -57,7 +57,7 @@ onMounted(async () => {
             :min="0"
           />
         </div>
-      
+
         <div class="flex flex-col">
           <label class="text-lg font-semibold p-2">
             {{ opponent || "Loading..." }}
