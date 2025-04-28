@@ -11,11 +11,12 @@ type Set = {
 
 const matchId = computed(() => {
   const match = query.match;
-  return typeof match === "string" ? parseInt(match, 10) : undefined;
+  const parsedInt = typeof match === "string" ? parseInt(match, 10) : NaN;
+  return isNaN(parsedInt) ? NaN : parsedInt;
 });
 
-const id = ref<number | undefined>(matchId.value);
-console.log("Match Id: " + id);
+const id = ref<number | NaN>(matchId.value);
+console.log("Match Id: " + id.value);
 
 const isContentDisabled = computed(() => {
   return typeof id.value !== "number" || isNaN(id.value);
@@ -162,6 +163,7 @@ function openMatchView() {
         <UTabs color="neutral" variant="link" :items="sets" class="w-full">
           <template #content="{ item }">
             <MatchSetInfoInput
+              v-if="!isContentDisabled"
               :edit-view="editView"
               :match-id="id"
               :set-num="item.id"
