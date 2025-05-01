@@ -3,11 +3,11 @@
   <div class="grid grid-cols-1 gap-4">
     <UCard variant="soft">
       <template #header>
-        <h3>1. Setup Player Base</h3>
+        <h3>1. Setup Player and Team Base</h3>
       </template>
       <p>
-        Create multiple Player Profiles and Organise Players into different
-        club-owned teams
+        Create multiple Player and Team Profiles and Organise Players into those
+        different club-owned Teams. Don't forget to create Opponent teams too.
       </p>
       <!-- Image of Player Profile view -->
     </UCard>
@@ -41,7 +41,7 @@
       </p>
       <!-- Image of the leaderboard view-->
     </UCard>
-    <UCard variant="soft">
+    <!-- <UCard variant="soft">
       <template #header>
         <h3>5. Analyse Match Data</h3>
       </template>
@@ -49,7 +49,6 @@
         Gain detailed insights of performance by experimenting with the graphing
         software
       </p>
-      <!-- Image of Match Data View -->
-    </UCard>
+    </UCard> -->
   </div>
 </template>

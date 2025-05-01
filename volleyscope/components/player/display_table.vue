@@ -37,10 +37,11 @@ type PlayerResponse = {
   message?: string;
 };
 
-const { data: playersData } = await useAsyncData<PlayerResponse[]>(
-  "table",
+const { data: playersData } = useAsyncData<PlayerResponse[]>(
+  () => `players-${teamId}`,
   () => $fetch(`/api/player/getAllPlayers?team=${teamId}`),
   {
+    watch: [() => teamId],
     transform: (data) => {
       return (
         data?.map((player) => ({
@@ -235,7 +236,7 @@ async function deleteSuccess() {
     icon: "i-lucide-trash-2",
   });
   deleteModal.value = false;
-  await refreshNuxtData("table");
+  await refreshNuxtData(`players-${teamId}`);
 }
 
 function onSelect(row: TableRow<PlayerResponse>) {
