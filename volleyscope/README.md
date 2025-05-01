@@ -1,75 +1,34 @@
-# Nuxt Minimal Starter
+## 1. Clone repository or download volleyscope file
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## 2. Ensure you are in Volleyscope Directory
 
-## Setup
+## 3. Setup
 
-Make sure to install dependencies:
+## install bun
 
-```bash
-# npm
-npm install
+# [Bun Installation Docs](https://bun.sh/docs/installation)
 
-# pnpm
-pnpm install
+# install dependencies and initialise project
 
-# yarn
-yarn install
-
-# bun
 bun install
-```
 
-## Development Server
+# run code
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
 bun run dev
-```
 
-## Production
+## 4. Docker Setup
 
-Build the application for production:
+# 1. Install Docker Desktop
 
-```bash
-# npm
-npm run build
+# 2. Setup PostgreSQL locally [Docker Database Setup Docummentation](https://orm.drizzle.team/docs/guides/postgresql-local-setup)
 
-# pnpm
-pnpm build
+## Drizzle Database Setup
 
-# yarn
-yarn build
+# generate migration files
 
-# bun
-bun run build
-```
+bun drizzle-kit generate
 
-Locally preview production build:
+# run migrations and push changes to database
 
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+bun drizzle-kit migrate
+bun drizzle-kit push
