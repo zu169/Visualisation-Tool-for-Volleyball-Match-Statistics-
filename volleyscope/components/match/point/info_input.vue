@@ -21,19 +21,40 @@ type Player = {
   shirtNumber: number;
 };
 
+type Points = {
+  pointId: number;
+  setId: number;
+  pointNum: number;
+  side: string;
+  playerId: number;
+};
+
+async function checkServeExists() {
+  if (!pointId.value) return;
+  const response = await $fetch(`/api/point/getServe?point=${pointId.value}`);
+
+  if (response.message === "success") {
+    if (!serveAdded.value) {
+      serveAdded.value = true;
+      addedActions.value.push("Serve");
+    }
+  }
+}
+
 async function checkPointExists() {
   console.log("Checking if point exists");
-  const { data: point, message: response } = await $fetch(
+  const response = await useFetch(
     `/api/point/getPoint?point=${pointNum}&set=${setId}`
   );
 
-  if (!response || response === "error") {
+  if (!response.message || response.message === "error") {
     console.log("Error fetching point");
     return false;
   }
-  if (point.value === 0) {
-    pointId.value = point.pointId;
+  if (response.data != null) {
+    pointId.value = data.value.pointId;
     console.log("Point ID: " + pointId.value);
+    await checkServeExists();
     return true;
   }
   return false;
@@ -44,7 +65,7 @@ watchEffect(() => {
   if (!checkPointExists()) {
     console.log("Point does not exist, creating new point");
     setPoint();
-  }
+      }
 });
 
 async function setPoint() {
@@ -72,13 +93,14 @@ const { data: players } = await useFetch<Player[]>(
   `/api/playerList/getPlayerList?listId=${listId}`
 );
 if (players.value !== null) {
-  players.value = players.value.map((player) => ({
-    label: player.playerName,
-    value: player.playerId,
-    ...player,
-  }));
-  console.log("Player List in Point: ", players.value);
-}
+    players.value = players.value.map((player) => ({
+      label: player.playerName,
+      value: player.playerId,
+      ...player,
+    }));
+    console.log("Player List in Point: ", players.value);
+  }
+
 
 const addedActions = ref<string[]>([]);
 const serveAdded = ref(false);
@@ -121,7 +143,7 @@ function addAction(action: string) {
       <MatchPointSetDataCard
         v-else-if="action === 'Set'"
         :point-id="pointId"
-        players="players"
+        :players="players"
       />
       <MatchPointBlockDataCard
         v-else-if="action === 'Block'"
