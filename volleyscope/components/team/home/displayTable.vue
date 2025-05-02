@@ -20,8 +20,6 @@ type Team = {
   division: string;
 };
 
-const table = useTemplateRef("table");
-
 const columnVisibility = ref({
   teamId: false,
 });
@@ -29,7 +27,7 @@ const columnVisibility = ref({
 const globalFilter = ref("");
 
 const { data } = await useFetch<Team[]>("/api/team/getAllTeams", {
-  key: "table",
+  key: "table-teams",
   transform: (data) => {
     return (
       data?.map((team) => ({
@@ -228,7 +226,7 @@ function getHeader(column: Column<Team>, label: string) {
       </UDropdownMenu>
     </div>
     <UTable
-      ref="table"
+      ref="table-teams"
       v-model:global-filter="globalFilter"
       v-model:column-visibility="columnVisibility"
       sticky
