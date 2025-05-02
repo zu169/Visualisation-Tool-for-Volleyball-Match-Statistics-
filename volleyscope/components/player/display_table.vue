@@ -52,51 +52,6 @@ const { data: playersData } = useAsyncData<PlayerResponse[]>(
   }
 );
 
-// const data = ref<Player[]>([
-//   {
-//     id: 0,
-//     name: "Alan Atkins",
-//     position: "Outside Hitter",
-//     shirtNum: 8,
-//   },
-//   {
-//     id: 1,
-//     name: "Szandra Kovacs",
-//     position: "Outside Hitter",
-//     shirtNum: 11,
-//   },
-//   {
-//     id: 2,
-//     name: "Amin Khoshikibari",
-//     position: "Setter",
-//     shirtNum: 16,
-//   },
-//   {
-//     id: 3,
-//     name: "Georgia Pachygiannaki",
-//     position: "Libero",
-//     shirtNum: 16,
-//   },
-//   {
-//     id: 4,
-//     name: "Joseph Lovell",
-//     position: "Libero",
-//     shirtNum: 11,
-//   },
-//   {
-//     id: 5,
-//     name: "Nicholas Ciobanu",
-//     position: "Opposite Hitter",
-//     shirtNum: 7,
-//   },
-//   {
-//     id: 6,
-//     name: "Zu Ziolek",
-//     position: "Libero",
-//     shirtNum: 3,
-//   },
-// ]);
-
 const columns: TableColumn<PlayerResponse>[] = [
   {
     id: "name",
@@ -229,6 +184,13 @@ async function deleteSuccess() {
       color: "error",
     });
     return;
+  }
+  if (response.message === "used in match") {
+    toast.add({
+      title: "Can't delete Player",
+      description: "Player is used in a Match",
+      color: "error",
+    });
   }
   toast.add({
     title: "Player " + name + " has been deleted!",
