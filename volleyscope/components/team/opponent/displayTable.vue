@@ -126,6 +126,13 @@ async function deleteSuccess() {
       color: "error",
     });
     return;
+  } else if (response.message === "used in match") {
+    toast.add({
+      title: "Can't delete Opponent",
+      description: "Opponent is used in a Match",
+      color: "error",
+    });
+    return;
   }
   toast.add({
     title: "Team " + name + " has been deleted!",

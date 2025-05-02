@@ -20,6 +20,8 @@ type Team = {
   division: string;
 };
 
+const table = useTemplateRef("table");
+
 const columnVisibility = ref({
   teamId: false,
 });
@@ -40,14 +42,17 @@ const { data } = await useFetch<Team[]>("/api/team/getAllTeams", {
 
 const columns: TableColumn<Team>[] = [
   {
+    id: "Team Name",
     accessorKey: "teamName",
     header: ({ column }) => getHeader(column, "Name"),
   },
   {
+    id: "League",
     accessorKey: "league",
     header: ({ column }) => getHeader(column, "League"),
   },
   {
+    id: "Division",
     accessorKey: "division",
     header: ({ column }) => getHeader(column, "Division"),
   },
@@ -121,6 +126,13 @@ async function deleteSuccess() {
     toast.add({
       title: "Error",
       description: "There was an error deleting the Team",
+      color: "error",
+    });
+    return;
+  } else if (response.message === "used in match") {
+    toast.add({
+      title: "Can't delete Team",
+      description: "Team is used in a Match",
       color: "error",
     });
     return;
