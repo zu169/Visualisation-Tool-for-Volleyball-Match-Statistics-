@@ -40,14 +40,13 @@ const { data: players, status } = await useAsyncData<Player[]>(() => {
 });
 
 // Fetch the player list based on playerListId
-const { data: playerList } = await useAsyncData<Player[]>(
-  () => $fetch(`/api/playerList/getPlayerList?listId=${playerListId.value}`),
-  { watch: [playerListId], immediate: true }
+const { data: playerList } = useFetch<Player[]>(
+  `/api/playerList/getPlayerList?listId=${playerListId.value}`
 );
 
 console.log("Player List: ", playerList);
-
-if (playerList.value && Array.isArray(playerList.value)) {
+watch(playerList, () => {
+  if (playerList.value && Array.isArray(playerList.value)) {
   selectedPlayers.value = playerList.value.map((player) => ({
     label: player.playerName,
     value: player.playerId,
@@ -60,6 +59,8 @@ if (playerList.value && Array.isArray(playerList.value)) {
     color: "error",
   });
 }
+})
+
 
 function approvePositions() {
   const positions: string[] = [];
