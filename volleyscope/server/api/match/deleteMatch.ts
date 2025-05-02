@@ -1,6 +1,6 @@
 import { db } from "~/db/index";
 import { eq } from "drizzle-orm";
-import { matches, sets } from "~/db/schema/match";
+import { sets, matches } from "~/db/schema/match";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -10,14 +10,14 @@ export default defineEventHandler(async (event) => {
     return { message: "Invalid Team ID" };
   }
   try {
-    const sets = await db
+    const setsFound = await db
       .select({ setId: sets.setId })
       .from(sets)
       .where(eq(sets.matchId, id));
 
     console.log("Sets: ", sets);
-    if (sets !== undefined) {
-      sets.forEach(async (set) => {
+    if (setsFound !== undefined) {
+      setsFound.forEach(async (set) => {
         await db.delete(sets).where(eq(sets.setId, set.setId));
       });
     }

@@ -10,10 +10,11 @@ export default defineEventHandler(async (event) => {
   try {
     // First, delete team-player links for this player
     const inMatch = db
-      .select()
+      .select({ playerId: listPlayer.playerId })
       .from(listPlayer)
       .where(eq(listPlayer.playerId, id));
-    if (inMatch.playerId === id) {
+
+    if (inMatch !== undefined) {
       return { message: "used in match" };
     } else {
       // Then delete the player record itself
