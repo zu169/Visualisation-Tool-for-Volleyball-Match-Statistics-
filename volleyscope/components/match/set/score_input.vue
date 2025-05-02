@@ -26,14 +26,12 @@ const { data: matchData } = useAsyncData("matchData", () =>
   $fetch<Match>(`/api/match/getMatch?match=${matchId}`)
 );
 
-const { data: teamData } = useAsyncData("teamData", () =>
-  $fetch<Team>(`/api/team/getTeam?team=${matchData.value?.teamId}`)
+const { data: teamData } = useFetch<Team>(
+  `/api/team/getTeam?team=${matchData.value?.teamId}`
 );
-
-const { data: opponentData } = useAsyncData("opponentData", () =>
-  $fetch<Team>(`/api/team/getOpponent?team=${matchData.value?.opponentId}`)
+const { data: opponentData } = useFetch<Team>(
+  `/api/team/getOpponent?team=${matchData.value?.opponentId}`
 );
-
 watch([teamData, opponentData], ([teamData, opponentData]) => {
   if (teamData && opponentData) {
     team.value = teamData.teamName;
