@@ -21,6 +21,25 @@ const selected = ref<Player>();
 const serve = ref();
 const success = ref();
 
+const { data: serveData, pending } = await useFetch(`/api/point/getServe?point=${pointId}`,
+  {
+    watch: [pointId],
+    immediate: true,
+  }
+);
+
+watchEffect(() => {
+  if (pending.value) return; // wait for fetch to finish
+  if (!serveData.value || serveData.value.length === 0) return;
+
+  const serveInfo = serveData.value[0];
+
+  // Find the player object from the players array
+  selected.value = players.find((p) => p.playerName === serveInfo.playerName);
+  serve.value = serveInfo.type;
+  success.value = serveInfo.success;
+});
+
 watchEffect(() => {
   if (!selected.value || !serve.value || !success.value) return;
   console.log(
