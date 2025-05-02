@@ -2,6 +2,7 @@
 const toast = useToast();
 
 type Set = {
+  setId: number;
   matchId: number;
   setNumber: number;
   teamScore: number;
@@ -16,6 +17,10 @@ const { editView, matchId, setNum } = defineProps<{
   setNum: number;
 }>();
 
+console.log("Match ID: " + matchId);
+console.log("Set Number: " + setNum);
+console.log("Edit View: " + editView);
+
 const setId = ref<number | undefined>(undefined);
 
 const original = ref<Set | undefined>();
@@ -25,8 +30,8 @@ const playerListId = ref();
 const youtube = ref();
 
 if (editView) {
-  const { data: setData, pending } = useAsyncData<Set>(() =>
-    $fetch(`/api/set/getSet?match=${matchId}&set=${setNum}`)
+  const { data: setData, pending } = useFetch<Set>(
+    `/api/set/getSet?match=${matchId}&set=${setNum}`
   );
 
   watchEffect(() => {
@@ -40,6 +45,10 @@ if (editView) {
       youtube.value = setData.value.youtubeLink;
       console.log("Player List ID: " + playerListId.value);
       original.value = { ...setData.value };
+    } else if (setData.value === null) {
+      console.log("No existing set — starting fresh.");
+      setId.value = undefined;
+      // No data to populate; keep fresh inputs
     }
   });
 }

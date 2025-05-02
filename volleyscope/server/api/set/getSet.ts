@@ -7,6 +7,9 @@ export default defineEventHandler(async (event) => {
   const matchId = Number(query.match);
   const setNum = Number(query.set);
 
+  console.log("Match ID: ", matchId);
+  console.log("Set Number: ", setNum);
+
   if (isNaN(matchId) || isNaN(setNum)) {
     return { message: "Invalid Match ID" };
   }
@@ -17,6 +20,7 @@ export default defineEventHandler(async (event) => {
       .from(sets)
       .where(and(eq(sets.matchId, matchId), eq(sets.setNumber, setNum)));
 
+    console.log("Set Info ", data);
     // Add a pending field to the response
     return data[0] ?? { message: "Set not found", pending: false }; // return single set
   } catch (error) {

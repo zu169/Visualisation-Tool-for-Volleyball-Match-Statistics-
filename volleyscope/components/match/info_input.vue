@@ -6,8 +6,6 @@ import {
   fromDate,
 } from "@internationalized/date";
 
-import type { DateValue } from "@internationalized/date";
-
 const toast = useToast();
 const matchId = defineModel<number>();
 console.log("Match Id: " + matchId.value);
@@ -18,13 +16,6 @@ type Match = {
   date: string;
   matchType: string;
 };
-
-const original = ref<Match>();
-const team = ref<number>();
-const opponent = ref<number>();
-const gameType = ref<string>();
-const gameDate = ref<DateValue>();
-const isoGameDate = ref<string>();
 
 // Get current date (for max validation)
 const today = new Date();
@@ -42,6 +33,13 @@ const isDateDisabled = (date: DateValue) => {
   return date > currentDate;
 };
 
+const original = ref<Match>();
+const team = ref<number>();
+const opponent = ref<number>();
+const gameType = ref<string>();
+const gameDate = shallowRef(new CalendarDate(2025, 4, 28));
+const isoGameDate = ref<string>();
+
 const { data: matchData, pending } = useAsyncData<Match>(
   () => $fetch(`/api/match/getMatch?match=${matchId.value}`)
   // {
@@ -54,18 +52,19 @@ const { data: matchData, pending } = useAsyncData<Match>(
  * Initialize form when match data loads
  */
 watchEffect(() => {
+  if (!matchId.value) return;
   if (pending.value === true) return;
   if (matchData.value && matchId.value) {
+    console.log("Match Data: ", matchData.value);
     team.value = matchData.value.teamId;
     opponent.value = matchData.value.opponentId;
     gameType.value = matchData.value.matchType;
     isoGameDate.value = matchData.value.date;
 
     // Convert ISO date to CalendarDate object
-    gameDate.value = fromDate(
-      new Date(matchData.value.date),
-      getLocalTimeZone()
-    );
+    console.log("ISO Date: " + matchData.value.date);
+    gameDate.value = fromDate(new Date(isoGameDate.value));
+    console.log("Game Date: ", gameDate.value);
 
     original.value = { ...matchData.value };
     console.log("Original: ", original.value);
@@ -100,12 +99,19 @@ watchEffect(() => {
     return;
 
   if (isNaN(matchId.value)) {
-    isoGameDate.value = gameDate.value.toDate(getLocalTimeZone()).toISOString();
+    isoGameDate.value = gameDate.value
+      .toDate(getLocalTimeZone())
+      .toISOString()
+      .split("T")[0];
+    console.log("Date: " + isoGameDate.value);
     saveMatch(0);
     return;
     console.log(hasChanged.value);
   } else if (hasChanged.value === true && matchId.value !== undefined) {
-    isoGameDate.value = gameDate.value.toDate(getLocalTimeZone()).toISOString();
+    isoGameDate.value = gameDate.value
+      .toDate(getLocalTimeZone())
+      .toISOString()
+      .split("T")[0];
     saveMatch(1);
   }
   return;

@@ -9,7 +9,7 @@ const UButton = resolveComponent("UButton");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
 
 const router = useRouter();
-const { teamId } = defineProps<{ teamId?: number }>();
+const { teamId } = defineProps<{ teamId: number }>();
 const selectedMatch = ref<Match | null>(null);
 const toast = useToast();
 
@@ -69,10 +69,11 @@ const columnVisibility = ref({
 
 const globalFilter = ref("");
 
-const { data } = await useAsyncData<Match[]>(
-  "table", // <-- the key name
-  () => $fetch(`/api/match/getAllMatches?team=${teamId}`), // <-- must be a FUNCTION
+const { data } = useAsyncData<Match[]>(
+  `matches-${teamId}`,
+  () => $fetch(`/api/match/getAllMatches?team=${teamId}`),
   {
+    watch: [() => teamId],
     transform: (data) => {
       return (
         data?.map((match) => ({
@@ -206,7 +207,7 @@ async function deleteSuccess() {
     color: "error",
     icon: "i-lucide-trash-2",
   });
-  await refreshNuxtData("table");
+  await refreshNuxtData(`matches-${teamId}`);
 }
 
 function onSelect(row: TableRow<Match>, e?: Event) {

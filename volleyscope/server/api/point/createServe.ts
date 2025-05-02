@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
       await db
         .update(serves)
         .set(serveData)
-        .where(eq(serves.serveId, serve.serveId));
+        .where(eq(serves.serveId, serveData.serveId));
     }
     return { message: "success" };
   } catch (error) {

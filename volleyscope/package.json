@@ -10,8 +10,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test" : "vitest ",
-    "test:ui" : "vitest --ui"
+    "test": "vitest ",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.3.0",
@@ -19,7 +19,7 @@
     "@nuxt/ui": "^3.0.2",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.41.0",
-    "nuxt": "^3.16.1",
+    "nuxt": "^3.17.0",
     "pg": "^8.14.1",
     "valibot": "^1.0.0",
     "vue": "latest",

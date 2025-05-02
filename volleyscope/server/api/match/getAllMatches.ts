@@ -4,20 +4,21 @@ import { matches } from "~/db/schema/match";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  const id = Number(query.team);
+  const teamId = Number(query.team);
+
   try {
-    if (id === 0) {
+    if (teamId === 0) {
       const data = await db.select().from(matches).orderBy(matches.date);
 
       return data;
+    } else {
+      const data = await db
+        .select()
+        .from(matches)
+        .orderBy(matches.date)
+        .where(eq(matches.teamId, teamId));
+      return data;
     }
-    const data = await db
-      .select()
-      .from(matches)
-      .orderBy(matches.date)
-      .where(eq(matches.teamId, id));
-
-    return data;
   } catch (error) {
     console.log(error);
     return { message: "error" };

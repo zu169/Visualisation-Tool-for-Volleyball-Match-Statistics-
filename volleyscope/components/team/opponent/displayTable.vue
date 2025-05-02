@@ -29,7 +29,7 @@ const columnVisibility = ref({
 const globalFilter = ref("");
 
 const { data } = await useFetch<Team[]>("/api/team/getAllOpponents", {
-  key: "table",
+  key: "table-opponents",
   transform: (data) => {
     return (
       data?.map((team) => ({
@@ -123,6 +123,13 @@ async function deleteSuccess() {
     toast.add({
       title: "Error",
       description: "There was an error deleting the Team",
+      color: "error",
+    });
+    return;
+  } else if (response.message === "used in match") {
+    toast.add({
+      title: "Can't delete Opponent",
+      description: "Opponent is used in a Match",
       color: "error",
     });
     return;
@@ -228,7 +235,7 @@ function getHeader(column: Column<Team>, label: string) {
       </UDropdownMenu>
     </div>
     <UTable
-      ref="table"
+      ref="table-opponents"
       v-model:global-filter="globalFilter"
       v-model:column-visibility="columnVisibility"
       sticky

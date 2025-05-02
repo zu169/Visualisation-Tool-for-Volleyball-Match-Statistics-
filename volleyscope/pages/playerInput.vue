@@ -143,7 +143,10 @@ const schema = v.object({
     v.maxLength(100, "Cannot be more than 100 characters")
   ),
   position: v.pipe(v.string()),
-  shirtNumber: v.pipe(v.number("Must be a number")),
+  shirtNumber: v.pipe(
+    v.number("Must be a number"),
+    v.toMinValue(0)
+  ),
   teams: v.array(v.number()),
   yearJoined: v.pipe(v.string()),
   playerHeight: v.pipe(v.number()),

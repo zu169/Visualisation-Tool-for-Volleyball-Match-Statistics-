@@ -64,8 +64,8 @@ watchEffect(() => {
 });
 
 console.log("player id " + id);
-const { data: playerData } = await useAsyncData<PlayerResponse>(() =>
-  $fetch(`/api/player/getSinglePlayer?player=${playerId.value}`)
+const { data: playerData } = await useFetch<PlayerResponse>(
+  `/api/player/getSinglePlayer?player=${id}`
 );
 
 const player = computed(() => playerData.value?.player ?? null);

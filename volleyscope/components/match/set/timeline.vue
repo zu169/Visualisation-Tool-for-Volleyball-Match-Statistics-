@@ -41,16 +41,21 @@ onMounted(() => {
   }
 });
 
-async function fetchPoints() {
-  const { data: pointData } = useAsyncData<Points[]>("points", () => {
-    return $fetch(`/api/point/getPoints?set=${setId}`);
-  });
+if (setId !== undefined) {
+  selectedPoints.value = Array(team + opponent).fill(Point.Unknown);
+  await fetchPoints();
+}
+
+function fetchPoints() {
+  const { data: pointData } = useFetch<Points[]>(
+    `/api/point/getPoints?set=${setId}`
+  );
   if (pointData.value !== null) {
     pointData.value.forEach((point) => {
       if (point.side === "home") {
-        selectedPoints.value[point.pointNumber - 1] = Point.Home;
+        selectedPoints.value[point.pointNum - 1] = Point.Home;
       } else if (point.side === "away") {
-        selectedPoints.value[point.pointNumber - 1] = Point.Away;
+        selectedPoints.value[point.pointNum - 1] = Point.Away;
       }
     });
   }
@@ -88,13 +93,54 @@ watch(fullDeleteSuccess, async () => {
   }
 });
 
-const addPoint = (team: "home" | "away", index: number) => {
+function checkTeamPoints(whichTeam: string) {
+  let teamPoints = 0;
+  let opponentPoints = 0;
+  selectedPoints.value.forEach((point) => {
+    if (point === Point.Home) {
+      teamPoints++;
+    } else if (point === Point.Away) {
+      opponentPoints++;
+    }
+  });
+  if (whichTeam === "home" && teamPoints <= team) {
+    console.log("Home Team Points: " + teamPoints);
+    return true;
+  } else if (whichTeam === "home" && teamPoints > team) {
+    toast.add({
+      title: "Error",
+      description: "You have already added all the points for your team!",
+      color: "error",
+    });
+    return false;
+  } else if (whichTeam === "away" && opponentPoints <= opponent) {
+    console.log("Away Team Points: " + opponentPoints);
+    return true;
+  } else if (whichTeam === "away" && opponentPoints > opponent) {
+    toast.add({
+      title: "Error",
+      description: "You have already added all the points for the opponent!",
+      color: "error",
+    });
+    return false;
+  }
+}
+
+const addPoint = (team: "home" | "away" | "unknown", index: number) => {
   // If both are visible: first click
   if (selectedPoints.value[index] === Point.Unknown) {
     if (team === "home") {
-      selectedPoints.value[index] = Point.Home;
+      if (checkTeamPoints(team)) {
+        selectedPoints.value[index] = Point.Home;
+      } else {
+        return;
+      }
     } else {
-      selectedPoints.value[index] = Point.Away;
+      if (checkTeamPoints(team)) {
+        selectedPoints.value[index] = Point.Away;
+      } else {
+        return;
+      }
     }
     console.log("Point Number" + index);
     pointNum.value = index + 1;
@@ -102,6 +148,7 @@ const addPoint = (team: "home" | "away", index: number) => {
     addPointModal.value = true;
   } else {
     // Second click: reset both buttons to visible
+    side.value = selectedPoints.value[index];
     pointNum.value = index + 1;
     console.log("Point Number" + pointNum.value);
     choiceModal.value = true;
@@ -122,13 +169,13 @@ async function deletePoint(pointNumber: number) {
   } else if (response.message === "Point not found") {
     toast.add({
       title: "Error",
-      description: "Point " + pointNumber.value + " does not exist!",
+      description: "Point " + pointNumber + " does not exist!",
       color: "error",
     });
     return true;
   }
   toast.add({
-    title: "Point " + pointNumber.value + " has been deleted!",
+    title: "Point " + pointNumber + " has been deleted!",
     color: "success",
     icon: "i-lucide-trash-2",
   });
@@ -144,7 +191,9 @@ async function deletePoint(pointNumber: number) {
       <template v-for="(value, index) in selectedPoints" :key="'home' + index">
         <UButton
           v-if="value === Point.Unknown"
-          class="w-10 h-10 bg-white"
+          class="w-10 h-10"
+          color="primary"
+          variant="soft"
           @click="addPoint('home', index)"
           >{{ index + 1 }}</UButton
         >
@@ -167,9 +216,19 @@ async function deletePoint(pointNumber: number) {
     <div class="flex flex-col gap-2 w-1/2 items-start">
       <template v-for="(value, index) in selectedPoints" :key="'home' + index">
         <UButton
-          v-if="value === Point.Unknown || value === Point.Away"
-          class="w-10 h-10 bg-white"
+          v-if="value === Point.Unknown"
+          class="w-10 h-10"
+          color="primary"
+          variant="soft"
           @click="addPoint('away', index)"
+          >{{ index + 1 }}</UButton
+        >
+        <UButton
+          v-else-if="value === Point.Away"
+          class="w-10 h-10"
+          color="success"
+          variant="soft"
+          @click="addPoint('unknown', index)"
           >{{ index + 1 }}</UButton
         >
         <div v-else-if="value === Point.Home" class="w-10 h-10 invisible" />
